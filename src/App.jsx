@@ -3,6 +3,8 @@ import loadingAnim from "./assets/lottie/loading"
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
+import scholarlyIcon from '../src/assets/images/scholarly.png'
+
 export default function App() {
 
   let navigate = useNavigate();
@@ -18,8 +20,8 @@ export default function App() {
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center gap-4 text-2xl text-black dark:bg-black dark:text-white">
-      <div className="w-[100px] h-[100px] rounded-circle bg-background"></div>
-      <p className="font-bold bg-gradient-to-r from-blue to-purple bg-clip-text text-transparent">Scholarly</p>
+      <img src={scholarlyIcon} alt="Scholarly" className="max-w-[220px] max-h-[180px] object-cover" />
+      {/* <p className="font-bold bg-gradient-to-r from-blue to-purple bg-clip-text text-transparent">Scholarly</p> */}
       <LottieWidget lottieAnimation={loadingAnim} loop={true} className="w-10 h-10" />
     </div>
   )
