@@ -13,5 +13,5 @@ body, #root{
 /* By default this website is on darkmode */
 :root{
   color:'white';
-  background-color: black;
+  background-color: #000000;
 }

@@ -26,7 +26,7 @@ export default function Input({prefix, id, placeholder, password=false, error, r
     }
   return (
     <div className='w-auto gap-1'>
-        <div className={`w-full h-fit px-5 select-none py-4 ${className} outline-none flex gap-6 items-center justify-center border-none border-purple border-2 bg-red-700 focus:border rounded-[20px]`}>
+        <div className={`w-full h-fit px-5 select-none py-4 ${className} outline-none flex gap-6 items-center justify-center border-none border-purple border-2 bg-background focus:border rounded-[20px]`}>
             {prefix && <div className='text-[18px] scale-105'>
                 {prefix}
                 </div>}
