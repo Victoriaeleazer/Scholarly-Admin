@@ -48,9 +48,9 @@ export default function LoginPage () {
         </div>
       </div>
 
-      {isNotPhone && <div className="h-full flex flex-col items-center justify-center flex-1 bg-blue" >
-        <h1>NEW HERE?</h1>
-        <h2>Sign up and discover a great <br />amount of new opportunities!</h2>
+      {isNotPhone && <div className="h-full flex flex-col items-center justify-center flex-1 gap-4 text-white bg-gradient-to-r from-blue to-purple" >
+        <h1 className='text-[2vw] font-bold'>NEW HERE?</h1>
+        <h2 className='font-normal'><i>Sign up and discover a great <br />amount of new opportunities!</i></h2>
       </div>}
     </div>
   )
