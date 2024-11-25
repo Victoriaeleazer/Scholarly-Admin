@@ -15,3 +15,15 @@ body, #root{
   color:'white';
   background-color: #000000;
 }
+input::autofill{
+  background: transparent;
+}
+input:-webkit-autofill {
+  background: transparent !important;
+}
+input:-webkit-autofill:focus {
+  background: transparent !important;
+}
+input:-webkit-autofill:hover {
+  background: transparent !important;
+}

@@ -6,10 +6,14 @@ import { BrowserRouter, Routes } from 'react-router'
 import { Route } from 'react-router'
 import LoginPage from './pages/authentication/LoginPage'
 import PageNotFound from './pages/page-not-found/PageNotFound'
+import { Toaster } from 'sonner'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
+    {/* Don't remove or edit this this everyone!!!
+    This is set inorder to see toasts (Those messages you see when logging in success or error) */}
+    <Toaster expand position='top-right' closeButton theme='dark' richColors />
       <Routes>
         <Route path='/' element={<App/>} />
         <Route path='/login' element={<LoginPage/>} />

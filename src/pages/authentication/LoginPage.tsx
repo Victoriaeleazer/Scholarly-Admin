@@ -1,34 +1,91 @@
-import React, { useEffect, useState } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 import Input from '../../components/Input';
 import { FaAt } from "react-icons/fa6";
-import { Unlock } from 'iconsax-react';
+import { Call, Unlock } from 'iconsax-react';
 import Button from '../../components/Button';
 import { Link } from 'react-router';
 import {useMediaQuery} from '@react-hook/media-query'
+import { delay } from '../../services/delay';
+import { loginAccount } from '../../services/api-consumer';
+import { toast } from 'sonner';
+import {validate as validateEmail} from 'react-email-validator'
+import { isPhoneNumber, validatePhoneNumber } from '../../utils/PhoneUtils';
 // import plant from './assets/plant.jpg'
 
 export default function LoginPage () {
-    const [email, setEmail] = useState('');
+    const [emailOrPhone, setEmailOrPhone] = useState('');
     const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+    const [isNumber, setIsPhoneNumber] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [sideHovered, setSideHovered] = useState(false);
 
     const isPhone = !useMediaQuery('only screen and (min-width: 767px)')
 
     const startsOverflowing = !useMediaQuery('only screen and (min-width: 1165px)')
 
+    useEffect(()=>{
+      const phoneMatch = isPhoneNumber(emailOrPhone)
+      setIsPhoneNumber(phoneMatch);
+    }, [emailOrPhone])
+
 
      // Handle form submission
-  const handleSubmit = (event) => {
+  async function handleSubmit(event: FormEvent){
+    setErrorMessage(null);
     event.preventDefault();
-    if (!email || !password) {
-      setErrorMessage('Both email and password are required!');
-    } else {
-      setErrorMessage('');
-      // Handle your form submission here (e.g., send data to the server)
-      console.log('Form submitted:', { email, password });
+    setLoading(true);
+    // Wait 2 seconds
+    await delay(2000);
+
+    /// Email || Phone Validation check
+    if((emailOrPhone.trim().length === 0)){
+      setLoading(false)
+      setErrorMessage("email cannot be empty");
+      return;
     }
+
+    const validPhone = validatePhoneNumber(emailOrPhone);
+    const validEmail = validateEmail(emailOrPhone);
+
+    if(isNumber && !validPhone){
+      setLoading(false)
+      setErrorMessage("invalid phone number");
+      return;
+    }
+
+    if(!isNumber && !validEmail){
+      setLoading(false)
+      setErrorMessage("invalid email");
+      return;
+    }
+
+    if((password.trim().length === 0)){
+      setLoading(false)
+      setErrorMessage("password cannot be empty");
+      return;
+    }
+
+    login();
   };
+
+  async function login(){
+    toast.loading("Logging You In", {id:'loading-toast', dismissible:loading});
+    const response = await loginAccount(emailOrPhone, password);
+
+    toast.dismiss('loading-toast');
+
+    if(response.status === 200){
+      toast.success(response.data.message);
+      console.log("Login Successful", response.data.data)
+      setLoading(false);
+      return;
+    }
+
+    // If it's not Ok (a success)
+    toast.error(response.data.message ?? "Network Error Occurred");
+    setLoading(false);
+  }
 
 
 
@@ -40,11 +97,11 @@ export default function LoginPage () {
           <h1 className='text-[40px] font-semibold select-none text-center'>Welcome Back !</h1>
           <p className='text-gray-400 text-[15px] select-none font-no text-center mb-4'>Log into your <span className='font-semibold bg-gradient-to-r from-blue via-blue to-purple bg-clip-text text-transparent'>scholarly</span> admin account</p>
           <form className='flex w-full flex-col gap-6' onSubmit={handleSubmit}>
-              <Input placeholder='Enter Email' prefix={<FaAt />} type='email' required={true}  />
+              <Input placeholder='Enter Email Or Phone' onChange={(email)=>setEmailOrPhone(email.trim())} prefix={isNumber? <Call /> : <FaAt />} type='text' error={errorMessage?.includes('email') || errorMessage?.includes('phone')?errorMessage: null} required={true}  />
 
-              <Input placeholder='Enter Password' prefix={<Unlock />} type='password' required={true}  />
+              <Input placeholder='Enter Password' onChange={(password)=>setPassword(password)} prefix={<Unlock />} type='password' error={errorMessage?.includes('password')?errorMessage: null} required={true}  />
 
-              <Button title='Login' type='submit' gradient />
+              <Button title='Login' type='submit' loading={loading} gradient />
 
               <p className='text-secondary'> Don't have an admin account? <Link to={'/register'} className='underline text-white cursor-pointer'>Create One</Link></p>
           </form>

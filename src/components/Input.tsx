@@ -10,7 +10,7 @@ interface props{
     required?:boolean,
     value?:string,
     password?:boolean,
-    error?: string,
+    error?: string | null,
     onChange?: (s:string)=> void
 
 }
@@ -27,7 +27,7 @@ export default function Input({prefix, id, placeholder, password=false, error, r
         return <Eye onClick={()=>setShowPassword(!showPassword)}/>
     }
   return (
-    <div className='w-auto gap-1'>
+    <div className='w-auto gap-1 flex flex-col items-start'>
         <div className={`w-full h-fit px-5 select-none py-4 ${className} outline-none flex gap-6 items-center justify-center border-none border-purple border-2 bg-background focus:border rounded-[20px]`}>
             {prefix && <div className='text-[18px] scale-105'>
                 {prefix}
@@ -35,7 +35,7 @@ export default function Input({prefix, id, placeholder, password=false, error, r
 
             <input
                 id={id}
-                className='bg-transparent font-normal text-white focus:outline-none flex flex-1 placeholder:text-secondary'
+                className='bg-transparent autofill:bg-background font-normal text-white focus:outline-none flex flex-1 placeholder:text-secondary'
                 required={required}
                 placeholder={placeholder}
                 type={password || type==='password'? (showPassword?'text':'password'):type}
@@ -52,7 +52,7 @@ export default function Input({prefix, id, placeholder, password=false, error, r
                 <ShowButton/>
                 </div>}
         </div>
-        {error && <p className='text-red-500 font-bold text-[14px]'><i>{`* ${error?.toLowerCase().trim()}`}</i></p>}
+        <p className={`text-red-500 font-bold ${error?'text-[14px]':'text-[0px]'} transition-all ease-in-out`}><i>{`* ${error?.toLowerCase().trim()}`}</i></p>
     </div>
     
   )
