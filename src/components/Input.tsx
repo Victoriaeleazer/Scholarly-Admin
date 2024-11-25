@@ -20,9 +20,9 @@ export default function Input({prefix, id, placeholder, password=false, error, r
 
     const ShowButton = ()=>{
         if(showPassword){
-            return <EyeSlash onClick={()=>setShowPassword(!showPassword)} className='text-lg text-blue' />
+            return <EyeSlash onClick={()=>setShowPassword(!showPassword)} className='text-[18px] scale-105 text-blue' />
         }
-        return <Eye onClick={()=>setShowPassword(!showPassword)} className='text-lg text-blue' />
+        return <Eye onClick={()=>setShowPassword(!showPassword)} className='text-[18px] scale-105 text-blue' />
     }
   return (
     <div className='w-auto gap-1'>
