@@ -12,7 +12,9 @@ export default function LoginPage () {
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
-    const isNotPhone = useMediaQuery('only screen and (min-width: 767px)')
+    const isPhone = !useMediaQuery('only screen and (min-width: 767px)')
+
+    const startsOverflowing = !useMediaQuery('only screen and (min-width: 1165px)')
 
 
      // Handle form submission
@@ -32,8 +34,8 @@ export default function LoginPage () {
 
   return(
     <div className="w-full h-full overflow-hidden flex bg-black">
-      <div className='h-full flex flex-col text-white items-center justify-center flex-grow-[2]'> 
-        <div className='flex flex-col items-center justify-center w-[80%] h-full gap-3 text-center md:w-[40%]'>
+      <div className='h-full flex flex-col text-white items-center justify-center flex-grow-[3]'> 
+        <div className={`flex flex-col items-center justify-center h-full gap-3 text-center ${isPhone? 'w-[85%]': startsOverflowing? 'w-[80%]': 'w-[45%]'}`}>
           <h1 className='text-[40px] font-semibold select-none text-center'>Welcome Back !</h1>
           <p className='text-gray-400 text-[15px] select-none font-no text-center mb-4'>Log into your <span className='font-semibold bg-gradient-to-r from-blue via-blue to-purple bg-clip-text text-transparent'>scholarly</span> admin account</p>
           <form className='flex w-full flex-col gap-6' onSubmit={handleSubmit}>
@@ -48,7 +50,7 @@ export default function LoginPage () {
         </div>
       </div>
 
-      {isNotPhone && <div className="h-full flex flex-col items-center justify-center flex-1 gap-4 text-white bg-gradient-to-r from-blue to-purple" >
+      {!isPhone && <div className={`h-full flex flex-col items-center justify-center flex-grow-[1.5] gap-4 text-white bg-gradient-to-r from-blue to-purple ${startsOverflowing? 'flex-grow-[0.75]':''}`}>
         <h1 className='text-[2vw] font-bold'>NEW HERE?</h1>
         <h2 className='font-normal'><i>Sign up and discover a great <br />amount of new opportunities!</i></h2>
       </div>}

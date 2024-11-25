@@ -20,9 +20,9 @@ export default function Input({prefix, id, placeholder, password=false, error, r
 
     const ShowButton = ()=>{
         if(showPassword){
-            return <EyeSlash onClick={()=>setShowPassword(!showPassword)} className='text-[18px] scale-105 text-blue' />
+            return <EyeSlash onClick={()=>setShowPassword(!showPassword)}/>
         }
-        return <Eye onClick={()=>setShowPassword(!showPassword)} className='text-[18px] scale-105 text-blue' />
+        return <Eye onClick={()=>setShowPassword(!showPassword)}/>
     }
   return (
     <div className='w-auto gap-1'>
@@ -46,7 +46,9 @@ export default function Input({prefix, id, placeholder, password=false, error, r
 
             />
 
-            {(password || type==='password') && <ShowButton/>}
+            {(password || type==='password') && <div className='text-[18px] text-blue'>
+                <ShowButton/>
+                </div>}
         </div>
         {error && <p className='text-red-500 font-bold text-[14px]'><i>{`* ${error?.toLowerCase().trim()}`}</i></p>}
     </div>
