@@ -33,7 +33,7 @@ export default function LoginPage () {
   return(
     <div className="w-full h-full overflow-hidden flex bg-black">
       <div className='h-full flex flex-col text-white items-center justify-center flex-grow-[2]'> 
-        <div className='flex flex-col items-center justify-center w-[40%] h-full gap-3 text-center'>
+        <div className='flex flex-col items-center justify-center w-[80%] h-full gap-3 text-center md:w-[40%]'>
           <h1 className='text-[40px] font-semibold select-none text-center'>Welcome Back !</h1>
           <p className='text-gray-400 text-[15px] select-none font-no text-center mb-4'>Log into your <span className='font-semibold bg-gradient-to-r from-blue via-blue to-purple bg-clip-text text-transparent'>scholarly</span> admin account</p>
           <form className='flex w-full flex-col gap-6' onSubmit={handleSubmit}>
