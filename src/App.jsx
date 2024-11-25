@@ -1,79 +1,26 @@
-import React, { useState } from 'react';
-// import plant from './assets/plant.jpg'
+import LottieWidget from "./components/LottieWidget";
+import loadingAnim from "./assets/lottie/loading"
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
 
-const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+export default function App() {
 
-     // Handle form submission
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (!email || !password) {
-      setErrorMessage('Both email and password are required!');
-    } else {
-      setErrorMessage('');
-      // Handle your form submission here (e.g., send data to the server)
-      console.log('Form submitted:', { email, password });
-    }
-  };
+  let navigate = useNavigate();
 
-
-  return(
-    <div class="form-hold">
- 
-        
-        <div className='form-left'>   
-            <div className="form-container">
-                <h2>Login to Your Account</h2>
-                {/* <h3>Login using social networks</h3> */}
-
-                <form onSubmit={handleSubmit}>
-                    <div>
-                        <label htmlFor="email"></label>
-                        <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Email"
-                        required
-                        />
-                    </div>
-
-                    <div>
-                        <label htmlFor="password"></label>
-                        <input
-                        type="password"
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Password"
-                        required
-                        />
-                    </div>
-                      {errorMessage && <p className="error">{errorMessage}</p>}
-                    
-                    <div className='btn'>
-                        <button type="submit">Sign in</button>
-                    </div>
-                </form>
-            </div>
+  useEffect(()=>{
+    const timer = setTimeout(()=>{
+      navigate("/login", {replace:true});
+    }, 5000);
     
-        </div>
+  
+    return ()=> clearTimeout(timer);
+  })
 
-        <div className="form-right" >
-            <div className="form-right-inner">
-                <h1>NEW HERE?</h1>
-                <h2>Sign up and discover a great <br />amount of new opportunities!</h2>
-
-              <div className="btn">
-                  <button>Sign up</button>
-                 </div>
-            </div>
-        </div>
+  return (
+    <div className="w-full h-full flex flex-col items-center justify-center gap-4 text-2xl text-black dark:bg-black dark:text-white">
+      <div className="w-[100px] h-[100px] rounded-circle bg-background"></div>
+      <p className="font-bold bg-gradient-to-r from-blue to-purple bg-clip-text text-transparent">Scholarly</p>
+      <LottieWidget lottieAnimation={loadingAnim} loop={true} className="w-10 h-10" />
     </div>
   )
-}
-
-export default Login;
+};
