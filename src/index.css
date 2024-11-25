@@ -9,3 +9,9 @@ body, #root{
   font-family: 'DM Sans', sans-serif;
   width: 100vw;
 }
+
+/* By default this website is on darkmode */
+:root{
+  color:'white';
+  background-color: black;
+}

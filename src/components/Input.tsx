@@ -5,6 +5,7 @@ interface props{
     placeholder:string,
     prefix?:ReactNode | string,
     className?: string | undefined,
+    id?:string,
     type?: HTMLInputTypeAttribute | undefined,
     required?:boolean,
     value?:string,
@@ -14,7 +15,7 @@ interface props{
 
 }
 
-export default function Input({prefix, placeholder, password=false, error, required, value, onChange, type, className}:props) {
+export default function Input({prefix, id, placeholder, password=false, error, required, value, onChange, type, className}:props) {
     const [showPassword, setShowPassword] = useState(password || type==='password');
 
     const ShowButton = ()=>{
@@ -30,7 +31,8 @@ export default function Input({prefix, placeholder, password=false, error, requi
                 {prefix}
                 </div>}
 
-            <input 
+            <input
+                id={id}
                 className='bg-transparent font-normal text-white focus:outline-none flex flex-1 placeholder:text-secondary'
                 required={required}
                 placeholder={placeholder}

@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Input from '../../components/Input';
 import { FaAt } from "react-icons/fa6";
 import { Unlock } from 'iconsax-react';
 import Button from '../../components/Button';
 import { Link } from 'react-router';
+import {useMediaQuery} from '@react-hook/media-query'
 // import plant from './assets/plant.jpg'
 
 export default function LoginPage () {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+
+    const isNotPhone = useMediaQuery('only screen and (min-width: 767px)')
+
 
      // Handle form submission
   const handleSubmit = (event) => {
@@ -22,6 +26,8 @@ export default function LoginPage () {
       console.log('Form submitted:', { email, password });
     }
   };
+
+
 
 
   return(
@@ -42,10 +48,10 @@ export default function LoginPage () {
         </div>
       </div>
 
-      <div className="h-full flex flex-col items-center justify-center flex-1 bg-blue" >
+      {isNotPhone && <div className="h-full flex flex-col items-center justify-center flex-1 bg-blue" >
         <h1>NEW HERE?</h1>
         <h2>Sign up and discover a great <br />amount of new opportunities!</h2>
-      </div>
+      </div>}
     </div>
   )
 }
