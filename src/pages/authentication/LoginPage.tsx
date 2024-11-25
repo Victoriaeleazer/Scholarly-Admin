@@ -11,6 +11,7 @@ export default function LoginPage () {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [sideHovered, setSideHovered] = useState(false);
 
     const isPhone = !useMediaQuery('only screen and (min-width: 767px)')
 
@@ -50,10 +51,22 @@ export default function LoginPage () {
         </div>
       </div>
 
-      {!isPhone && <div className={`h-full flex flex-col items-center justify-center flex-grow-[1.5] gap-4 text-white bg-gradient-to-r from-blue to-purple ${startsOverflowing? 'flex-grow-[0.75]':''}`}>
-        <h1 className='text-[2vw] font-bold'>NEW HERE?</h1>
-        <h2 className='font-normal'><i>Sign up and discover a great <br />amount of new opportunities!</i></h2>
-      </div>}
+      {!isPhone && (<div 
+      onMouseEnter={()=>setSideHovered(true)}
+      onMouseLeave={()=>setSideHovered(false)}
+      className={`h-full flex flex-col items-center justify-center overflow-hidden flex-grow-[1.5] relative gap-4 text-white bg-gradient-to-br from-blue via-violet-800 to-purple ${startsOverflowing? 'flex-grow-[0.75]':''}`}>
+        {/* Shapes : */}
+        <div className={`w-[150px] h-[150px] rounded-circle z-10 absolute top-[10%] ${sideHovered? 'left-[50%]':'left-[10%]'} bg-white opacity-10 transition-all ease-in-out duration-500`}/>
+        <div className={`w-[150px] h-[150px] z-10 absolute ${sideHovered? 'rotate-[270deg]' : 'rotate-90'} top-[20%] right-[5%] bg-white opacity-10 clip-triangle transition-all ease-in-out duration-500`}/>
+        <div className={`w-[150px] h-[150px] rounded-circle z-10 absolute bottom-[10%] ${sideHovered? 'right-[45%]' : 'right-[10%]'} bg-white opacity-10 transition-all ease-in-out duration-500`}/>
+        <div className={`w-[150px] h-[150px] z-10 absolute ${sideHovered? 'rotate-[270deg]' :'rotate-90'} bottom-[20%] left-[15%] bg-white opacity-10 clip-star transition-all ease-in-out duration-500`}/>
+
+        <div className="bg-transparent backdrop-blur-[2.5px] w-full h-full z-20 flex flex-col gap-4 items-center justify-center">
+          <h1 className='text-[3vw] font-extrabold'>New Here?</h1>
+          <h2 className='font-[300] text-[1vw] text-center'><i>Sign up and join <strong className='font-bold'>scholarly</strong>'s admin community.<br />Don't be the odd <em className='border-dashed border-b'>staff</em> out!</i></h2>
+          <Link to={'/register'} className='bg-white w-[120px] h-[50px] text-black rounded-[25px] text-center flex items-center justify-center font-bold hover:bg-opacity-20 hover:text-white ease-in transition-colors' >Sign Up</Link>
+        </div>
+      </div>)}
     </div>
   )
 }
