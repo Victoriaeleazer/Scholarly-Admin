@@ -10,6 +10,7 @@ export default {
       colors:{
         purple:'#560677',
         blue:'#628EFF',
+        black: '#000000',
         background:'#101010',
         secondary:'#9ca3af'
       },
