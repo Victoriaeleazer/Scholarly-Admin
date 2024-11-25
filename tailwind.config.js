@@ -11,7 +11,7 @@ export default {
         purple:'#560677',
         blue:'#628EFF',
         black: '#000000',
-        background:'#0A0A0A',
+        background:'#121212',
         secondary:'#9ca3af'
       },
       borderRadius:{
