@@ -139,7 +139,7 @@ export default function RegisterPage () {
     <div id='name-section' className='flex w-full flex-col h-fit overflow-hidden gap-3 items-center justify-center text-center'>
       <h1 className='text-[40px] font-semibold select-none text-center'>Hello There!</h1>
       <p className='text-gray-400 text-[15px] select-none font-no text-center mb-4'>Get started with <span className='font-semibold bg-gradient-to-r from-blue via-blue to-purple bg-clip-text text-transparent'>scholarly</span> admin.<br/>What are your names?</p>
-      <form className='flex w-full flex-col gap-6' onSubmit={handleNamesSubmit}>
+      <form className='flex w-full flex-col items-center gap-6' onSubmit={handleNamesSubmit}>
           <Input placeholder='Enter First Name' onChange={setFirstName} prefix={<User />} type='text' error={errorMessage?.includes('first')?errorMessage: null} required={true}  />
 
           <Input placeholder='Enter Last Name' onChange={setLastName} prefix={<User />} type='text' error={errorMessage?.includes('last')?errorMessage: null} required={true}  />
@@ -158,7 +158,7 @@ export default function RegisterPage () {
     <div id='email-section' className='flex w-full flex-col h-fit overflow-hidden gap-3 items-center justify-center text-center'>
       <h1 className='text-[40px] font-semibold select-none text-center'>...One More Thing</h1>
         <p className='text-gray-400 text-[15px] select-none font-no text-center mb-4'>What're your email, phone number and password?<br />Enter them below</p>
-        <form className='flex w-full flex-col gap-6' onSubmit={handleFinalSubmit}>
+        <form className='flex w-full flex-col items-center gap-6' onSubmit={handleFinalSubmit}>
             <Input placeholder='Enter Email' onChange={setEmail} prefix={<FaAt />} type='email' error={errorMessage?.includes('email')?errorMessage: null} required={true}  />
 
             <Input placeholder='Enter Phone Number' onChange={setPhoneNmber} prefix={<Call />} type='text' error={errorMessage?.includes('phone')?errorMessage: null} required={true}  />
