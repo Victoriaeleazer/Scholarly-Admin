@@ -20,7 +20,7 @@ export default function App() {
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center gap-4 text-2xl text-black dark:bg-black dark:text-white">
-      <img src={scholarlyIcon} alt="Scholarly" className="max-w-[220px] max-h-[180px] object-cover" />
+      <img src={scholarlyIcon} alt="Scholarly" className="max-w-[240px] max-h-[190px] object-cover" />
       {/* <p className="font-bold bg-gradient-to-r from-blue to-purple bg-clip-text text-transparent">Scholarly</p> */}
       <LottieWidget lottieAnimation={loadingAnim} loop={true} className="w-10 h-10" />
     </div>

@@ -5,7 +5,7 @@ import LottieWidget from '../../components/LottieWidget'
 export default function PageNotFound() {
   return (
     <div className='w-full h-full flex flex-col items-center justify-center text-white'>
-        <LottieWidget lottieAnimation={notFoundAnim} className='w-[90%] h-[90%] max-md:w-[70%] max-md:h-[70%]' loop />
+        <LottieWidget lottieAnimation={notFoundAnim} className='w-[90%] h-[90%]' loop />
     </div>
   )
 }
