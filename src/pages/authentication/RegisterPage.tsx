@@ -101,9 +101,9 @@ export default function RegisterPage () {
       return;
     }
 
-    if((password.trim().length === 0) || confirmPassword.trim().length ===0){
+    if((password.trim().length <= 8) || confirmPassword.trim().length ===0){
       setLoading(false)
-      setErrorMessage("password cannot be empty");
+      setErrorMessage(password.trim().length !== 0?"password must be at least 8 digits in length":"password cannot be empty");
       return;
     }
 
