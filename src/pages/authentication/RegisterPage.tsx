@@ -33,6 +33,7 @@ export default function RegisterPage () {
     const [pageIndex, setPageIndex] = useState(0);
 
     const isPhone = !useMediaQuery('only screen and (min-width: 767px)')
+    
 
 
     // Handle names form submission
@@ -161,7 +162,7 @@ export default function RegisterPage () {
         <form className='flex w-full flex-col gap-6' onSubmit={handleFinalSubmit}>
             <Input placeholder='Enter Email' onChange={setEmail} prefix={<FaAt />} type='email' error={errorMessage?.includes('email')?errorMessage: null} required={true}  />
 
-            <Input placeholder='Enter Phone Number' onChange={setPhoneNmber} prefix={<Call />} type='text' error={errorMessage?.includes('phone')?errorMessage: null} required={true}  />
+            <Input placeholder='Enter Phone Number' onChange={(phone)=>setPhoneNmber(phone.replaceAll(' ', ''))} prefix={<Call />} type='text' error={errorMessage?.includes('phone')?errorMessage: null} required={true}  />
 
             <Input placeholder='Enter Password' onChange={setPassword} prefix={<Unlock />} type='password' error={errorMessage?.includes('password') && !errorMessage?.includes('match') ?errorMessage: null} required={true}  />
 
@@ -180,7 +181,7 @@ export default function RegisterPage () {
 
   return(
     <div className="w-screen h-full overflow-hidden flex flex-row-reverse bg-black">
-      <div className='h-full w-full flex flex-col text-white items-center justify-center flex-grow-[3]'> 
+      <div className={`h-full flex flex-col text-white items-center justify-center flex-grow-[3] ${isPhone? 'w-full': 'w-auto'}`}> 
         <div className={`flex items-center overflow-hidden justify-center h-full ${isPhone? 'w-[85%]': startsOverflowing? 'w-[80%]': 'w-[45%]'}`}>
           <PageSlider currentIndex={pageIndex}>
             {nameSection()}

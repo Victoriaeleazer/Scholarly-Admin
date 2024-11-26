@@ -111,7 +111,7 @@ export default function LoginPage () {
       {!isPhone && (<div 
       onMouseEnter={()=>setSideHovered(true)}
       onMouseLeave={()=>setSideHovered(false)}
-      className={`h-full flex flex-col items-center justify-center overflow-hidden flex-grow-[1.5] relative gap-4 text-white bg-gradient-to-br from-blue via-violet-800 to-purple ${startsOverflowing? 'flex-grow-[0.75]':''}`}>
+      className={`h-full flex  flex-col items-center justify-center overflow-hidden flex-grow-[1.5] relative gap-4 text-white bg-gradient-to-br from-blue via-violet-800 to-purple ${startsOverflowing? 'flex-grow-[0.75]':''}`}>
         {/* Shapes : */}
         <div className={`w-[150px] h-[150px] rounded-circle z-10 absolute top-[10%] ${sideHovered? 'left-[50%]':'left-[10%]'} bg-white opacity-10 transition-all ease-in-out duration-500`}/>
         <div className={`w-[150px] h-[150px] z-10 absolute ${sideHovered? 'rotate-[270deg]' : 'rotate-90'} top-[20%] right-[5%] bg-white opacity-10 clip-triangle transition-all ease-in-out duration-500`}/>
