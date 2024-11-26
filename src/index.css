@@ -15,6 +15,22 @@ body, #root{
   color:'white';
   background-color: #000000;
 }
+option{
+  background-color: #000000;
+  color: white;
+  transition: background ease 500ms;
+}
+option:hover, option:focus{
+  background-color: '#560677';
+}
+option:first-child{
+  border-top-right-radius: 15px;
+  border-top-left-radius: 15px;
+}
+option:last-child{
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
 input::autofill{
   background: transparent;
 }

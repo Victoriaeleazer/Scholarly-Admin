@@ -91,7 +91,7 @@ export default function LoginPage () {
 
 
   return(
-    <div className="w-full h-full overflow-hidden flex bg-black">
+    <div className="w-full h-full box-border overflow-hidden flex bg-black">
       <div className='h-full flex flex-col text-white items-center justify-center flex-grow-[3]'> 
         <div className={`flex flex-col items-center justify-center h-full gap-3 text-center ${isPhone? 'w-[85%]': startsOverflowing? 'w-[80%]': 'w-[45%]'}`}>
           <h1 className='text-[40px] font-semibold select-none text-center'>Welcome Back !</h1>
@@ -121,7 +121,7 @@ export default function LoginPage () {
         <div className="bg-transparent backdrop-blur-[2.5px] w-full h-full z-20 flex flex-col gap-4 items-center justify-center">
           <h1 className='text-[3vw] font-extrabold'>New Here?</h1>
           <h2 className='font-[300] text-[1vw] text-center'><i>Sign up and join <strong className='font-bold'>scholarly</strong>'s admin community.<br />Don't be the odd <em className='border-dashed border-b'>staff</em> out!</i></h2>
-          <Link to={'/register'} className='bg-white w-[120px] h-[50px] text-black rounded-[25px] text-center flex items-center justify-center font-bold hover:bg-opacity-20 hover:text-white ease-in transition-colors' >Sign Up</Link>
+          <Link to={'/register'} className='bg-white w-[120px] h-[50px] text-black rounded-[25px] text-center flex items-center justify-center font-bold hover:bg-opacity-20 hover:text-white ease-in transition-colors'>Get Started</Link>
         </div>
       </div>)}
     </div>

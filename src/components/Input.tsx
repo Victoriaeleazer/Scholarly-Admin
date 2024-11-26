@@ -42,7 +42,7 @@ export default function Input({prefix, id, placeholder, password=false, error, r
                 value={value}
                 onChange={(e)=>{
                     if(onChange){
-                        onChange!(e.target.value)
+                        onChange!(e.target.value.trim())
                     }
                 }}
 

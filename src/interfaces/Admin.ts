@@ -1,0 +1,1 @@
+export enum AdminRole {Faculty='faculty', Counselor='counselor', Accountant='accountant', Manager='manager'}; 

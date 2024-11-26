@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios";
+import { AdminRole } from "../interfaces/Admin";
 
 export const baseUrl = " https://scholarly-admin-backend.onrender.com/scholarly/api/v1";
 
@@ -20,7 +21,7 @@ export async function loginAccount(emailOrPhoneNumber:string, password:string){
     return response;
 }
 
-export async function registerAccount(email:string, phoneNumber:string, firstName:string, lastName:string, role: 'faculty'|'manager'|'counselor'|'accountant', password:string){
+export async function registerAccount(email:string, phoneNumber:string, firstName:string, lastName:string, role: AdminRole | string, password:string){
     const reqBody = {password, email, phoneNumber, firstName, lastName, role}
 
     const response = await axiosInstance.post(`${baseUrl}/auth/register`, reqBody, {headers:headers});
