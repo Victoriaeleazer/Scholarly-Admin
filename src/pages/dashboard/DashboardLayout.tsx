@@ -60,7 +60,7 @@ export default function DashboardLayout() {
   )
 
   const sideBar = ()=>(
-    <div className={`h-full bg-tertiary text-white px-5 py-2 flex flex-col items-center gap-3 transition-all duration-[1000ms] ease overflow-hidden ${isPhone? 'w-[65vw] absolute z-10 left-0 top-0 ':'z-0'} ${isPhone? (menuOpen?'left-0':'-left-[70vw]')  : (collapsed? 'w-[90px]' : 'w-[20%]')}`} style={{left: menuOpen? '0px': '-70vw'}}>
+    <div className={`h-full bg-tertiary text-white px-5 py-2 flex flex-col items-center gap-3 transition-all duration-[1000ms] ease overflow-hidden ${isPhone? 'w-[65vw] absolute z-10 left-0 top-0 ':'z-0'} ${isPhone? (menuOpen?'left-0':'-left-[70vw]')  : (collapsed? 'w-[90px]' : 'w-[20%]')}`}>
 
       <div className='w-full flex gap-4 justify-start p-3 items-center text-white font-extrabold overflow-hidden'>
         <div onClick={()=>{
@@ -69,7 +69,7 @@ export default function DashboardLayout() {
             return;
           }
           setCollapsed(!collapsed);
-        }} className='cursor-pointer transition-transform duration-500 ease-in-out' style={{transform:collapsed? 'rotate(-180deg)':'rotate(0deg)'}}><HambergerMenu size={30} /></div>
+        }} className='cursor-pointer transition-transform duration-500 ease-in-out' style={{transform:collapsed || menuOpen? 'rotate(-180deg)':'rotate(0deg)'}}><HambergerMenu size={30} /></div>
         <p className='select-none text-[27px] bg-gradient-to-r from-blue via-blue to-purple bg-clip-text text-transparent text-nowrap'>Scholarly</p>
       </div>
 
@@ -105,7 +105,16 @@ export default function DashboardLayout() {
         {sideBar()}
 
         {/* Nav bar & Page (Outlet) */}
-        <div key={currentLocation.pathname} className='flex flex-col items-start flex-1 bg-transparent h-full'>
+        <div onClick={(e)=>{
+          if(!isPhone){
+            return;
+          }
+          if(menuOpen){
+            e.stopPropagation();
+            setMenuOpen(false);
+            return;
+          }
+        }} key={currentLocation.pathname} className='flex flex-col items-start flex-1 bg-transparent h-full'>
           <div className='w-full flex items-center justify-end px-6 py-5 gap-8'>
             {isPhone && <div onClick={()=>{
               setCollapsed(false);
