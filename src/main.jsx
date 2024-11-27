@@ -25,8 +25,9 @@ createRoot(document.getElementById('root')).render(
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/dashboard' element={<DashboardLayout />}>
           <Route index element={<DashboardPage />} />
-            <Route path='channels' element={<ChannelPage />} />
-          <Route path='feedbacks' element={<FeedbacksPage />} />  
+          <Route path='channels' element={<ChannelPage />} />
+          <Route path='feedbacks' element={<FeedbacksPage />} />
+          <Route path='*' element={<PageNotFound />}/>
         </Route>
         <Route path="*" element={<PageNotFound />} />
       </Routes>

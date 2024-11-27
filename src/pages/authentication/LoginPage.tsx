@@ -3,13 +3,15 @@ import Input from '../../components/Input';
 import { FaAt } from "react-icons/fa6";
 import { Call, Unlock } from 'iconsax-react';
 import Button from '../../components/Button';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import {useMediaQuery} from '@react-hook/media-query'
 import { delay } from '../../services/delay';
 import { loginAccount } from '../../services/api-consumer';
 import { toast } from 'sonner';
 import {validate as validateEmail} from 'react-email-validator'
 import { isPhoneNumber, validatePhoneNumber } from '../../utils/PhoneUtils';
+import { saveAdminUserData } from '../../services/user-storage';
+import { Admin } from '../../interfaces/Admin';
 // import plant from './assets/plant.jpg'
 
 export default function LoginPage () {
@@ -19,6 +21,8 @@ export default function LoginPage () {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [sideHovered, setSideHovered] = useState(false);
+
+    const navigate = useNavigate();
 
     const isPhone = !useMediaQuery('only screen and (min-width: 767px)')
 
@@ -79,6 +83,8 @@ export default function LoginPage () {
       toast.success(response.data.message);
       console.log("Login Successful", response.data.data)
       setLoading(false);
+      saveAdminUserData(response.data['data'] as Admin);
+      navigate('/dashboard', {replace:true});
       return;
     }
 

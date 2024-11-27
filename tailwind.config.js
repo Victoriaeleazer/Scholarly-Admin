@@ -12,6 +12,7 @@ export default {
         blue:'#628EFF',
         black: '#000000',
         background:'rgb(31,31,31)',
+        tertiary:'#101010',
         secondary:'#9ca3af'
       },
       borderRadius:{
@@ -35,7 +36,29 @@ export default {
         '.clip-triangle': {// Default color
           clipPath: `polygon(50% 0%, 0% 100%, 100% 100%)`,
         },
+        '.ease': {// Default color
+          transitionTimingFunction:'ease',
+        },
       });
+    },
+    function ({ addUtilities }) {
+      addUtilities({
+        '.scholarly-scrollbar::-webkit-scrollbar': {
+          width: '5px',
+        },
+        '.scholarly-scrollbar::-webkit-scrollbar-track': {
+          background: 'transparent',
+          'border-radius': '10px',
+        },
+        '.scholarly-scrollbar::-webkit-scrollbar-thumb': {
+          background: '#101010',
+          'border-radius': '10px',
+        },
+        '.scholarly-scrollbar::-webkit-scrollbar-thumb:hover': {
+          background: '#101010',
+
+        },
+      }, ['responsive', 'hover']);
     },
   ],
 }
