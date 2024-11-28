@@ -33,8 +33,8 @@ export default function PageSlider({className='',currentIndex=0, slideDuration=1
 
   return (
     <div className={`w-full h-full ${className} overflow-x-hidden relative`}>
-        <div className={`flex h-full items-center transition-transform ease-out duration-500`} style={{transform: `translateX(-${index * 100}%)`, transitionDuration:`${slideDuration}ms`, transitionTimingFunction:'ease'}}>
-            {React.Children.map(children, (child)=> <div className='flex-grow-0 flex-shrink-0 px-2' style={{flexBasis:'100%'}}>{child}</div>)}
+        <div className={`flex h-full items-center transition-transform ease-out gap-2 duration-500`} style={{transform: `translateX(-${index * 100}%)`, transitionDuration:`${slideDuration}ms`, transitionTimingFunction:'ease'}}>
+            {React.Children.map(children, (child)=> <div className='flex-grow-0 flex-shrink-0' style={{flexBasis:'100%'}}>{child}</div>)}
         </div>
 
     </div>
