@@ -6,10 +6,11 @@ interface props{
     currentIndex?:number,
     slideDuration?:number,
     endless?:boolean,
+    gap?:string | undefined,
     onChange?: (index:number) => void
 }
 
-export default function PageSlider({className='',currentIndex=0, slideDuration=1000, endless=false, onChange=()=>{}, children}:props) {
+export default function PageSlider({className='',currentIndex=0, slideDuration=1000,gap='32px', endless=false, onChange=()=>{}, children}:props) {
 
     const [index, setIndex] = useState(currentIndex);
 
@@ -33,7 +34,7 @@ export default function PageSlider({className='',currentIndex=0, slideDuration=1
 
   return (
     <div className={`w-full h-full ${className} overflow-x-hidden relative`}>
-        <div className={`flex h-full items-center transition-transform ease-out gap-2 duration-500`} style={{transform: `translateX(-${index * 100}%)`, transitionDuration:`${slideDuration}ms`, transitionTimingFunction:'ease'}}>
+        <div className={`flex h-full items-center transition-transform ease-out duration-500`} style={{gap:gap,transform: `translateX(${index==0? `-${index * 100}%`: `calc(-${index * 100}% - ${gap})`})`, transitionDuration:`${slideDuration}ms`, transitionTimingFunction:'ease'}}>
             {React.Children.map(children, (child)=> <div className='flex-grow-0 flex-shrink-0' style={{flexBasis:'100%'}}>{child}</div>)}
         </div>
 
