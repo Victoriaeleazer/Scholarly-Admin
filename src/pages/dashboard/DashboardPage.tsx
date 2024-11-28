@@ -26,6 +26,7 @@ export default function DashboardPage() {
   return (
     <div className='text-white bg-transparent px-6 py-8 w-full h-fit overflow-x-hidden overflow-y-scroll scholarly-scrollbar'>
       <FadeSlideUp className='select-none font-light text-4xl'>Welcome, {admin?.role.charAt(0).toUpperCase() + admin?.role.substring(1)} <span className='font-extrabold'>{admin?.fullName}</span> </FadeSlideUp>
+      <FadeSlideUp delay={5000} slideDirection='left'>Hello</FadeSlideUp>
     </div>
   )
 }
