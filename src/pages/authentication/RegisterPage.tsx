@@ -182,7 +182,7 @@ export default function RegisterPage () {
   return(
     <div className="w-screen h-full overflow-hidden flex flex-row-reverse bg-black">
       <div className={`h-full flex flex-col text-white items-center justify-center flex-grow-[3] ${isPhone? 'w-full': 'w-auto'}`}> 
-        <div className={`flex items-center overflow-hidden justify-center h-full ${isPhone? 'w-[85%]': startsOverflowing? 'w-[80%]': 'w-[45%]'}`}>
+        <div className={`flex items-center justify-center h-full ${isPhone? 'w-[85%]': startsOverflowing? 'w-[80%]': 'w-[45%]'}`}>
           <PageSlider currentIndex={pageIndex}>
             {nameSection()}
             {emailSection()}
