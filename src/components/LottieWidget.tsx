@@ -11,7 +11,7 @@ interface props{
 
 
 
-export default function LottieWidget({lottieAnimation, width, height, className='', loop=false}:props) {
+export default function LottieWidget({lottieAnimation, width, height, className='', loop=true}:props) {
     
   return (
     <Lottie className={className} animationData={lottieAnimation} color='#2196f3' loop={loop} width={width ?? 100} height={height ?? 100}  />
