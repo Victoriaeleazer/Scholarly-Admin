@@ -13,8 +13,14 @@ import DashboardPage from './pages/dashboard/DashboardPage'
 import ChannelPage from './pages/dashboard/channels/ChannelPage'
 import FeedbacksPage from './pages/dashboard/feedbacks/FeedbacksPage'
 import AnnouncementPage from './pages/dashboard/announcements/AnnouncementPage'
-import EventsPage from './pages/events/EventsPage'
+import EventsPage from './pages/dashboard/events/EventsPage'
 import StudentsPage from './pages/dashboard/students/StudentsPage'
+import MenteesPage from './pages/dashboard/mentees/MenteesPage'
+import BatchesPage from './pages/dashboard/batches/BatchesPage'
+import MyBatchesPage from './pages/dashboard/my-batches/MyBatchesPage'
+import CoursesPage from './pages/dashboard/courses/CoursesPage'
+import StaffsPage from './pages/dashboard/staffs/StaffsPage'
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -31,6 +37,11 @@ createRoot(document.getElementById('root')).render(
           <Route path='channels' element={<ChannelPage />} />
           <Route path='announcements' element={<AnnouncementPage />} />
           <Route path='students' element={<StudentsPage />} />
+          <Route path='batches' element={<BatchesPage />} />
+          <Route path='courses' element={<CoursesPage />} />
+          <Route path='my-batches' element={<MyBatchesPage />} />
+          <Route path='staffs' element={<StaffsPage />} />
+          <Route path='mentees' element={<MenteesPage />} />
           <Route path='events' element={<EventsPage />} />
           <Route path='feedbacks' element={<FeedbacksPage />} />
           <Route path='*' element={<PageNotFound />}/>

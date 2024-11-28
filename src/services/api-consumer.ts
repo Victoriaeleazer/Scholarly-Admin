@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { AdminRole } from "../interfaces/Admin";
 
-export const baseUrl = " https://scholarly-admin-backend.onrender.com/scholarly/api/v1";
+export const baseUrl = "https://scholarly-admin-backend.onrender.com/scholarly/api/v1";
 
 
 const headers = {"Content-Type": 'application/json'};

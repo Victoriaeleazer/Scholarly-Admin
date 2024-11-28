@@ -83,16 +83,16 @@ export default function DashboardLayout() {
       {/* Varying Menus. (Menus that vary based on User Roles) */}
 
       {/* For Faculty */}
-      {true && facultyMenus()}
+      {admin?.role === AdminRole.Faculty && facultyMenus()}
 
       {/* For Counselors */}
-      {true && counselorMenus()}
+      {admin?.role === AdminRole.Counselor && counselorMenus()}
 
       {/* For Managers */}
-      {true && managerMenus()}
+      {admin?.role === AdminRole.Manager && managerMenus()}
 
       {/* For Menus that apply to both managers and counselors */}
-      {true && managerOrCouselorMenus()}         
+      {admin?.role === AdminRole.Counselor || admin?.role === AdminRole.Manager && managerOrCouselorMenus()}         
       
 
       <DashboardNavItem selected={currentLocation.pathname.includes('/settings')} navItem={{icon:<Setting />, selectedIcon:<Setting variant='Bold'/>, link:'./settings', name:'Settings'}} />
