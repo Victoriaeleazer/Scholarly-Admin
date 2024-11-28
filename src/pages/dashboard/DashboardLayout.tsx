@@ -110,6 +110,7 @@ export default function DashboardLayout() {
             return;
           }
           if(menuOpen){
+            e.preventDefault();
             e.stopPropagation();
             setMenuOpen(false);
             return;

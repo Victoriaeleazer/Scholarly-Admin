@@ -12,6 +12,7 @@ import DashboardLayout from './pages/dashboard/DashboardLayout'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import ChannelPage from './pages/dashboard/channels/ChannelPage'
 import FeedbacksPage from './pages/dashboard/feedbacks/FeedbacksPage'
+import AnnouncementPage from './pages/dashboard/announcements/AnnouncementPage'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -26,6 +27,7 @@ createRoot(document.getElementById('root')).render(
         <Route path='/dashboard' element={<DashboardLayout />}>
           <Route index element={<DashboardPage />} />
           <Route path='channels' element={<ChannelPage />} />
+          <Route path='announcements' element={<AnnouncementPage />} />
           <Route path='feedbacks' element={<FeedbacksPage />} />
           <Route path='*' element={<PageNotFound />}/>
         </Route>
