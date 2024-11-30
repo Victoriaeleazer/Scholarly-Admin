@@ -20,6 +20,7 @@ import BatchesPage from './pages/dashboard/batches/BatchesPage'
 import MyBatchesPage from './pages/dashboard/my-batches/MyBatchesPage'
 import CoursesPage from './pages/dashboard/courses/CoursesPage'
 import StaffsPage from './pages/dashboard/staffs/StaffsPage'
+import ViewEventPage from './pages/dashboard/events/ViewEventPage'
 
 
 
@@ -43,7 +44,10 @@ createRoot(document.getElementById('root')).render(
           <Route path='my-batches' element={<MyBatchesPage />} />
           <Route path='staffs' element={<StaffsPage />} />
           <Route path='mentees' element={<MenteesPage />} />
-          <Route path='events' element={<EventsPage />} />
+          <Route path='events' element={<EventLayout />}> 
+          <Route index element={<EventsPage />} />
+          <Route path= ':id' element={<ViewEventPage />} />
+          </Route>
           <Route path='feedbacks' element={<FeedbacksPage />} />
           <Route path='*' element={<PageNotFound />}/>
         </Route>
