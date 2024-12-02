@@ -3,6 +3,8 @@ import { AdminRole } from "../interfaces/Admin";
 
 export const baseUrl = "https://scholarly-admin-backend.onrender.com/scholarly/api/v1";
 
+export const websocket_url = "wss://scholarly-admin-backend.onrender.com/scholarly-websocket-endpoint"
+
 
 const headers = {"Content-Type": 'application/json'};
 

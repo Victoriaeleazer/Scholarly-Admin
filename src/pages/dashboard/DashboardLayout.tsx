@@ -20,11 +20,26 @@ export default function DashboardLayout() {
 
   const isPhone = !useMediaQuery('only screen and (min-width: 767px)')
 
+  const isTablet = !useMediaQuery('only screen and (min-width: 1106px)') && !isPhone
+
   useEffect(()=>{
     if(hasAdminUserData()){
       setAdmin(getAdminUserData());
     }
   }, [])
+
+  useEffect(()=>{
+    if(!collapsed && isTablet){
+      setCollapsed(true);
+      return;
+    }
+
+    if(!isTablet){
+      if(collapsed){
+        setCollapsed(false)
+      }
+    }
+  }, [isTablet])
 
   useEffect(()=>{
     /// In order to make sure that when the user clicks or navigates
@@ -83,16 +98,16 @@ export default function DashboardLayout() {
       {/* Varying Menus. (Menus that vary based on User Roles) */}
 
       {/* For Faculty */}
-      {true && facultyMenus()}
+      {admin?.role === AdminRole.Faculty && facultyMenus()}
 
       {/* For Counselors */}
-      {true && counselorMenus()}
+      {admin?.role === AdminRole.Counselor && counselorMenus()}
 
       {/* For Managers */}
-      {true && managerMenus()}
+      {admin?.role === AdminRole.Manager && managerMenus()}
 
       {/* For Menus that apply to both managers and counselors */}
-      {true && managerOrCouselorMenus()}         
+      {admin?.role === AdminRole.Counselor || admin?.role === AdminRole.Manager && managerOrCouselorMenus()}         
       
 
       <DashboardNavItem selected={currentLocation.pathname.includes('/settings')} navItem={{icon:<Setting />, selectedIcon:<Setting variant='Bold'/>, link:'./settings', name:'Settings'}} />
