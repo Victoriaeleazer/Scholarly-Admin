@@ -4,14 +4,16 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
 import scholarlyIcon from '../src/assets/images/scholarly.png'
+import { hasAdminUserData } from "./services/user-storage";
 
 export default function App() {
 
   let navigate = useNavigate();
 
   useEffect(()=>{
+    const loggedIn = hasAdminUserData();
     const timer = setTimeout(()=>{
-      navigate("/login", {replace:true});
+      navigate(loggedIn? "/dashboard" :"/login", {replace:true});
     }, 5000);
     
   
