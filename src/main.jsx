@@ -19,6 +19,8 @@ import BatchesPage from './pages/dashboard/batches/BatchesPage'
 import MyBatchesPage from './pages/dashboard/my-batches/MyBatchesPage'
 import CoursesPage from './pages/dashboard/courses/CoursesPage'
 import StaffsPage from './pages/dashboard/staffs/StaffsPage'
+import ViewEventPage from './pages/dashboard/events/ViewEventPage'
+import EventLayout from './pages/dashboard/events/EventLayout'
 
 
 createRoot(document.getElementById('root')).render(
@@ -33,10 +35,10 @@ createRoot(document.getElementById('root')).render(
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/dashboard' element={<DashboardLayout />}>
           <Route index element={<DashboardPage />} />
-          <Route path='channels' element={<ChannelLayout />}>
+          {/* <Route path='channels' element={<ChannelLayout />}>
             <Route index element={<OpenChat />} />
             <Route path=':channelId' element={<ChatsPage/>} />
-          </Route>
+          </Route> */}
           <Route path='announcements' element={<AnnouncementPage />} />
           <Route path='students' element={<StudentsPage />} />
           <Route path='batches' element={<BatchesPage />} />
