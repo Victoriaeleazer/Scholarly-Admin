@@ -268,7 +268,7 @@ export default function ChatsPage() {
       {/* Icon That appears when it's time to scroll */}
       <div 
           onClick={()=>listRef.current?.scrollTo({behavior:'smooth', top:listRef.current?.scrollHeight})}
-          className={`absolute bottom-7 left-[50%] z-[5] w-10 h-10 flex items-center justify-center rounded-circle bg-purple hover:bg-background transition-all ease-in-out duration-500 ${canScroll? 'opacity-20 -bottom-10' :'opacity-100'}`}>
+          className={`absolute left-[50%] z-[5] w-10 h-10 flex items-center justify-center rounded-circle bg-purple hover:bg-background transition-all ease-in-out duration-500 ${canScroll? 'opacity-20 -bottom-10' :'opacity-10 bottom-7'}`}>
           <ArrowDown2 size={25} variant='Bold' />
       </div>
     </div>
