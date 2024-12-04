@@ -20,6 +20,10 @@ export default function ChannelPage() {
 
   const [channels, setChannels] = useState<Channel[]>(getChannels());
 
+  const [filteredChannels, setFilteredChannels] = useState<Channel[]>(getChannels());
+
+  const [filter, setFilter] = useState('');
+
   const location = useLocation();
 
   useEffect(()=>{
@@ -30,7 +34,7 @@ export default function ChannelPage() {
         console.log('Connected to channels websocket')
 
         client.subscribe(`/channels/${admin.id}`, (channelApiResponse)=>{
-          console.log(channelApiResponse.body);
+          // console.log(channelApiResponse.body);
 
           const data = JSON.parse(channelApiResponse.body)["data"];
 
@@ -39,6 +43,7 @@ export default function ChannelPage() {
           // list of channels.
           if(Array.isArray(data)){
             const channels = data.map(channel => channel as Channel);
+            channels.sort((a,b)=> new Date(b.latestMessage.timestamp).getTime() - new Date(a.latestMessage.timestamp).getTime())
             setChannels(channels);
             return;
           }
@@ -57,6 +62,7 @@ export default function ChannelPage() {
             }
           }
           newChannels.push(channelData);
+          newChannels.sort((a,b)=> new Date(b.latestMessage.timestamp).getTime() - new Date(a.latestMessage.timestamp).getTime())
           setChannels(newChannels);
 
         })
@@ -68,6 +74,7 @@ export default function ChannelPage() {
       },
       onStompError:()=>console.log("Stomp Error"),
       onWebSocketError:()=>console.log('Error'),
+      onDisconnect:()=> console.log("Disconnected")
 
     });
 
@@ -78,13 +85,17 @@ export default function ChannelPage() {
     };
 
 
-  }, [])
+  }, [location.pathname])
 
   // To constantly save channels when they are opened
   useEffect(()=>{
     const sortedChannels = channels.sort((a,b)=> new Date(b.latestMessage.timestamp).getTime() - new Date(a.latestMessage.timestamp).getTime());
-    saveChannels(sortedChannels)
-  }, [channels])
+    saveChannels(sortedChannels);
+
+    const filtered = sortedChannels.filter(channel => channel.channelName.toLowerCase().includes(filter.toLowerCase()));
+    setFilteredChannels(filtered);
+
+  }, [channels, filter])
 
   
 
@@ -94,23 +105,26 @@ export default function ChannelPage() {
 
       <LottieWidget lottieAnimation={addChatAnim} className='w-[200px] h-[200px]'/>
 
-      <p>You don't have a chat yet.<br />Create a channel or chat with an admin</p>
+      <p>
+        {filter.trim().length === 0 && "You don't have a chat yet.\nCreate a channel or chat with an admin"}
+        {filter.trim().length !== 0 && <p>There were no search results for '<span className='font-bold'>{filter.trim()}</span>'.</p>}
+      </p>
 
     </div>
   }
 
   function chatsLayout(){
     return <div className='flex flex-col items-center justify-center text-center h-fit overflow-x-hidden overflow-y-scroll scholarly-scrollbar w-full'>
-      {channels.map(channel => (
-        <Link to={channel.id} replace={!location.pathname.endsWith('channels')} className={`w-full flex bg-transparent text-white border-white border-b border-opacity-10 last:border-b-0 gap-5 items-center py-5 px-4 justify-center ${location.pathname.includes(channel.id)? 'bg-white bg-opacity-5' : ''}`}>
+      {filteredChannels.map(channel => (
+        <Link to={channel.id} key={channel.id} replace={!location.pathname.endsWith('channels')} className={`w-full flex bg-transparent text-white border-white border-b border-opacity-10 last:border-b-0 gap-5 items-center py-5 px-4 justify-center ${location.pathname.includes(channel.id)? 'bg-white bg-opacity-5' : ''}`}>
           <div className='w-[45px] h-[45px] rounded-circle overflow-hidden'>
             {channel.channelProfile && <img src={channel.channelProfile} alt='Channel Photo' className='w-full h-full object-cover' />}
             {!channel.channelProfile && <div className='w-full h-full flex items-center justify-center font-[Raleway] bg-purple font-bold text-[25px] text-center'>{channel.channelName.charAt(0)}</div>}
           </div>
 
-          <div className='flex flex-1 flex-col items-start gap-0.5 justify-center'>
-            <p>{channel.channelName}</p>
-            <p className='text-secondary text-[12px] font-[Raleway]'>{channel.latestMessage.senderId !== admin.id && channel.latestMessage.messageType === 'chat' && <span className='font-semibold'>Someone: </span>}{channel.latestMessage.message ?? "bleh"}</p>
+          <div className='flex flex-1 flex-col items-start gap-0.5 justify-center overflow-hidden'>
+            <p className='whitespace-nowrap text-ellipsis overflow-hidden'>{channel.channelName}</p>
+            <p className='text-secondary text-[12px] font-[Raleway] whitespace-nowrap text-ellipsis overflow-hidden'>{channel.latestMessage.senderId !== admin.id && channel.latestMessage.messageType === 'chat' && <span className='font-semibold'>Someone: </span>}{channel.latestMessage.message ?? "bleh"}</p>
           </div>
 
           {channel.unreadMessages !== 0 && <div className='rounded-circle min-w-7 min-h-7 flex items-center justify-center text-center bg-purple font-extrabold'>{channel.unreadMessages}</div>}
@@ -124,11 +138,11 @@ export default function ChannelPage() {
     <div className={`${isPhone? 'w-full':'w-[450px]'} h-full select-none rounded-[18px] pb-0 bg-tertiary flex flex-col relative`}>
       <div className='w-full sticky h-fit top z-[1] rounded-t-[18px] px-6 py-4 bg-tertiary flex flex-col gap-3'>
         <h1 className='text-[25px] font-bold'>Chats</h1>
-        <SearchBar />
+        <SearchBar onChange={(v)=> setFilter(v.trim())} />
       </div>
 
-      {channels.length === 0 && noChatsLayout()}
-      {channels.length !== 0 && chatsLayout()}
+      {filteredChannels.length === 0 && noChatsLayout()}
+      {filteredChannels.length !== 0 && chatsLayout()}
       
       <Fab className='absolute shadow-sm bottom-5 right-5'>
         <Add size={25} />

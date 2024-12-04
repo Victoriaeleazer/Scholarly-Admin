@@ -75,7 +75,7 @@ export default function DashboardLayout() {
   )
 
   const sideBar = ()=>(
-    <div className={`h-full bg-tertiary text-white px-5 py-2 flex flex-col items-center gap-3 transition-all duration-[1000ms] ease ${isPhone? 'w-[65vw] absolute z-10 left-0 top-0 ':'z-0'} ${isPhone? (menuOpen?'left-0':'-left-[70vw]')  : (collapsed? 'w-[90px]' : 'w-[20%]')}`} style={{left: (isPhone && !menuOpen)? '-75vw': '0px'}}>
+    <div className={`h-full bg-tertiary text-white px-5 py-2 flex flex-col items-center gap-3 transition-all duration-[1000ms] ease ${isPhone? 'w-[65vw] absolute z-10 left-0 top-0 ':'z-0'} ${isPhone? (menuOpen?'left-0':'-left-[70vw]')  : (collapsed? 'w-[95px]' : 'w-[20%]')}`} style={{left: (isPhone && !menuOpen)? '-75vw': '0px'}}>
 
       <div className='w-full flex gap-4 justify-start p-3 items-center text-white font-extrabold overflow-hidden'>
         <div onClick={()=>{

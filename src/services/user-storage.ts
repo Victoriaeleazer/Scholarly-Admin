@@ -1,5 +1,6 @@
 import { Admin } from "../interfaces/Admin";
 import { Channel } from "../interfaces/Channel";
+import { Chat } from "../interfaces/Chat";
 
 export function saveAdminUserData(data:Admin){
     localStorage.setItem('userdata', JSON.stringify(data))
@@ -29,3 +30,12 @@ export function getChannels() : Channel[]{
 export function getChannel(channelId:string): Channel | undefined | null{
     return getChannels().find(channel => channelId === channel.id);
 }
+
+export function saveChats(channelId:string, chats: Chat[]){
+    localStorage.setItem(`chats:${channelId}`, JSON.stringify(chats));
+}
+
+export function getChats(channelId): Chat[]{
+    return JSON.parse(localStorage.getItem(`chats:${channelId}`) ?? '[]');
+}
+

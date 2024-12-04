@@ -41,8 +41,14 @@ export default {
         },
       });
     },
-    function ({ addUtilities }) {
+    function ({ addUtilities, theme }) {
       addUtilities({
+        '*':{
+          '--scholarly-scrollbar-color':theme('colors.tertiary')
+        },
+        '.purple-scrollbar':{
+          '--scholarly-scrollbar-color':'#560677'
+        },
         '.scholarly-scrollbar::-webkit-scrollbar': {
           width: '5px',
         },
@@ -51,11 +57,11 @@ export default {
           'border-radius': '10px',
         },
         '.scholarly-scrollbar::-webkit-scrollbar-thumb': {
-          background: '#101010',
+          background: 'var(--scholarly-scrollbar-color)',
           'border-radius': '10px',
         },
         '.scholarly-scrollbar::-webkit-scrollbar-thumb:hover': {
-          background: '#101010',
+          background: 'var(--scholarly-scrollbar-color)',
 
         },
       }, ['responsive', 'hover']);

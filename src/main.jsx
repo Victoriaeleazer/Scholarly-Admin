@@ -22,7 +22,10 @@ import StaffsPage from './pages/dashboard/staffs/StaffsPage'
 import ChannelLayout from './pages/dashboard/channels/ChannelLayout'
 import ChatsPage from './pages/dashboard/channels/ChatsPage'
 import OpenChat from './pages/dashboard/channels/OpenChat'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
+
+const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -30,29 +33,31 @@ createRoot(document.getElementById('root')).render(
     {/* Don't remove or edit this this everyone!!!
     This is set inorder to see toasts (Those messages you see when logging in success or error) */}
     <Toaster expand position='top-right' closeButton theme='dark' richColors />
-      <Routes>
-        <Route path='/' element={<App/>} />
-        <Route path='/login' element={<LoginPage/>} />
-        <Route path='/register' element={<RegisterPage />} />
-        <Route path='/dashboard' element={<DashboardLayout />}>
-          <Route index element={<DashboardPage />} />
-          <Route path='channels' element={<ChannelLayout />}>
-            <Route index element={<OpenChat />} />
-            <Route path=':channelId' element={<ChatsPage/>} />
+      <QueryClientProvider client={queryClient}>
+        <Routes>
+          <Route path='/' element={<App/>} />
+          <Route path='/login' element={<LoginPage/>} />
+          <Route path='/register' element={<RegisterPage />} />
+          <Route path='/dashboard' element={<DashboardLayout />}>
+            <Route index element={<DashboardPage />} />
+            <Route path='channels' element={<ChannelLayout />}>
+              <Route index element={<OpenChat />} />
+              <Route path=':channelId' element={<ChatsPage/>} />
+            </Route>
+            <Route path='announcements' element={<AnnouncementPage />} />
+            <Route path='students' element={<StudentsPage />} />
+            <Route path='batches' element={<BatchesPage />} />
+            <Route path='courses' element={<CoursesPage />} />
+            <Route path='my-batches' element={<MyBatchesPage />} />
+            <Route path='staffs' element={<StaffsPage />} />
+            <Route path='mentees' element={<MenteesPage />} />
+            <Route path='events' element={<EventsPage />} />
+            <Route path='feedbacks' element={<FeedbacksPage />} />
+            <Route path='*' element={<PageNotFound />}/>
           </Route>
-          <Route path='announcements' element={<AnnouncementPage />} />
-          <Route path='students' element={<StudentsPage />} />
-          <Route path='batches' element={<BatchesPage />} />
-          <Route path='courses' element={<CoursesPage />} />
-          <Route path='my-batches' element={<MyBatchesPage />} />
-          <Route path='staffs' element={<StaffsPage />} />
-          <Route path='mentees' element={<MenteesPage />} />
-          <Route path='events' element={<EventsPage />} />
-          <Route path='feedbacks' element={<FeedbacksPage />} />
-          <Route path='*' element={<PageNotFound />}/>
-        </Route>
-        <Route path="*" element={<PageNotFound />} />
-      </Routes>
+          <Route path="*" element={<PageNotFound />} />
+        </Routes>
+      </QueryClientProvider>
     </BrowserRouter>
   </StrictMode>,
 )

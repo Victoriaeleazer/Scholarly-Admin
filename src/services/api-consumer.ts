@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { AdminRole } from "../interfaces/Admin";
+import { Chat } from "../interfaces/Chat";
 
 export const baseUrl = "https://scholarly-admin-backend.onrender.com/scholarly/api/v1";
 
@@ -29,4 +30,23 @@ export async function registerAccount(email:string, phoneNumber:string, firstNam
     const response = await axiosInstance.post(`${baseUrl}/auth/register`, reqBody, {headers:headers});
 
     return response;
+}
+
+export async function sendChat(channelId:string, chat:Chat){
+    
+    const reqBody = chat;
+    const pathVariables = `${channelId}/${chat.senderId}`;
+
+    const response = await axiosInstance.post(
+        `${baseUrl}/chat/sendChat/${pathVariables}`,
+        chat,
+        {headers:headers}
+    );
+
+    return response;
+}
+
+export async function sendAttachment(channelId:string, chat:Chat){
+    const formData = new FormData();
+    // formData.append('attachment', )
 }
