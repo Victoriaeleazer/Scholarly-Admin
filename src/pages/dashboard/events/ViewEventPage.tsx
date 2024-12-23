@@ -5,7 +5,7 @@ export default function ViewEventPage() {
   let {id} = useParams();
 
   return (
-  <div className='text-black '>
+  <div className='text-white '>
     {id}
 
     <div className="container mx-auto p-6">

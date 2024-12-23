@@ -35,10 +35,10 @@ createRoot(document.getElementById('root')).render(
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/dashboard' element={<DashboardLayout />}>
           <Route index element={<DashboardPage />} />
-          {/* <Route path='channels' element={<ChannelLayout />}>
+          <Route path='channels' element={<ChannelLayout />}>
             <Route index element={<OpenChat />} />
             <Route path=':channelId' element={<ChatsPage/>} />
-          </Route> */}
+          </Route>
           <Route path='announcements' element={<AnnouncementPage />} />
           <Route path='students' element={<StudentsPage />} />
           <Route path='batches' element={<BatchesPage />} />
