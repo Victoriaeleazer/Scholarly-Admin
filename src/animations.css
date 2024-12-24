@@ -1,0 +1,28 @@
+
+@keyframes slide-down-anim{
+    0% {
+        transform: translateY(-100vh) rotate(-90deg);
+    }
+
+    100% {
+        transform: translateY(0) rotate(0deg);
+
+    }
+}
+
+@keyframes pop-in-anim {
+    0% {
+        transform: scale(0.4);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+    }
+    
+}

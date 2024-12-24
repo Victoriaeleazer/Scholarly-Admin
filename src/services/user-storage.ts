@@ -1,6 +1,7 @@
 import { Admin } from "../interfaces/Admin";
 import { Channel } from "../interfaces/Channel";
 import { Chat } from "../interfaces/Chat";
+import { Notification } from "../interfaces/Notification";
 
 export function saveAdminUserData(data:Admin){
     localStorage.setItem('userdata', JSON.stringify(data))
@@ -37,5 +38,13 @@ export function saveChats(channelId:string, chats: Chat[]){
 
 export function getChats(channelId): Chat[]{
     return JSON.parse(localStorage.getItem(`chats:${channelId}`) ?? '[]');
+}
+
+export function saveNotifications (notifications: Notification[]){
+    localStorage.setItem("notifications", JSON.stringify(notifications))
+}
+
+export function getNotifications(): Notification[]{
+    return JSON.parse(localStorage.getItem('notifications') ?? '[]');
 }
 

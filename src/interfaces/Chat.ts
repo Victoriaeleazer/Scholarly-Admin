@@ -11,5 +11,5 @@ export interface Chat{
     attachmentType:'image' | 'video' | 'audio' | 'document',
     messageType:'chat' | 'update' |'member' | 'create'
     timestamp:string,
-    readReceipt:string[] | Member[],
+    readReceipt:string[],
 }

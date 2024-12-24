@@ -1,31 +1,142 @@
-import React, { useEffect, useState } from 'react'
-import { Outlet, useLocation } from 'react-router'
+import React, { ReactNode, useEffect, useState } from 'react'
+import { Outlet, useLocation, useNavigate } from 'react-router'
 import DashboardNavItem from '../../components/DashboardNavItem'
-import { HambergerMenu, Home2, Calendar, Notification, Information, Messages, Personalcard, ShieldTick, BookSaved, Setting, Book, Message, EmojiHappy, ArrowDown2 } from 'iconsax-react'
+import { HambergerMenu, Home2, Calendar, Information, Messages, Notification as N, Personalcard, ShieldTick, BookSaved, Setting, Book, Message, EmojiHappy, ArrowDown2, DirectboxReceive, Icon, IconProps, Messages1, SecurityUser } from 'iconsax-react'
 import { Admin, AdminRole } from '../../interfaces/Admin';
 import { getAdminUserData, hasAdminUserData } from '../../services/user-storage';
 import { useMediaQuery } from '@react-hook/media-query';
+import { acceptInvitation, markNotification, websocket_url } from '../../services/api-consumer';
+import { Stomp } from '@stomp/stompjs';
+import {distinctList} from '../../utils/ArrayUtils';
+import { ApiResponse } from '../../interfaces/ApiResponse';
+import { Channel } from '../../interfaces/Channel';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux-hook';
+import { setChannels } from '../../provider/channels-slice';
+import { Notification} from '../../interfaces/Notification';
+import { setNotifications } from '../../provider/notificications-slice';
+import { toast } from 'sonner';
+import notificationAnim from '../../assets/lottie/notification-anim.json'
+import Dialog from '../../components/Dialog';
+import LottieWidget from '../../components/LottieWidget';
+import Button from '../../components/Button';
+import { useMutation } from '@tanstack/react-query';
+import PopupTarget from '../../components/PopupMenu/PopupTarget';
+import PopupMenu from '../../components/PopupMenu/PopupMenu';
 
 export default function DashboardLayout() {
 
   const currentLocation = useLocation();
 
-  const [refreshState, setRefresh] = useState("");
+  const navigate = useNavigate();
 
   const [collapsed, setCollapsed] = useState(false);
 
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const [admin, setAdmin] = useState<Admin | null>(null);
+  const [profilePopup, showProfilePopup] = useState(false);
+
+  const [admin, setAdmin] = useState<Admin>(getAdminUserData());
+
+  const [notificationShow, showNotification] = useState(false);
+
+  const [selectedNotification, selectNotification] = useState<Notification>()
+
+  const [filter, setFilter] = useState<'all'| 'read' | 'unread'>('all')
 
   const isPhone = !useMediaQuery('only screen and (min-width: 767px)')
 
   const isTablet = !useMediaQuery('only screen and (min-width: 1106px)') && !isPhone
 
+  const dispatch = useAppDispatch();
+
+  const channels = useAppSelector((state)=> state.channels.value);
+
+  const notifications = useAppSelector((state)=> state.notifications.value)
+
+  const unreadNotifications = notifications.filter(notification => !notification.read).length
+
+  const filteredNotifications = notifications.filter(notif => filter === 'all'? true: filter === 'unread'? !notif.read: notif.read);
+
+  const selectedInvitation = selectedNotification?.category === 'invitation';
+
   useEffect(()=>{
-    if(hasAdminUserData()){
-      setAdmin(getAdminUserData());
+    if(!hasAdminUserData()){
+      localStorage.clear();
+      navigate('/authentication/login', {replace:true, relative:'route'});
+       return;
     }
+    setAdmin(getAdminUserData())
+
+    /// Universal Websocket object
+    const websocket = new WebSocket(websocket_url);
+
+    const channelCompareFn = (a:Channel, b:Channel)=> (new Date(b.latestMessage.timestamp).getTime() - new Date(a.latestMessage.timestamp).getTime());
+    const notificationCompareFn = (a:Notification, b:Notification)=> (new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+
+    /// Websocket that listens to channels and updates them
+    const client = Stomp.over(websocket);
+    client.onConnect = ()=>{
+      console.log("Connected to scholarly websocket");
+      
+      // we subscribe to channels websocket
+      client.subscribe(`/channels/${admin?.id}`, (message)=>{
+        const body = JSON.parse(message.body);
+
+        const data = (body as ApiResponse).data;
+
+        if (Array.isArray(data)) {
+          const channels = data.map((channel) => channel as Channel);
+          dispatch(setChannels(distinctList(channels, 'id', channelCompareFn)));
+        } else {
+          const channelData = data as Channel;
+          dispatch(setChannels(distinctList([...channels, channelData], 'id', channelCompareFn)))
+        }
+
+      })
+
+      // we subscribe to notifications websocket
+      client.subscribe(`/notifications/${admin?.id}`, (message)=>{
+        const body = JSON.parse(message.body);
+
+        const data = (body as ApiResponse).data;
+
+        if (Array.isArray(data)) {
+          const _notifications = data.map((data) => data as Notification);
+        
+          dispatch(setNotifications(distinctList(_notifications, 'id', notificationCompareFn)));
+          
+          const _unread = _notifications.filter(notification => !notification.read).length;
+          if(_unread > 0){
+          toast.info("Unread Notifications", {id:'notifications',description:`You have ${_unread} unread notification${_unread !== 1 && "s"}`})
+
+          }
+        } else {
+          const notification = data as Notification;
+          if(!notification.read){
+            toast.info(notification.title, {id:'notifications',description:notification.content});
+          }
+          dispatch(setNotifications(distinctList([...Array.from(notifications), notification], 'id', notificationCompareFn)))
+        }
+
+      })
+
+      client.publish({destination: `/scholarly/getChannels/${admin?.id}`})
+      client.publish({destination: `/scholarly/getNotifications/${admin?.id}`})
+    }
+    client.onDisconnect = ()=>{
+      console.log("Disconnected from channels web socket")
+    }
+    client.debug = ()=>{}
+
+    client.activate();
+
+    return ()=>{
+      if(client.connected || client.active){
+        client.deactivate({force: true});
+      }
+    }
+
   }, [])
 
   useEffect(()=>{
@@ -42,6 +153,11 @@ export default function DashboardLayout() {
   }, [isTablet])
 
   useEffect(()=>{
+    if(!hasAdminUserData()){
+      localStorage.clear();
+      navigate('/authentication/login', {replace:true, relative:'route'});
+      return;
+   }
     /// In order to make sure that when the user clicks or navigates
     /// On a phone screen size, the drawer is closed immediately
     setMenuOpen(false);
@@ -116,12 +232,87 @@ export default function DashboardLayout() {
     </div>
   )
 
+  const notificationColor = (notification?: Notification) : string =>{
+    switch(notification?.category){
+      case 'account':
+        return 'orange';
+      case 'invitation':
+        return 'blue'; 
+      case 'channel':
+        return 'green'  
+      default:
+        return 'transparent';
+    }
+  }
+    
+  const notificationIcon = (notification?: Notification) : ReactNode =>{
+  
+    switch(notification?.category){
+      case 'account':
+        return <SecurityUser size={25} variant='Bold' />
+      case 'channel':
+        return <Messages1 size={25} variant='Bold' />
+      case 'invitation':
+        return <DirectboxReceive size={25} variant='Bold' color='white' />  
+      default:
+        return <div className=' h-[25px] w-[25px]'/>
+    }
+  }
+
+  async function respondToNotification({notificationId, read} : {notificationId: string, read: boolean}){
+    const response = (await markNotification(notificationId, read));
+    
+    const body = response.data as ApiResponse;
+
+    if(response.status !== 200){
+      throw new Error(body?.message ?? "Error when marking notification")
+    }
+
+    return body;
+
+  }
+
+  async function respondToInvitation({invitationId, accept} : {invitationId: string, accept: boolean}){
+    const response = (await acceptInvitation(invitationId, accept));
+    
+    const body = response.data as ApiResponse;
+
+    if(response.status !== 200){
+      throw new Error(body?.message ?? "Error when marking notification")
+    }
+
+    return body;
+
+  }
+
+
+  const notificationMutation = useMutation({
+    mutationFn: respondToNotification,
+    onSuccess: (data, {read})=>{
+      toast.success(`Marked notification as ${!read? 'unread' : 'read'}`);
+      selectNotification(undefined);
+    },
+    onError: (error, {read})=>{
+      toast.error(`Unable to ${!read? 'unmark': 'mark' }`, {description: error.message});
+    }
+  })
+
+  const invitationMutation = useMutation({
+    mutationFn: respondToInvitation,
+    onSuccess: (_,data,__)=>{
+      toast.success(`${data.accept? "Accepted": "Declined"} Invitation`);
+      selectNotification(undefined);
+    },
+    onError: (error, {accept})=>{
+      toast.error(`Unable to ${accept? "accept": "reject"}`, {description: error.message});
+    }
+  })
+
 
   return (
-    <div className='flex w-full h-full overflow-hidden relative'>
+    <div onClick={()=>showProfilePopup(false)} className='flex w-full h-full overflow-hidden relative'>
         {/* Drawer. We want it only to show if the browser is not in a phone screen size */}
         {sideBar()}
-
         {/* Nav bar & Page (Outlet) */}
         <div onClick={(e)=>{
           if(!isPhone){
@@ -144,9 +335,9 @@ export default function DashboardLayout() {
             <div className='flex flex-1'/>
 
             {/* Notification Icon */}
-            <div title='notification' className='flex w-11 h-11 cursor-pointer relative rounded-circle items-center justify-center bg-background text-white'>
-              <div className='p-1.5 absolute top-1.5 right-3 rounded-circle bg-blue'/>
-              <Notification className='w-[60%] h-[60%]' size={18} variant='Bold' />
+            <div onClick={()=>showNotification(true)} title='notification' className='flex w-11 h-11 cursor-pointer relative rounded-circle items-center justify-center bg-background text-white'>
+              { unreadNotifications > 0 && <div className='p-1.5 absolute top-1.5 right-3 rounded-circle bg-blue'/>}
+              <N className='w-[60%] h-[60%]' size={18} variant='Bold' />
             </div>
 
             {/* Settings Icon */}
@@ -155,13 +346,112 @@ export default function DashboardLayout() {
             </div>
 
             {/* Profile Icon */}
-            <div className='w-fit flex items-center justify-center gap-4'>
-              <img className='rounded-circle w-10 h-10 bg-tertiary object-cover' src={admin?.profile ?? 'P'} alt="Profile Photo" />
-              <ArrowDown2 className='text-secondary' size={18} />
-            </div>
+            <PopupTarget
+              id='profile-icon'>
+              <div onClick={(e)=>{
+                e.stopPropagation();
+                showProfilePopup(!profilePopup);
+              }} className='w-fit flex items-center justify-center gap-4'>
+                <img className='rounded-circle w-10 h-10 bg-tertiary object-cover' src={admin?.profile ?? '/images/no_profile.webp'} alt="Profile Photo" />
+                <ArrowDown2 className='text-secondary' size={18} />
+              </div>
+            </PopupTarget>
           </div>
           <Outlet />   
         </div>
+
+        {/* Profile Icon Popup */}
+        <PopupMenu
+          className='min-w-80 bg-tertiary p-0'
+          position='bottom-right'
+          onClose={()=> showProfilePopup(false)}
+          show={profilePopup}
+          targetId='profile-icon'>
+            <div className='flex flex-col m-0 bg-tertiary items-center py-[30px] px-4 gap-4'>
+              <img className='rounded-circle w-16 h-16 bg-tertiary text-center object-cover' src={admin?.profile ?? '/images/no_profile.webp'} alt="Profile Photo" />
+              <p className='text-white font-light'>Hi, <span className='text-white font-semibold'>{admin.firstName}</span></p>
+              <Button invert outlined className='text-[14px] max-h-[45px] rounded-[30px] mb-1' title='View Profile' />
+              <Button className='text-[14px] max-h-[45px] rounded-[30px]' negative title='Logout' />
+              <div className='flex items-center justify-center gap-2 underline decoration-secondary text-secondary text-[12px] underline-offset-[3px]'>
+                <p className='cursor-pointer'>Privacy Policy</p>
+                <div className='w-1 h-1 bg-secondary rounded-circle' />
+                <p className='cursor-pointer'>Our Terms</p>
+              </div>
+            </div>
+        </PopupMenu>
+
+        {/* Notifications Dialog */}
+        <Dialog 
+          animType='slide-down'
+          className='min-w-[40%] flex flex-col items-center justify-start gap-4 text-left'
+          show={notificationShow && !selectedNotification}
+          onClose={()=>{
+            showNotification(false)
+            setFilter('all')
+          }}
+          cancelable>
+          <p className='text-white mb-3 text-[25px] font-semibold self-start'>{filter !== 'all' && `${filter.charAt(0).toUpperCase() + filter.substring(1)} `}Notifications <span className='text-[17px] text-secondary transition-all ease'>({filteredNotifications.length})</span></p>
+          
+          {/* Notification Type Toggle */}
+          <div className="flex gap-4 w-full">
+            <p onClick={()=> setFilter('all')} className={`min-w-16 py-2 cursor-pointer select-none ${filter === 'all'? 'bg-purple text-white' : 'bg-white bg-opacity-5 text-secondary'} text-[14px] rounded-[25px] overflow-hidden  text-center transition-colors ease duration-300`}>All</p>
+            <p onClick={()=> setFilter('read')} className={`min-w-16 py-2 cursor-pointer select-none ${filter === 'read'? 'bg-purple text-white' : 'bg-white bg-opacity-5 text-secondary'} text-[14px] rounded-[25px] overflow-hidden  text-center transition-colors ease duration-300`}>Read</p>
+            <p onClick={()=> setFilter('unread')} className={`min-w-16 py-2 cursor-pointer select-none ${filter === 'unread'? 'bg-purple text-white' : 'bg-white bg-opacity-5 text-secondary'} text-[14px] rounded-[25px] overflow-hidden  text-center transition-colors ease duration-300`}>Unread</p>
+          </div>
+
+          {filteredNotifications.length === 0 && <div className='flex flex-col items-center justify-center gap-16 w-full min-h-[60vh] text-white text-[18px] font-semibold'>
+            <LottieWidget className='object-cover scale-[2.75]' lottieAnimation={notificationAnim} width={200} height={200} />
+            <p>No {filter !== 'all' && `${filter.charAt(0).toUpperCase() + filter.substring(1)} `} Notifications</p>
+          </div>}
+
+          {filteredNotifications.length !== 0 && <div className='w-full gap-4 h-[60vh] flex flex-col overflow-y-scroll scholarly-scrollbar'>
+            {filteredNotifications.map((notification, index)=>{
+
+              return <div onClick={()=> selectNotification(notification)} key={notification.id} className='w-full flex px-3 select-none items-center cursor-pointer gap-6 py-3 border-b-[1px] border-b-white border-opacity-10 last:border-b-0 hover:bg-white hover:bg-opacity-[0.02] transition-colors ease duration-500'>
+                <div className='w-[48px] h-[48px] flex items-center text-white bg-opacity-10 justify-center rounded-circle' style={{backgroundColor:notificationColor(notification)}}>
+                  {notificationIcon(notification)}
+                </div>
+                <div className='flex flex-col items-start justify-center gap-1 text-white overflow-hidden flex-1'>
+                  <p className='font-semibold text-[16px] whitespace-nowrap text-ellipsis overflow-hidden'>{notification.title}</p>
+                  <p className='text-secondary text-[12px] whitespace-nowrap text-ellipsis overflow-hidden'>{notification.content}</p>
+                </div>
+                <div style={{transitionBehavior: 'allow-discrete'}} className={`${notification.read? 'opacity-0 hidden': 'opacity-100'} w-2 h-2 bg-light-purple rounded-circle transition-all ease duration-1000`}/>
+              </div>
+            })}
+            </div>}
+        </Dialog>
+
+        {/* Selected Notification Dialog */}
+        <Dialog
+          animType='popin'
+          discrete={false}
+          onClose={()=>selectNotification(undefined)}
+          show={selectedNotification !== undefined}
+          cancelable
+          className='w-[400px] flex flex-col items-center justify-start gap-6 text-left'>
+            <div className='w-[80px] h-[80px] overflow-hidden flex items-center text-white bg-opacity-10 justify-center rounded-circle' style={{backgroundColor:notificationColor(selectedNotification)}}>
+              <div className='scale-[1.6]'>{notificationIcon(selectedNotification)}</div>
+            </div>
+            <p className='text-white text-[18px] whitespace-nowrap font-semibold text-center'>{selectedNotification?.title}</p>
+            <p className='text-secondary text-[14px] whitespace-nowrap text-center'>{selectedNotification?.content}</p>
+            <div className='flex gap-3 w-full justify-center items-center'>
+              {selectedInvitation && !selectedNotification.read && <Button className='flex-1 max-h-[50px] text-red-500' onClick={()=>invitationMutation.mutate({invitationId: selectedNotification!.id, accept: false})} loading={invitationMutation.isPending && !invitationMutation.variables.accept} negative title={'Reject'} />}
+              <Button onClick={()=>{
+                if(!selectedInvitation){
+                  notificationMutation.mutate({notificationId: selectedNotification!.id, read: !selectedNotification!.read});
+                  return;
+                }
+
+                if(selectedInvitation && selectedNotification.read){
+                  selectNotification(undefined);
+                  return;
+                }
+
+                invitationMutation.mutate({invitationId: selectedNotification!.id, accept: true});
+              }} className='flex-1 max-h-[50px]' loading={selectedInvitation? (invitationMutation.isPending && invitationMutation.variables.accept): notificationMutation.isPending} negative={selectedNotification?.read} invert={selectedNotification?.read} title={selectedInvitation? (selectedNotification?.read? 'Close' : 'Accept') : selectedNotification?.read? 'Mark as Unread' : 'Mark as read'} />
+            </div>
+
+        </Dialog>
     </div>
   )
 }

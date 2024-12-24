@@ -6,7 +6,7 @@ export interface Channel{
     channelName:string,
     channelDescription:string,
     channelProfile?:string,
-    creator: string | Member,
+    creator?: Member,
     createdAt:string,
     members:Member[],
     channelType: 'announcement' | 'project' | 'qa',

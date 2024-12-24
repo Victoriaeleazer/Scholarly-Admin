@@ -9,6 +9,7 @@ export default {
     extend: {
       colors:{
         purple:'#560677',
+        "light-purple": '#b100cd',
         blue:'#628EFF',
         black: '#000000',
         background:'rgb(31,31,31)',
@@ -62,8 +63,25 @@ export default {
         },
         '.scholarly-scrollbar::-webkit-scrollbar-thumb:hover': {
           background: 'var(--scholarly-scrollbar-color)',
-
         },
+        '.popup-modal':{
+          'animation': 'var(--popup-anim) 1s ease forwards',
+        },
+        '.popup-modal.closed':{
+          'animation': 'var(--popup-anim) 1s ease reverse forwards'
+        },
+        '.slide-down-anim':{
+          '--popup-anim':'slide-down-anim'
+        },
+        '.popin-anim':{
+          '--popup-anim':'pop-in-anim'
+        },
+        '.allow-discrete':{
+          'transition-behaviour':'allow-discrete'
+        },
+        '.normal-behaviour':{
+          'transition-behaviour':'normal'
+        }
       }, ['responsive', 'hover']);
     },
   ],

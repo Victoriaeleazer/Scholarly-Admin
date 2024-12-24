@@ -1,16 +1,19 @@
-import React, { ReactNode, useEffect, useState } from 'react'
+import React, { LegacyRef, ReactNode, useEffect, useState } from 'react'
 
 interface props{
     className?: string | undefined,
     children?:ReactNode,
     currentIndex?:number,
+    ref?: LegacyRef<HTMLDivElement>,
     slideDuration?:number,
+    exactSizing?:boolean,
     endless?:boolean,
+    alignPages?:'start' | 'center' | 'end'
     gap?:string | undefined,
     onChange?: (index:number) => void
 }
 
-export default function PageSlider({className='',currentIndex=0, slideDuration=1000,gap='32px', endless=false, onChange=()=>{}, children}:props) {
+export default function PageSlider({className='', ref, alignPages='center',currentIndex=0, exactSizing=false, slideDuration=1000,gap='32px', endless=false, onChange=()=>{}, children}:props) {
 
     const [index, setIndex] = useState(currentIndex);
 
@@ -34,8 +37,8 @@ export default function PageSlider({className='',currentIndex=0, slideDuration=1
 
   return (
     <div className={`w-full h-full ${className} overflow-x-hidden relative`}>
-        <div className={`flex h-full items-center transition-transform ease-out duration-500`} style={{gap:gap,transform: `translateX(${index==0? `-${index * 100}%`: `calc(-${index * 100}% - ${gap})`})`, transitionDuration:`${slideDuration}ms`, transitionTimingFunction:'ease'}}>
-            {React.Children.map(children, (child)=> <div className='flex-grow-0 flex-shrink-0' style={{flexBasis:'100%'}}>{child}</div>)}
+        <div ref={ref} className={`flex h-full items-center transition-transform ease-out duration-500`} style={{gap:gap,transform: `translateX(${index==0? `-${index * 100}%`: `calc(-${index * 100}% - ${gap})`})`, transitionDuration:`${slideDuration}ms`, transitionTimingFunction:'ease', alignItems:alignPages}}>
+            {React.Children.map(children, (child)=> <div className={`flex-grow-0 flex-shrink-0 ${exactSizing?'h-full':'h-fit'}`} style={{flexBasis:'100%'}}>{child}</div>)}
         </div>
 
     </div>

@@ -8,14 +8,16 @@ interface props{
     disabled?:boolean,
     negative?:boolean,
     gradient?:boolean,
+    outlined?: boolean,
+    invert?: boolean,
     className?:string | undefined,
     type?:"submit" | "reset" | "button" | undefined;
 }
 
-export default function Button({className='',loading=false, title, type, gradient=false, onClick, disabled=false, negative=false}:props) {
+export default function Button({className='', outlined=false, invert=false, loading=false, title, type, gradient=false, onClick, disabled=false, negative=false}:props) {
     if(negative || disabled){
         return (
-            <button type={type} className={`cursor-pointer select-none w-full h-[55px] rounded-[15px] font-semibold text-white text-center items-center justify-center inline-flex ${className} ${disabled? 'text-secondary bg-background':'bg-red-600 text-white'}`} disabled={loading || disabled} onClick={onClick}>
+            <button type={type} className={`cursor-pointer select-none w-full h-[55px] rounded-[15px] font-semibold ${invert? 'text-red-500' :'text-white'} ${invert && outlined? 'border-2 border-red-500 bg-transparent':'border-0'} text-center items-center justify-center inline-flex ${className} ${disabled? 'text-secondary bg-background': invert? 'text-red-500 bg-white bg-opacity-5' : 'bg-red-700 text-white'}`} disabled={loading || disabled} onClick={onClick}>
                 {!loading? title:<FaSpinner className="animate-spin" />}
             </button>
         )
@@ -29,8 +31,8 @@ export default function Button({className='',loading=false, title, type, gradien
         )
     }
   return (
-    <button type={type} className={` cursor-pointer select-none w-full h-[55px] rounded-[15px] font-semibold text-white text-center items-center justify-center inline-flex ${className} bg-purple`}  disabled={disabled || loading} onClick={onClick}>
-    {!loading? title:<FaSpinner className="animate-spin" />}
+    <button type={type} className={`cursor-pointer select-none w-full h-[55px] rounded-[15px] font-semibold ${invert? 'text-light-purple' :'text-white'} text-center items-center justify-center inline-flex ${className} ${invert && !outlined? 'bg-white bg-opacity-5' : 'bg-purple'} ${invert && outlined? 'outline outline-[3px] text-light-purple outline-purple bg-transparent':'outline-none outline-0'}`}  disabled={disabled || loading} onClick={onClick}>
+        {!loading? title:<FaSpinner className="animate-spin" />}
     </button>
   )
 }
