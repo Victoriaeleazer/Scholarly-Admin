@@ -19,6 +19,7 @@ import PopupTarget from '../../../components/PopupMenu/PopupTarget';
 import { Member } from '../../../interfaces/Member';
 import { delay } from '../../../services/delay';
 import OverlappingImages from '../../../components/OverlappingImages';
+import { useStreamVideoClient } from '@stream-io/video-react-sdk';
 
 // Where chatting is taking place.
 export default function ChatsPage() {
@@ -40,7 +41,9 @@ export default function ChatsPage() {
   const [canScroll, setCanScroll] = useState(true);
   const [showAttachmentPopup, setShowPopup] = useState(false);
   const [text, setText] = useState("");
-  const [selectType, setSelectType] = useState<'image' | 'audio' | 'document' | 'video'>('document')
+  const [selectType, setSelectType] = useState<'image' | 'audio' | 'document' | 'video'>('document');
+
+  const client = useStreamVideoClient()!;
 
   const handleInput = (e: ChangeEvent<HTMLTextAreaElement> | string) => {
     setText( typeof e === 'string'? e: e.target.value);
@@ -389,17 +392,22 @@ export default function ChatsPage() {
   const header = ()=>(
     <Link to={'details'} className='w-full cursor-pointer px-8 py-4 bg-transparent flex gap-7 items-center justify-center'>
       <div className='w-[45px] h-[45px] rounded-circle overflow-hidden'>
-        <img src={channel?.channelProfile} className='w-full h-full rounded-circle object-cover' />
-      </div>
+            {channel?.channelProfile && <img src={channel.channelProfile} alt='Channel Photo' className='w-full h-full object-cover' />}
+            {!channel?.channelProfile && <div className='w-full h-full flex items-center justify-center open-sans font-semibold text-[17px] text-center' style={{backgroundColor:channel?.color}}>{channel?.channelName.split(' ').map(name=> name.charAt(0).toUpperCase()).slice(0, Math.min(2, channel.channelName.split(' ').length))}</div>}
+          </div>
       <div className='flex flex-col gap-0 flex-1 overflow-hidden'>
         <p className='text-white font-bold text-[16px] whitespace-nowrap text-ellipsis'>{channel?.channelName}</p>
         <div style={{'--overlapping-outline-color':'#101010'} as React.CSSProperties & Record<string, string>} className='flex items-center justify-start gap-2'>
-          <OverlappingImages size={20} images={channel?.members.map(member => member.profile) ?? []} />
-          <p className='text-secondary font-[Raleway]'>{channel?.members.length} Member{channel?.members.length ===1?'':'s'}</p>
+          <OverlappingImages size={20} images={channel?.members.map(member => member.profile ?? {fullName: `${member.firstName} ${member.lastName}`, color: member.color ?? 'green'}) ?? []} />
+          <p className='text-secondary open-sans text-xs font-semibold'>{channel?.members.length} Member{channel?.members.length ===1?'':'s'}</p>
         </div>
       </div>
       <Call variant='Bold' />
-      <Video variant='Bold' />
+      <Video onClick={()=>{
+        const call = client.call('default', channelId!);
+        call.join({create:true});
+
+      }} variant='Bold' />
     </Link>
   )
 
@@ -494,8 +502,8 @@ export default function ChatsPage() {
           const isFirstMessage = index === 0;
           const isLastMessage = index === chats.length-1;
           const isSender = chat.senderId === admin?.id;
-          const readImages = (channel!.members as Member[]).filter(member=> chat.readReceipt.includes(member.id) && member.id !== admin?.id).map(member => member.profile);
-          const senderProfile = channel!.members.find(member => member.id === chat.id)?.profile;
+          const readImages = (channel!.members as Member[]).filter(member=> chat.readReceipt.includes(member.id) && member.id !== admin?.id).map(member => member.profile ?? {fullName: `${member.firstName} ${member.lastName}`, color: member.color ?? 'green'});
+          const sender = channel!.members.find(member => member.id === chat.senderId);
           let sameSender = false;
           let firstTimeSender = false;
           let lastTimeSender = false;
@@ -529,7 +537,7 @@ export default function ChatsPage() {
           }
 
 
-          return <ChatWidget key={chat.id} chat={chat} senderProfile={senderProfile} readImages={readImages} differentDay={differentDay} differentDayBelow={differentDayBelow} isSender={isSender} firstSender={firstTimeSender} lastMessageSent={isLastMessage} lastSender={lastTimeSender} sameSender={sameSender} />
+          return <ChatWidget key={chat.id} chat={chat} channelColor={channel?.color} sender={sender} readImages={readImages} differentDay={differentDay} differentDayBelow={differentDayBelow} isSender={isSender} firstSender={firstTimeSender} lastMessageSent={isLastMessage} lastSender={lastTimeSender} sameSender={sameSender} />
         })}
       </div>
 

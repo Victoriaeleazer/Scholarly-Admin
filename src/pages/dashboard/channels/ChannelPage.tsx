@@ -36,7 +36,7 @@ export default function ChannelPage() {
 
   const [channelName, setChannelName] = useState('');
   const [channelDescription, setChannelDesc] = useState('');
-  const [channelType, setChannelType] = useState<'announcement' | 'qa' | 'project'>('announcement');
+  const [channelType, setChannelType] = useState<'announcement' | 'qa' | 'project' | ''>('');
 
 
   
@@ -71,7 +71,7 @@ export default function ChannelPage() {
           <Link to={channel.id} key={channel.id} replace={!location.pathname.endsWith('channels')} className={`w-full flex bg-transparent text-white border-white border-b border-opacity-10 last:border-b-0 gap-5 items-center py-5 px-4 justify-center ${location.pathname.includes(channel.id)? 'bg-white bg-opacity-5' : ''}`}>
           <div className='w-[45px] h-[45px] rounded-circle overflow-hidden'>
             {channel.channelProfile && <img src={channel.channelProfile} alt='Channel Photo' className='w-full h-full object-cover' />}
-            {!channel.channelProfile && <div className='w-full h-full flex items-center justify-center font-[Raleway] bg-purple font-bold text-[25px] text-center'>{channel.channelName.charAt(0)}</div>}
+            {!channel.channelProfile && <div className='w-full h-full flex items-center justify-center open-sans font-medium text-[15px] text-center' style={{backgroundColor:channel.color}}>{channel.channelName.split(' ').map(name=> name.charAt(0).toUpperCase()).slice(0, Math.min(2, channel.channelName.split(' ').length))}</div>}
           </div>
 
           <div className='flex flex-1 flex-col items-start gap-0.5 justify-center overflow-hidden'>
@@ -132,7 +132,8 @@ export default function ChannelPage() {
         }}>
           <input onChange={(e)=>setChannelName(e.target.value.trim())} required placeholder='Enter Channel Name' multiple={false} className='w-full bg-background px-3 py-4 rounded-[15px] text-[14px] placeholder:text-secondary text-white focus:outline-none' />
           <textarea onChange={(e)=>setChannelDesc(e.target.value.trim())} required placeholder='Enter Channel Description' rows={5} draggable={false} className='w-full resize-none bg-background px-3 py-4 rounded-[15px] text-[14px] placeholder:text-secondary text-white focus:outline-none scholarly-scrollbar purple-scrollbar' />
-          <select onChange={(e)=>setChannelType(e.target.value.trim() as 'announcement' | 'qa' | 'project')} required multiple={false} className='w-full bg-background px-3 py-4 rounded-[15px] text-[14px] placeholder:text-secondary text-white focus:outline-none'>
+          <select onChange={(e)=>setChannelType(e.target.value.trim() as 'announcement' | 'qa' | 'project')} required multiple={false} className={`w-full bg-background px-3 py-4 rounded-[15px] text-[14px] placeholder:text-secondary ${channelType === ''? 'text-secondary' : 'text-white'} focus:outline-none`}>
+            <option className='bg-black text-secondary' value={''}>Select Type</option>
             <option className='bg-black text-white' value={'announcement'}>Announcement</option>
             <option className='bg-black text-white' value={'project'}>Project</option>
             <option className='bg-black text-white' value={'qa'}>QA</option>

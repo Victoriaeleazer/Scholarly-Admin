@@ -7,6 +7,7 @@ export interface Channel{
     channelDescription:string,
     channelProfile?:string,
     creator?: Member,
+    color:string,
     createdAt:string,
     members:Member[],
     channelType: 'announcement' | 'project' | 'qa',

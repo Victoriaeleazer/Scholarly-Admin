@@ -3,9 +3,9 @@ import { AdminRole } from "../interfaces/Admin";
 import { Chat } from "../interfaces/Chat";
 import { Channel } from "../interfaces/Channel";
 
-export const baseUrl = "https://scholarly-admin-backend.onrender.com/scholarly/api/v1";
+export const baseUrl = import.meta.env.VITE_API_URL;
 
-export const websocket_url = "wss://scholarly-admin-backend.onrender.com/scholarly-websocket-endpoint"
+export const websocket_url = import.meta.env.VITE_WEBSOCKET_URL;
 
 
 const headers = {"Content-Type": 'application/json'};

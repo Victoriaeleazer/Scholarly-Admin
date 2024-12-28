@@ -4,11 +4,13 @@ import { ExportSquare, PlayCircle } from 'iconsax-react';
 import docsPurple from "../../../assets/lottie/doc-purple.json"
 import LottieWidget from "../../../components/LottieWidget"
 import { HiDownload } from 'react-icons/hi';
-import OverlappingImages from '../../../components/OverlappingImages';
+import OverlappingImages, { colorAndName } from '../../../components/OverlappingImages';
+import { Member } from '../../../interfaces/Member';
 
 interface props{
     chat: Chat,
-    senderProfile?:string,
+    channelColor?:string,
+    sender?:Member,
     isSender?:boolean,
     firstSender?:boolean,
     lastSender?:boolean,
@@ -16,10 +18,10 @@ interface props{
     differentDay?:boolean,
     differentDayBelow?:boolean,
     lastMessageSent?:boolean,
-    readImages:(string | undefined)[],
+    readImages:(string | colorAndName)[],
 }
 
-export default function ChatWidget({chat, isSender=false, senderProfile, readImages, differentDay=false, differentDayBelow=false, firstSender=true, sameSender=false, lastMessageSent=false, lastSender=false}: props) {
+export default function ChatWidget({chat, isSender=false, channelColor, sender, readImages, differentDay=false, differentDayBelow=false, firstSender=true, sameSender=false, lastMessageSent=false, lastSender=false}: props) {
   
 
     const currentTime = new Date();
@@ -57,8 +59,13 @@ export default function ChatWidget({chat, isSender=false, senderProfile, readIma
 
     const messageType = ()=>(
         <div className={`w-full flex items-center gap-2 ${isSender? 'justify-end':'justify-start'}`}>
-            {!isSender && <div className='w-[30px] h-[30px] rounded-circle self-end overflow-hidden'>
-                {(lastMessageSent || lastSender || differentDayBelow) && <img src={senderProfile ?? chat.senderProfile ?? '/images/no_profile.webp'} className='w-full h-full object-cover' />}
+            {!isSender && <div className='w-[30px] h-[30px] flex rounded-circle self-end overflow-hidden'>
+                {(lastMessageSent || lastSender || differentDayBelow) && (
+                    <>
+                    {sender && !sender.profile && <div style={{backgroundColor:sender?.color}} className='w-full h-full text-white text-center open-sans font-semi flex flex-center text-xs'><p>{sender.firstName.charAt(0).toUpperCase() + sender.lastName.charAt(0).toUpperCase()}</p></div>}
+                    {sender && sender.profile && <img src={sender.profile} className='w-full h-full object-cover' />}
+                    </>
+                )}
                 </div>}
             <div className={`${isSender? 'max-w-[47%] items-end' : 'max-w-[40%] items-start'} w-fit flex flex-col gap-[3px]`}>
                 {chat.attachment && (
@@ -82,7 +89,8 @@ export default function ChatWidget({chat, isSender=false, senderProfile, readIma
                     </div>
                 )}
                 {chat.message && (
-                    <div className={`rounded-[20px] select-none w-fit py-2 px-4 flex flex-col items-center justify-center text-white text-[15px] cursor-pointer ${isSender? 'bg-purple' : 'bg-tertiary'} `} style={{
+                    <div className={`rounded-[20px] select-none w-fit py-2 px-4 flex flex-col items-center justify-center text-white text-[15px] cursor-pointer`} style={{
+                        backgroundColor: isSender? (channelColor??'var(--purple)'): 'var(--tertiary)',
                         borderBottomRightRadius: !isSender? '20px': firstSender || differentDay? '8px':'20px',
                         borderTopRightRadius: !isSender?'20px': ((lastSender || lastMessageSent) && !differentDay) && !firstSender? '8px': differentDayBelow? '8px' : '20px',
                         borderBottomLeftRadius: isSender? '20px': firstSender || differentDay? '8px':'20px',
@@ -99,7 +107,7 @@ export default function ChatWidget({chat, isSender=false, senderProfile, readIma
 
     const dateElement = ()=>(
         <div className='w-full flex items-center select-none justify-center'>
-            <p className='text-white select-none text-[13px] font-[DM Sans] font-semibold text-center bg-tertiary rounded-[25px] px-4 py-2'>
+            <p className='text-white select-none text-[13px] dm-sans font-semibold text-center bg-tertiary rounded-[25px] px-4 py-2'>
                 {isYesterday() && "Yesterday"}
                 {isToday() && "Today"}
                 {!isToday() && !isYesterday() && formatedText()}
@@ -109,7 +117,7 @@ export default function ChatWidget({chat, isSender=false, senderProfile, readIma
     )
 
     const readReceipt = ()=>(
-        <div className='flex w-fit gap-2 mt-2 select-none'>
+        <div className='flex w-fit gap-2 mt-2 select-none flex-center'>
             <OverlappingImages images={readImages} />
             <p className='font-semibold text-[11.5px]'>{chat.readReceipt.length-1} view{chat.readReceipt.length-1!=1?'s':''}</p>
         </div>

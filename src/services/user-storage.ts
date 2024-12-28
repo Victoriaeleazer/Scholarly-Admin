@@ -7,6 +7,14 @@ export function saveAdminUserData(data:Admin){
     localStorage.setItem('userdata', JSON.stringify(data))
 }
 
+export function saveCallToken(token: string){
+    localStorage.setItem('call-token', token);
+}
+
+export function getCallToken():string | undefined{
+    return (localStorage.getItem('call-token') as string | undefined);
+}
+
 export function hasAdminUserData():boolean{
     const rawData = localStorage.getItem('userdata');
 

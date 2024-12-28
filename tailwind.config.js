@@ -20,6 +20,27 @@ export default {
         circle: '50%',
         corner:'5%'
       },
+      keyframes:{
+        "shake":{
+          "0%":{
+            transform: `rotate(0deg)`
+          },
+          "33%":{
+            transform: `rotate(45deg)`
+          },
+          "66%":{
+            transform: `rotate(-45deg)`
+          },
+          "100%":{
+            transform: `rotate(0deg)`
+          },
+          
+
+        }
+      },
+      animation:{
+        'bell-shake': "shake 0.3s ease 2s infinite both"
+      }
     },
   },
   plugins: [
@@ -81,6 +102,22 @@ export default {
         },
         '.normal-behaviour':{
           'transition-behaviour':'normal'
+        },
+
+        // Fonts
+        '.open-sans':{
+          'font-family':"'Open Sans'"
+        },
+        '.dm-sans':{
+          'font-family':'DM Sans'
+        },
+        '.raleway':{
+          'font-family':'Raleway'
+        },
+        // Flex positions
+        '.flex-center':{
+          'justify-content':'center',
+          'align-items':'center',
         }
       }, ['responsive', 'hover']);
     },

@@ -10,8 +10,9 @@ import { loginAccount } from '../../services/api-consumer';
 import { toast } from 'sonner';
 import {validate as validateEmail} from 'react-email-validator'
 import { isPhoneNumber, validatePhoneNumber } from '../../utils/PhoneUtils';
-import { saveAdminUserData } from '../../services/user-storage';
+import { saveAdminUserData, saveCallToken } from '../../services/user-storage';
 import { Admin } from '../../interfaces/Admin';
+import { StreamVideoClient, User } from '@stream-io/video-react-sdk';
 // import plant from './assets/plant.jpg'
 
 export default function LoginPage () {
@@ -74,16 +75,19 @@ export default function LoginPage () {
   };
 
   async function login(){
+
     toast.loading("Logging You In", {id:'loading-toast', dismissible:loading});
     const response = await loginAccount(emailOrPhone, password);
-
     toast.dismiss('loading-toast');
 
     if(response.status === 200){
+      const admin = response.data['data'] as Admin;
+      saveCallToken(admin.token);
+
       toast.success(response.data.message);
       console.log("Login Successful", response.data.data)
       setLoading(false);
-      saveAdminUserData(response.data['data'] as Admin);
+      saveAdminUserData(admin);
       navigate('/dashboard', {replace:true});
       return;
     }

@@ -6,13 +6,14 @@ interface props{
     className?: string,
     show?:boolean,
     animType?: 'slide-down' | 'popin',
+    negative?:boolean,
     onClose?:()=>void,
     discrete?:boolean,
     cancelable?:boolean,
     children?:ReactNode
 }
 
-export default function Dialog({show=false, discrete=true, animType='popin', onClose, cancelable=onClose?true:false, className='', children}:props){
+export default function Dialog({show=false, discrete=true, negative=false, animType='popin', onClose, cancelable=onClose?true:false, className='', children}:props){
 
 
     return (
@@ -31,7 +32,7 @@ export default function Dialog({show=false, discrete=true, animType='popin', onC
                             e.stopPropagation();
                             onClose();
                         }
-                    }} className='rounded-circle z-[51] absolute -right-3.5 -top-3.5 cursor-pointer text-[12px] p-3 flex items-center justify-center text-white bg-purple'>
+                    }} className={`rounded-circle z-[51] absolute -right-3.5 -top-3.5 cursor-pointer text-[12px] p-3 flex items-center justify-center text-white ${negative? 'bg-red-600': 'bg-purple'}`}>
                         <FaPlus className="rotate-45" />
                     </div>
                     {children}
