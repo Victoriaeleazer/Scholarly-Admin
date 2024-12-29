@@ -1,4 +1,4 @@
-import React, { LegacyRef, useEffect, useState } from 'react'
+import React, { ChangeEvent, LegacyRef, useEffect, useMemo, useRef, useState } from 'react'
 import { Channel } from '../../../interfaces/Channel'
 import { Add, ArrowLeft, ArrowRight2, Dislike, Edit2, ExportCircle, PlayCircle, ProfileAdd, Trash } from 'iconsax-react'
 import { Chat } from '../../../interfaces/Chat'
@@ -9,10 +9,11 @@ import Dialog from '../../../components/Dialog'
 import Button from '../../../components/Button'
 import { useMatch, useNavigate, useParams } from 'react-router'
 import { useAppSelector } from '../../../hooks/redux-hook'
-import { removeMember, sendInvitation } from '../../../services/api-consumer'
+import { removeMember, sendInvitation, updateChannelPhoto } from '../../../services/api-consumer'
 import { ApiResponse } from '../../../interfaces/ApiResponse'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { FaSpinner } from 'react-icons/fa6'
 
 
 
@@ -25,6 +26,8 @@ export default function ChannelDetail() {
 
   const channel = useAppSelector((state)=> state.channels.value.find(channel => channel.id === channelId))
 
+  const fileSelectRef = useRef<HTMLInputElement>(null);
+
   const isCreator = channel?.creator?.id === admin?.id;
 
   const media = getChats(channelId ?? '').filter(chat => chat.attachment && ['image', 'video'].includes(chat.attachmentType))
@@ -35,18 +38,64 @@ export default function ChannelDetail() {
 
   const [addMemberPopup, showAddMemberPopup] = useState(false);
 
+  const [newProfile, setNewProfile] = useState<File | null>(null);
+
+  const profile = useMemo(()=>newProfile? URL.createObjectURL(newProfile): null, [newProfile]);
+
   const [index, setIndex] = useState(0)
+
+  // Clean Up Effect to remove the created Object URL from the memory
+  useEffect(()=>{
+    return ()=>{
+      if(profile){
+        URL.revokeObjectURL(profile);
+      }
+    }
+  },[])
+
+  const updateChannelPhotoMutation = useMutation({
+    mutationFn: async ()=>{
+      const response = await updateChannelPhoto(channelId!, newProfile!);
+      
+      const data = response.data as ApiResponse;
+
+      if(response.status !== 200){
+        throw Error(data.message);
+      }
+
+      return data;
+    },
+    onSuccess: ({message, data})=>{
+      setNewProfile(null)
+      toast.success(message);
+    },
+    onError: ({message})=>{
+      toast.error("Unable to Upload Photo", {description: message});
+    }
+  })
 
   const detailsHeader = ()=>(
       <div className='w-full cursor-pointer pb-8 bg-tertiary flex flex-col relative gap-4 items-center justify-center'>
-        <ArrowLeft className='self-start sticky left-8 ml-8 mt-8 top-8 z-[2]' onClick={()=> navigate(-1)} size={30} />
-  
-        <div className='w-[130px] h-[130px] relative mb-1 rounded-circle flex flex-center text-center text-white open-sans text-4xl font-semibold' style={{backgroundColor:channel?.color, letterSpacing:2}}>
-          {channel && <p>{channel.channelName.split(' ').map(name => name.charAt(0).toUpperCase()).splice(0, 2)}</p>}
-          {channel?.channelProfile && <img className='w-full h-full object-cover rounded-circle' src={channel?.channelProfile}  />}
-          <div style={{backgroundColor:channel?.color}} className='w-[22%] h-[22%] rounded-circle absolute bottom-1 right-1 outline flex flex-center outline-tertiary'>
+        <div className='w-full flex justify-between top-8 px-8 sticky z-[3] text-white font-semibold'>
+          <ArrowLeft className='' onClick={()=> navigate(-1)} size={30} />
+          {newProfile && !updateChannelPhotoMutation.isPending && <p className='text-white' onClick={()=>updateChannelPhotoMutation.mutate()}>Save</p>}
+          {newProfile && updateChannelPhotoMutation.isPending && <FaSpinner className='animate-spin' />}
+        </div>
+
+
+        {/* To handle file select. Don't remove */}
+        <input type='file' onChange={onImagePicked} ref={fileSelectRef} accept='image/*' multiple={false} className='[display:none]' />
+
+        <div onClick={()=>{
+          if(channel?.creator?.id === admin.id){
+            fileSelectRef.current?.click();
+          }
+        }} className='w-[130px] h-[130px] relative mb-1 rounded-circle select-none flex flex-center text-center text-white open-sans text-4xl font-semibold' style={{backgroundColor:channel?.color, letterSpacing:2}}>
+          {!(channel?.channelProfile || newProfile) && <p>{channel?.channelName.split(' ').map(name => name.charAt(0).toUpperCase()).splice(0, 2)}</p>}
+          {(channel?.channelProfile || newProfile) && <img className='w-full h-full object-cover object-center rounded-circle' src={profile ?? channel?.channelProfile} alt='Channel Profile'  />}
+          {channel?.creator?.id === admin.id && <div style={{backgroundColor:channel?.color}} className='w-[22%] h-[22%] rounded-circle absolute bottom-1 right-1 outline flex flex-center outline-tertiary'>
             <Edit2 variant='Bold' size={'60%'} />
-          </div>
+          </div>}
         </div>
         
   
@@ -54,6 +103,16 @@ export default function ChannelDetail() {
       </div>
     )
   
+  const onImagePicked = (e: ChangeEvent<HTMLInputElement>) =>{
+    if(profile){
+      URL.revokeObjectURL(profile);
+    }
+    const files = e.target.files ?? [];
+    const file = files[0];
+
+    setNewProfile(file);
+  }
+
   const detailsBody = ()=>(
     <div className='w-full flex relative flex-col'>
       <div className="w-full bg-tertiary sticky top-0 z-[2] flex flex-col gap-2">
@@ -137,7 +196,7 @@ export default function ChannelDetail() {
   const membersTab = ()=>(
     <div className='flex flex-col w-full h-fit justify-start items-start p-5 px-0'>
       <p className='text-[22px] font-bold text-left mb-5 px-2.5 select-none'>Members <span className='text-secondary text-lg'>({channel?.members?.length})</span></p>
-      {channel!.members?.map(member => (
+      {[...channel!.members].reverse().map(member => (
         <div key={member.id} className='w-full border-b select-none cursor-pointer transition-colors ease duration-500 border-secondary hover:bg-white hover:bg-opacity-[0.025] gap-5 border-opacity-10 last:border-0 flex px-2.5 py-3'>
           <div style={{backgroundColor:member?.color}} className='w-[50px] h-[50px] rounded-circle overflow-hidden flex flex-center text-center text-white open-sans font-medium text-sm'>
             {!member.profile && <p>{member.firstName.charAt(0) + member.lastName.charAt(0)}</p>}

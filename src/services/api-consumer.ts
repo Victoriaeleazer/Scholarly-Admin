@@ -105,3 +105,18 @@ export async function markNotification(notificationId: string, read: boolean){
     const response = await axiosInstance.patch(`${baseUrl}/notification/markAsRead/${pathVariables}`, {read}, {headers:headers})
     return response;
 }
+
+export async function updateChannelPhoto(channelId: string, profile: File){
+    const pathVariables = `${channelId}`;
+
+    const formData = new FormData();
+    formData.append('file', profile);
+
+    const response = await axiosInstance.patch(
+        `${baseUrl}/channel/updateChannelProfile/${pathVariables}`,
+        formData,
+        {headers:{"Content-Type":'multipart/form-data'}}
+    );
+
+    return response;
+}

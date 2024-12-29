@@ -20,30 +20,35 @@ import { Member } from '../../../interfaces/Member';
 import { delay } from '../../../services/delay';
 import OverlappingImages from '../../../components/OverlappingImages';
 import { useStreamVideoClient } from '@stream-io/video-react-sdk';
+import { useAppSelector } from '../../../hooks/redux-hook';
 
 // Where chatting is taking place.
 export default function ChatsPage() {
   const {channelId} = useParams();
   const navigate = useNavigate();
+  const channel = useAppSelector((state)=> state.channels.value.find(channel => channel.id === channelId))
+
   const [chats, setChats] = useState<Chat[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const [imageSrc, setImageSrc] = useState('');
   
   const [thumbnailBlob, setThumbnailBlob] = useState<Blob | null>(null);
   const [admin, setAdmin] = useState<Admin>()
-  const [channel, setChannel] = useState<Channel>();
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileSelectRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
+  const [client, setClient] = useState<Client | null>(null)
   const [canScroll, setCanScroll] = useState(true);
   const [showAttachmentPopup, setShowPopup] = useState(false);
   const [text, setText] = useState("");
   const [selectType, setSelectType] = useState<'image' | 'audio' | 'document' | 'video'>('document');
 
-  const client = useStreamVideoClient()!;
+  const callClient = useStreamVideoClient()!;
+
+  
 
   const handleInput = (e: ChangeEvent<HTMLTextAreaElement> | string) => {
     setText( typeof e === 'string'? e: e.target.value);
@@ -81,21 +86,6 @@ export default function ChatsPage() {
 
 
   }
-
-  function updateChannel(){
-    const gottenChannel = getChannel(channelId!);
-
-    if(gottenChannel){
-      setChannel(gottenChannel);
-      return;
-    }
-    toast.error("This channel seems to not be found");
-    navigate(-1);
-
-
-  }
-
-  
 
   const handleScroll =()=>{
     if(!listRef.current) return;
@@ -264,7 +254,7 @@ export default function ChatsPage() {
       return;
     }
     setAdmin(getAdminUserData());
-    updateChannel();
+    
     const savedChats = getChats(channelId);
     if(JSON.stringify(savedChats) !== JSON.stringify(chats)){
       setChats(savedChats);
@@ -273,6 +263,7 @@ export default function ChatsPage() {
       brokerURL: websocket_url,
       onConnect:()=>{
         console.log('Connected to chats websocket')
+        setClient(createdClient);
         
       
         createdClient.subscribe(`/chats/${channelId}`, async (chatsApiResponse)=>{
@@ -343,6 +334,14 @@ export default function ChatsPage() {
   },[])
 
   useEffect(()=>{
+    if(!channel){
+      toast.error("This channel seems to not be found");
+      navigate(-1);
+    }
+  }, [channel])
+  
+
+  useEffect(()=>{
     console.log("Chats Length is", chats.length);
     saveChats(channelId!, chats);
     
@@ -355,16 +354,16 @@ export default function ChatsPage() {
 
   }, [chats, canScroll])
 
-  useEffect(()=>{
-    const a = setTimeout(async()=>{
-      const unseenChats = chats.filter(chat=>chat.senderId !== admin?.id && !(chat.readReceipt as string[]).includes(admin!.id));
-      for(const chat of unseenChats){
-        await markChatAsRead(channelId!,chat.id, admin!.id )
-      }
-    }, 1000)
+  // useEffect(()=>{
+  //   const a = setTimeout(async()=>{
+  //     const unseenChats = chats.filter(chat=>chat.senderId !== admin?.id && !(chat.readReceipt as string[]).includes(admin!.id));
+  //     for(const chat of unseenChats){
+  //       await markChatAsRead(channelId!,chat.id, admin!.id )
+  //     }
+  //   }, 1000)
 
-    return ()=> clearTimeout(a)
-  }, [chats])
+  //   return ()=> clearTimeout(a)
+  // }, [chats])
 
   const sendMessageMutation = useMutation({
     mutationFn: sendMessage,
@@ -404,7 +403,7 @@ export default function ChatsPage() {
       </div>
       <Call variant='Bold' />
       <Video onClick={()=>{
-        const call = client.call('default', channelId!);
+        const call = callClient.call('default', channelId!);
         call.join({create:true});
 
       }} variant='Bold' />
@@ -536,8 +535,53 @@ export default function ChatsPage() {
             lastTimeSender = chat.senderId !== chats[index-1].senderId
           }
 
+          const readChat = {
+            ...chat,
+            readReceipt: [...chat.readReceipt, admin!.id]
+          } as Chat;
+          const readChannel = {
+            ...channel,
+            latestMessage: readChat,
+            unreadMessages:0,
+          } as Channel
 
-          return <ChatWidget key={chat.id} chat={chat} channelColor={channel?.color} sender={sender} readImages={readImages} differentDay={differentDay} differentDayBelow={differentDayBelow} isSender={isSender} firstSender={firstTimeSender} lastMessageSent={isLastMessage} lastSender={lastTimeSender} sameSender={sameSender} />
+          const markChat = ()=>{
+
+            // We send to the user's chat & channel websocket that he's read the chat
+            client?.publish({
+              destination:`/chats/${channelId}`,
+              body: JSON.stringify({
+                message:'Chat Marked As Read',
+                data: readChat
+              })
+            });
+            client?.publish({
+              destination: `/channels/${admin?.id}`,
+              body: JSON.stringify({
+                message:"Chat Marked As Read",
+                data: readChannel
+              })
+            })
+            markChatAsRead(channelId!,chat.id, admin!.id )
+          }
+
+
+          return <ChatWidget 
+            key={chat.id}
+            chat={chat}
+            read={chat.readReceipt.includes(admin?.id ?? '')}
+            markAsRead={markChat}
+            channelColor={channel?.color}
+            sender={sender}
+            readImages={readImages}
+            differentDay={differentDay}
+            differentDayBelow={differentDayBelow}
+            isSender={isSender}
+            firstSender={firstTimeSender}
+            lastMessageSent={isLastMessage}
+            lastSender={lastTimeSender}
+            sameSender={sameSender}
+            />
         })}
       </div>
 

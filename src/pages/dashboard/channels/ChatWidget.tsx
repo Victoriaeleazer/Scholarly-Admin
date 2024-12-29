@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Chat } from '../../../interfaces/Chat'
 import { ExportSquare, PlayCircle } from 'iconsax-react';
 import docsPurple from "../../../assets/lottie/doc-purple.json"
@@ -6,11 +6,14 @@ import LottieWidget from "../../../components/LottieWidget"
 import { HiDownload } from 'react-icons/hi';
 import OverlappingImages, { colorAndName } from '../../../components/OverlappingImages';
 import { Member } from '../../../interfaces/Member';
+import { useInView } from 'react-intersection-observer';
 
 interface props{
     chat: Chat,
     channelColor?:string,
+    markAsRead: ()=> void,
     sender?:Member,
+    read?:boolean,
     isSender?:boolean,
     firstSender?:boolean,
     lastSender?:boolean,
@@ -21,8 +24,17 @@ interface props{
     readImages:(string | colorAndName)[],
 }
 
-export default function ChatWidget({chat, isSender=false, channelColor, sender, readImages, differentDay=false, differentDayBelow=false, firstSender=true, sameSender=false, lastMessageSent=false, lastSender=false}: props) {
+export default function ChatWidget({chat, isSender=false, markAsRead, read=false, channelColor, sender, readImages, differentDay=false, differentDayBelow=false, firstSender=true, sameSender=false, lastMessageSent=false, lastSender=false}: props) {
   
+    const {ref, inView} = useInView({
+        threshold: 0.4,
+    })
+
+    useEffect(()=>{
+        if(inView && !read){
+            markAsRead();
+        }
+    },[inView])
 
     const currentTime = new Date();
     const isToday = ()=>{
@@ -52,7 +64,7 @@ export default function ChatWidget({chat, isSender=false, channelColor, sender, 
 
     const otherType = ()=>(
         <div className='w-full flex flex-col gap-2 items-center justify-center'>
-            {chat.attachment && <img className='rounded-circle w-[155px] h-[155px] border-[5px] border-tertiary object-cover' src={chat.attachment} alt='channel photo' />}
+            {chat.attachment && <img className='rounded-circle w-[170px] h-[170px] border-[5px] border-tertiary object-cover' src={chat.attachment} alt='channel photo' />}
             <p className='text-white select-none text-[11px] font-semibold text-center bg-tertiary rounded-[15px] px-3 py-1.5'>{chat.message}</p>
         </div>
     )
@@ -124,7 +136,7 @@ export default function ChatWidget({chat, isSender=false, channelColor, sender, 
     )
   
     return (
-    <div className={`font-[RaleWay] w-full flex items-center mt-2 flex-col gap-5 justify-center`} style={{
+    <div ref={ref} className={`font-[RaleWay] w-full flex items-center mt-2 flex-col gap-5 justify-center`} style={{
         marginTop:differentDay? '40px': sameSender? '1px':firstSender? chat.messageType !== 'chat'? '4px' :'25px':'1px',
         marginBottom:chat.messageType !== 'chat'? '25px':'0px'
     }}>
