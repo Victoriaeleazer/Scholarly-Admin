@@ -12,6 +12,15 @@ body, #root{
 
 /* By default this website is on darkmode */
 :root{
+  --purple:#560677;
+  --blue:#628EFF;
+  --background:rgb(31,31,31);
+  --tertiary: #101010;
+  --secondary:#9ca3af;
+  --popup-offset-margin:20px;
+  --popup-anim: 'pop-in-anim';
+  --overlapping-outline-color: #000000;
+  interpolate-size: allow-keywords;
   color:'white';
   background-color: #000000;
 }
@@ -31,6 +40,10 @@ option:last-child{
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
 }
+input:focus,textarea:focus{
+  outline: none;
+  border: none;
+}
 input::autofill{
   background: transparent;
 }
@@ -42,4 +55,83 @@ input:-webkit-autofill:focus {
 }
 input:-webkit-autofill:hover {
   background: transparent !important;
+}
+input::placeholder{
+  user-select: none;
+}
+
+/* Popover is hidden by default */
+
+.popover {
+  --popover-shadow: var(--tertiary);
+  width: fit-content;
+  margin: 0px;
+  user-select: none;
+  inset: auto;
+  position: fixed;
+  overflow: hidden;
+  z-index: 1000;
+  background-color: theme('accentColor.background');
+  box-shadow: 0px 4px 6px var(--popover-shadow);
+  border-radius: 8px;
+  transition-behavior: allow-discrete;
+  top: calc(anchor(bottom) + var(--popup-offset-margin));
+  right: anchor(right);
+}
+
+.popover-top-right{
+  top: auto;
+  right:auto;
+  bottom: auto;
+  left: auto;
+  bottom: calc(anchor(top) + var(--popup-offset-margin));
+  right: anchor(right);
+}
+
+.popover-top-left{
+  top: auto;
+  right:auto;
+  bottom: auto;
+  left: auto;
+  bottom: calc(anchor(top) + var(--popup-offset-margin));
+  left: anchor(left);
+}
+
+.popover-bottom-left{
+  top: auto;
+  right:auto;
+  bottom: auto;
+  left: auto;
+  top: calc(anchor(bottom) + var(--popup-offset-margin));
+  left: anchor(left);
+}
+
+.popover-bottom-right{
+  top: auto;
+  right:auto;
+  bottom: auto;
+  left: auto;
+  top: calc(anchor(bottom) + var(--popup-offset-margin));
+  right: anchor(right);
+}
+
+/* When the popover is visible */
+.popover.show {
+  display: flex;
+  opacity: 1;
+  height: fit-content;
+  pointer-events: all;;
+
+}
+
+/* Optional transitions */
+.popover {
+  transition-property: height display opacity;
+  transition-timing-function: ease;
+  transition-duration: 1s;
+  height: 0px;
+  pointer-events: none;
+  display: none;
+  opacity: 0;
+
 }

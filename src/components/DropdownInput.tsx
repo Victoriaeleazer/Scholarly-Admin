@@ -24,7 +24,7 @@ export default function DropDownInput({prefix, id, placeholder, options, error, 
 
             <select
                 id={id}
-                className={`bg-transparent autofill:bg-background font-normal text-white focus:outline-none flex flex-1 placeholder:text-secondary ${value === '' || !options.includes(value ?? '') || !value? 'text-secondary' :'text-white'}`}
+                className={`bg-transparent autofill:bg-background font-normal focus:outline-none flex flex-1 placeholder:text-secondary ${value === '' || !options.includes(value ?? '') || !value? 'text-secondary' :'text-white'}`}
                 required={required}
                 value={value}
                 onChange={(e)=>onChange(e.target.value.trim())}>

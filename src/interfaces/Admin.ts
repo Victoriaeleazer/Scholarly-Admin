@@ -5,6 +5,8 @@ export interface Admin{
     lastName:string,
     profile?:string,
     createdAt:string,
+    token: string,
+    color:string,
     id:string,
     role:AdminRole,
     phoneNumber:string,
