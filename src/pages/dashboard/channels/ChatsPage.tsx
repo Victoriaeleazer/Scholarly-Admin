@@ -1,5 +1,5 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import React, { ChangeEvent, useContext, useEffect, useRef, useState } from 'react'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router'
 import { getAdminUserData, getChannel, getChats, hasAdminUserData, saveChats } from '../../../services/user-storage';
 import { toast } from 'sonner';
 import { ArrowDown2, Call, CloseCircle, DocumentText, EmojiHappy, Image, Microphone, Music, Paperclip, PlayCircle, Send,Video, VideoPlay } from 'iconsax-react';
@@ -19,8 +19,10 @@ import PopupTarget from '../../../components/PopupMenu/PopupTarget';
 import { Member } from '../../../interfaces/Member';
 import { delay } from '../../../services/delay';
 import OverlappingImages from '../../../components/OverlappingImages';
-import { useStreamVideoClient } from '@stream-io/video-react-sdk';
+import { useCall, useStreamVideoClient } from '@stream-io/video-react-sdk';
 import { useAppSelector } from '../../../hooks/redux-hook';
+import { useCustomStreamCall } from '../../../hooks/stream-call-hook';
+import { CallContext } from '../CallLayout';
 
 // Where chatting is taking place.
 export default function ChatsPage() {
@@ -47,6 +49,11 @@ export default function ChatsPage() {
   const [selectType, setSelectType] = useState<'image' | 'audio' | 'document' | 'video'>('document');
 
   const callClient = useStreamVideoClient()!;
+
+  const callContext = useContext(CallContext);
+  
+
+  const call = useCall();
 
   
 
@@ -401,12 +408,9 @@ export default function ChatsPage() {
           <p className='text-secondary open-sans text-xs font-semibold'>{channel?.members.length} Member{channel?.members.length ===1?'':'s'}</p>
         </div>
       </div>
-      <Call variant='Bold' />
-      <Video onClick={()=>{
-        const call = callClient.call('default', channelId!);
-        call.join({create:true});
-
-      }} variant='Bold' />
+      {callChannel.isPending && !callChannel.variables.video && <FaSpinner className='animate-spin' />}
+      {!callChannel.isPending && <Call className={`${!(call && call.id.includes(channelId ?? ''))? 'text-white': 'text-green-500 animate-bounce'}`} onClick={(e)=>{e.stopPropagation();e.preventDefault();callChannel.mutate({video: false})}} variant='Bold' />}
+      <Video onClick={(e)=>{e.stopPropagation();e.preventDefault();callChannel.mutate({video: false})}} variant='Bold' />
     </Link>
   )
 
@@ -594,18 +598,53 @@ export default function ChatsPage() {
     </div>
   )
 
-  
+  useEffect(()=>{
+    console.log("Call Changed");
+  }, [call])
 
-  
+  const callChannel = useMutation({
+    mutationFn: async({video=true}: {video?:boolean})=>{
+      const _call = callClient.call('default', channelId!+"-"+new Date().getUTCSeconds());
+      await _call.join({
+        create: true,
+        ring:true,
+        video,
+        data:{
+          custom:{
+            name: channel?.channelName,
+            id: channel?.id,
+            color: channel?.color
 
+          },
+          members: channel!.members.map((member)=>{
+            return {
+              user_id: member.id,
+              custom:{
+                color:member.color,
+                firstName: member.firstName,
+                lastName: member.lastName,
+                profile: member.profile
+              },
+              role:member.id ===channel?.creator?.id? 'admin' : 'user'
+            }
+          })
+        }
+      })
 
-  
-  
+      return _call;
+    },
 
-  
+    onSuccess: (data)=>{
+      toast.success("Call Created");
+      callContext?.setCall(data);
 
+    },
 
-
+    onError: ({message})=>{
+      console.error(message);
+      toast.error("Couldn't Place Call", {description: message})
+    }
+  })
 
   return (
     <div onClick={()=>{
@@ -623,8 +662,7 @@ export default function ChatsPage() {
 
           {/* Footer */}
           {footer()}
-        </div>
-
+      </div>
       
     </div>
     

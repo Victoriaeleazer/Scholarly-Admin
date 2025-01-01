@@ -7,6 +7,7 @@ export interface Admin{
     createdAt:string,
     token: string,
     color:string,
+    tokenExpiration: string,
     id:string,
     role:AdminRole,
     phoneNumber:string,

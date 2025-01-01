@@ -82,6 +82,9 @@ export default function LoginPage () {
 
     if(response.status === 200){
       const admin = response.data['data'] as Admin;
+      const expiration = new Date();
+      expiration.setHours(expiration.getHours()+10)
+      admin.tokenExpiration = expiration.toISOString();
       saveCallToken(admin.token);
 
       toast.success(response.data.message);

@@ -9,7 +9,6 @@ import LoginPage from './pages/authentication/LoginPage'
 import PageNotFound from './pages/page-not-found/PageNotFound'
 import { Toaster } from 'sonner'
 import RegisterPage from './pages/authentication/RegisterPage'
-import DashboardLayout from './pages/dashboard/DashboardLayout'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import FeedbacksPage from './pages/dashboard/feedbacks/FeedbacksPage'
 import AnnouncementPage from './pages/dashboard/announcements/AnnouncementPage'
@@ -20,8 +19,8 @@ import BatchesPage from './pages/dashboard/batches/BatchesPage'
 import MyBatchesPage from './pages/dashboard/my-batches/MyBatchesPage'
 import CoursesPage from './pages/dashboard/courses/CoursesPage'
 import StaffsPage from './pages/dashboard/staffs/StaffsPage'
-import ViewEventPage from './pages/dashboard/events/ViewEventPage'
-import EventLayout from './pages/dashboard/events/EventLayout'
+// import ViewEventPage from './pages/dashboard/events/ViewEventPage'
+// import EventLayout from './pages/dashboard/events/EventLayout'
 import ChannelLayout from './pages/dashboard/channels/ChannelLayout'
 import ChatsPage from './pages/dashboard/channels/ChatsPage'
 import OpenChat from './pages/dashboard/channels/OpenChat'
@@ -29,6 +28,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Provider } from 'react-redux'
 import { store } from './store'
 import ChannelDetail from './pages/dashboard/channels/ChannelDetails'
+import CallLayout from './pages/dashboard/CallLayout'
 
 
 const queryClient = new QueryClient();
@@ -45,7 +45,7 @@ createRoot(document.getElementById('root')).render(
               <Route path='/' element={<App/>} />
               <Route path='/login' element={<LoginPage/>} />
               <Route path='/register' element={<RegisterPage />} />
-              <Route path='/dashboard' element={<DashboardLayout />}>
+              <Route path='/dashboard' element={<CallLayout />}>
                 <Route index element={<DashboardPage />} />
                 <Route path='channels' element={<ChannelLayout />}>
                   <Route index element={<OpenChat />} />

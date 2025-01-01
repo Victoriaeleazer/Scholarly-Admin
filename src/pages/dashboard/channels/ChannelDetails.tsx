@@ -77,7 +77,7 @@ export default function ChannelDetail() {
   const detailsHeader = ()=>(
       <div className='w-full cursor-pointer pb-8 bg-tertiary flex flex-col relative gap-4 items-center justify-center'>
         <div className='w-full flex justify-between top-8 px-8 sticky z-[3] text-white font-semibold'>
-          <ArrowLeft className='' onClick={()=> navigate(-1)} size={30} />
+          <ArrowLeft className='' onClick={()=> navigate(`../${channelId}`, {replace:true})} size={30} />
           {newProfile && !updateChannelPhotoMutation.isPending && <p className='text-white' onClick={()=>updateChannelPhotoMutation.mutate()}>Save</p>}
           {newProfile && updateChannelPhotoMutation.isPending && <FaSpinner className='animate-spin' />}
         </div>

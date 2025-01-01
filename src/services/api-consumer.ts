@@ -33,6 +33,13 @@ export async function registerAccount(email:string, phoneNumber:string, firstNam
     return response;
 }
 
+export async function updateToken(id: string){
+
+    const response = await axiosInstance.patch(`${baseUrl}/auth/updateToken/${id}`, null, {headers:headers});
+
+    return response;
+}
+
 export async function sendChat(channelId:string, chat:Chat){
     
     const reqBody = chat;

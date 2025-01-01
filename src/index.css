@@ -12,7 +12,7 @@ body, #root{
 
 /* By default this website is on darkmode */
 :root{
-  --purple:#560677;
+  --purple:rgb(86, 6, 119);
   --blue:#628EFF;
   --background:rgb(31,31,31);
   --tertiary: #101010;
