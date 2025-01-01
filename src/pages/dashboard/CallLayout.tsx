@@ -9,7 +9,7 @@ import { hasAdminUserData, getAdminUserData, saveCallToken, getCallToken } from 
 import DashboardLayout from "./DashboardLayout";
 import { NoiseCancellation } from "@stream-io/audio-filters-web";
 
-const apiKey = import.meta.env.VITE_STREAM_API_KEY;
+const apiKey = import.meta.env.STREAM_API_KEY;
 
 export const CallContext = React.createContext<{
   setCall: (call?: Call) => void;
