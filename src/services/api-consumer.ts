@@ -3,9 +3,9 @@ import { AdminRole } from "../interfaces/Admin";
 import { Chat } from "../interfaces/Chat";
 import { Channel } from "../interfaces/Channel";
 
-export const baseUrl = import.meta.env.BACKEND_API_URL;
+export const baseUrl = import.meta.env.VITE_BACKEND_API_URL;
 
-export const websocket_url = import.meta.env.BACKEND_WEBSOCKET_URL;
+export const websocket_url = import.meta.env.VITE_BACKEND_WEBSOCKET_URL;
 
 
 const headers = {"Content-Type": 'application/json'};
