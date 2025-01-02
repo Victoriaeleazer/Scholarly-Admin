@@ -1,3 +1,7 @@
+// Stream Sdks Custom Styles
+import "@stream-io/video-react-sdk/dist/css/styles.css";
+
+
 import { PaginatedGridLayout, ParticipantView, hasVideo, StreamVideoParticipant, useCall, useCallStateHooks, useParticipantViewContext, VideoPlaceholderProps, combineComparators, dominantSpeaker, pinned, publishingAudio, publishingVideo, reactionType, screenSharing, speaking } from '@stream-io/video-react-sdk'
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { IoHandRightOutline, IoHandRightSharp } from "react-icons/io5";
@@ -44,13 +48,15 @@ export default function CallPage() {
 
     const navigate = useNavigate();
 
-    const {useCallMembers, useMicrophoneState, useCameraState, useParticipants, useCallState} = useCallStateHooks()
+    const {useCallMembers, useLocalParticipant, useMicrophoneState, useCameraState, useParticipants, useCallState} = useCallStateHooks()
 
     const callState = useCallState();
 
     const callContext = useContext(CallContext)
 
     const participants = useParticipants({sortBy: comparator});
+
+    const localParticipant = useLocalParticipant();
 
     const microphoneState = useMicrophoneState();
 
@@ -68,14 +74,20 @@ export default function CallPage() {
         const {participant} = props;
     
         const videoRef = useRef<HTMLVideoElement>(null);
+
+        const audioRef = useRef<HTMLAudioElement>(null);
         
         const member = useMemo(()=>channel?.members.find(member=> member.id === participant.userId), [participant])
     
         useEffect(() => {
             if (videoRef.current && participant.videoStream) {
-            videoRef.current.srcObject = participant.videoStream;
+                videoRef.current.srcObject = participant.videoStream;
             }
-        }, [participant.videoStream]);
+
+            if (audioRef.current && participant.audioStream) {
+                audioRef.current.srcObject = participant.audioStream;
+            }
+        }, [participant.videoStream, participant.audioStream]);
     
         return <div  style={{outline: participant.isSpeaking?  'solid':'none', outlineColor: member?.color}} className='w-full h-full aspect-video bg-tertiary rounded-[18px] overflow-hidden flex flex-center transition-all ease duration-300 outline-8'>
             {!hasVideo(participant) && <div className='h-[50%] bg-black aspect-square flex flex-center rounded-circle text-center open-sans font-semibold text-white text-[300%]' style={{backgroundColor:member?.color, letterSpacing: '3px'}}>
@@ -83,6 +95,8 @@ export default function CallPage() {
 
                 {!participant.image && <p className=''>{participant.name.split(' ').map(n => n.charAt(0).toUpperCase()).splice(0, 2)}</p>}
                 </div>}
+
+            <audio ref={audioRef} className='absolute -z-10 top-0' autoPlay playsInline />
     
             {hasVideo(participant) && <video className='w-full h-full object-cover object-center' ref={videoRef} autoPlay playsInline />}
         </div>
@@ -138,6 +152,21 @@ export default function CallPage() {
         return 4;
 
     }
+
+    const CustomParticipantViewUI = () => {
+        const { participant } = useParticipantViewContext();
+        return (
+          <div className="participant-name">{participant.name || participant.sessionId}</div>
+        );
+    };
+    const CustomVideoPlaceholder = ({ style }: VideoPlaceholderProps) => {
+        const { participant } = useParticipantViewContext();
+        return (
+            <div className="video-placeholder" style={style}>
+            <img src={participant.image} alt={participant.sessionId} />
+            </div>
+        );
+    };
   return (
     <div className='w-full h-full fixed z-[100] bg-black flex'>
 
@@ -168,17 +197,27 @@ export default function CallPage() {
 
                 </div>
 
-                <div className='w-full flex flex-1 flex-col bg-black pt-5 px-8 overflow-y-scroll scholarly-scrollbar'>
+                {/* My Custom UI */}
+                {/* <div className='w-full flex flex-1 flex-col bg-black pt-5 px-8 overflow-y-scroll scholarly-scrollbar'>
                     <div className='w-full h-full '>
-                        {/* Participants List and UI */}
                         <div style={{gridTemplateColumns: `repeat(${getGridColumns()}, minmax(0, 1fr))`}} className='w-full h-fit grid gap-4'>
                                     {participants.map(participant => <ParticipantVideo participant={participant} />)}
                         </div>
+                    </div>
 
                         
-                    </div>
-                    
+                </div> */}
+               
+
+                {/* Using Streams UI */}
+                <div className='w-full flex-1 overflow-hidden'>
+                    <PaginatedGridLayout
+                        VideoPlaceholder={CustomVideoPlaceholder}
+                        ParticipantViewUI={CustomParticipantViewUI}
+                    />
+
                 </div>
+                
                 {/* Call Controls */}
                 <div className='w-full flex gap-5 flex-center py-6'>
 

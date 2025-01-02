@@ -604,11 +604,17 @@ export default function ChatsPage() {
 
   const callChannel = useMutation({
     mutationFn: async({video=true}: {video?:boolean})=>{
-      const _call = callClient.call('default', channelId!+"-"+new Date().getUTCSeconds());
+      const _call = callClient.call('default', channelId!+"-"+(new Date().getUTCSeconds()));
+
+      // By default, whe joining call, camera and microphone is disabled.
+      await _call.microphone.disable();
+      await _call.camera.disable();
+
+
       await _call.join({
         create: true,
         ring:true,
-        video,
+        video:true,
         data:{
           custom:{
             name: channel?.channelName,

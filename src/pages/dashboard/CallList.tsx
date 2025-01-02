@@ -48,6 +48,11 @@ export default function CallList() {
 
     const acceptCall = useMutation({
         mutationFn: async()=>{
+            // By default, whe joining call, camera and microphone is disabled.
+            await call.microphone.disable();
+            await call.camera.disable();
+            
+            // The join the call.
             await call.join();
         },
         onSuccess: ()=>{
