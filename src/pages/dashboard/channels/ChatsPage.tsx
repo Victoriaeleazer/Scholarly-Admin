@@ -636,13 +636,18 @@ export default function ChatsPage() {
           })
         }
       })
+      callContext?.setCall(_call);
 
       return _call;
     },
 
-    onSuccess: (data)=>{
-      toast.success("Call Created");
-      callContext?.setCall(data);
+    onSuccess: async (data)=>{
+      toast.success("Call Created", {description:call?"Join the call":""});
+      if(!call){
+        callContext?.setCall(data);
+      }
+
+      
 
     },
 

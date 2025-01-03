@@ -10,7 +10,7 @@ import { delay } from '../../services/delay';
 import { useNavigate } from 'react-router';
 
 export default function CallList() {
-    const call = useCall();
+    const call = useCall()!;
     const navigate = useNavigate();
     const client = useStreamVideoClient()!;
     const admin = getAdminUserData();
@@ -49,8 +49,8 @@ export default function CallList() {
     const acceptCall = useMutation({
         mutationFn: async()=>{
             // By default, whe joining call, camera and microphone is disabled.
-            await call.microphone.disable();
-            await call.camera.disable();
+            // await call.microphone.disable();
+            // await call.camera.disable();
             
             // The join the call.
             await call.join();
@@ -81,7 +81,7 @@ export default function CallList() {
 
   return (
     <div className='w-full select-none cursor-pointer px-3 py-3 flex flex-1 items-center bg-green-700 rounded-[25px] gap-3 font-normal open-sans text-white h-full text-center'>
-        <OverlappingImages outlineColor='var(--background)' images={members.map(part => part.user.image ?? {fullName: part.user.name!, color: part.user.custom.color})} />
+        <OverlappingImages limit={6} outlineColor='var(--background)' images={members.map(part => part.user.image ?? {fullName: part.user.name!, color: part.user.custom.color})} />
         <p>Ongoing Conference Call from <span className='font-bold whitespace-nowrap text-ellipsis'>{callCustomData.name}</span>.</p>
         <p><span className='font-semibold'>{participants.length}</span> Currently in call.</p>
 

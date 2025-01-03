@@ -1,0 +1,53 @@
+.str-video__video-placeholder{
+    width: 150px;
+    height: 150px;
+    aspect-ratio: 1/1;
+    background-color: purple;
+    border-radius: theme(borderRadius.circle);
+    
+}
+
+.str-video__video-placeholder__avatar, .str-video__video-placeholder__no-video-label, .str-video__video-placeholder__initials-fallback {
+    text-align: center;
+    font-size: 60%;
+    gap: 2px;
+}
+
+.str-video__participant-details {
+    margin-bottom: 2%;
+    width: fit-content;
+    justify-content: center;
+    margin-left: 2%;
+    font-family: 'Open Sans';
+    font-weight: 650;
+
+}
+
+.str-video__participant-details__name{
+    width: fit-content;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    border-radius: 20px;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+
+.str-video__participant-view{
+    background-color: theme(accentColor.tertiary);
+    border-radius: 18px;
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    color: white;
+}
+
+.str-video__video{
+    width: 100%;
+    background-color: theme(accentColor.tertiary);
+}
+
+
+.str-video__participant-view--no-video {
+    width: 100%;
+}

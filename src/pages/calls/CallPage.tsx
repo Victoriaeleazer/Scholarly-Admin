@@ -1,11 +1,9 @@
-// Stream Sdks Custom Styles
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 
-
-import { PaginatedGridLayout, ParticipantView, hasVideo, StreamVideoParticipant, useCall, useCallStateHooks, useParticipantViewContext, VideoPlaceholderProps, combineComparators, dominantSpeaker, pinned, publishingAudio, publishingVideo, reactionType, screenSharing, speaking } from '@stream-io/video-react-sdk'
+import { PaginatedGridLayout, ParticipantView, DefaultVideoPlaceholder, hasVideo, StreamVideoParticipant, useCall, useCallStateHooks, useParticipantViewContext, VideoPlaceholderProps, combineComparators, dominantSpeaker, pinned, publishingAudio, publishingVideo, reactionType, screenSharing, speaking, Video } from '@stream-io/video-react-sdk'
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { IoHandRightOutline, IoHandRightSharp } from "react-icons/io5";
-import {Call as PhoneCall, EmojiHappy, Grid2, Grid5, Grid7, MessageText1, Microphone, Video, MicrophoneSlash1, VideoSlash} from 'iconsax-react'
+import {Call as PhoneCall, EmojiHappy, Grid2, Grid5, Grid7, MessageText1, Microphone, Video as VideoIcon, MicrophoneSlash1, VideoSlash} from 'iconsax-react'
 import CallChannelData from '../../interfaces/CallChannelData';
 import { getChannel } from '../../services/user-storage';
 import { useMutation } from '@tanstack/react-query';
@@ -14,6 +12,8 @@ import { delay } from '../../services/delay';
 import { CallContext } from '../dashboard/CallLayout';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
+
+import './call-page.css'
 
 const CustomParticipantViewUI = () => {
     const { participant } = useParticipantViewContext();
@@ -72,34 +72,20 @@ export default function CallPage() {
 
     const ParticipantVideo = (props: {participant: StreamVideoParticipant}) =>{
         const {participant} = props;
-    
-        const videoRef = useRef<HTMLVideoElement>(null);
-
-        const audioRef = useRef<HTMLAudioElement>(null);
         
         const member = useMemo(()=>channel?.members.find(member=> member.id === participant.userId), [participant])
     
-        useEffect(() => {
-            if (videoRef.current && participant.videoStream) {
-                videoRef.current.srcObject = participant.videoStream;
-            }
+        // useEffect(() => {
+        //     if (videoRef.current && participant.videoStream) {
+        //         videoRef.current.srcObject = participant.videoStream;
+        //     }
 
-            if (audioRef.current && participant.audioStream) {
-                audioRef.current.srcObject = participant.audioStream;
-            }
-        }, [participant.videoStream, participant.audioStream]);
+        //     if (audioRef.current && participant.audioStream) {
+        //         audioRef.current.srcObject = participant.audioStream;
+        //     }
+        // }, [participant.videoStream, participant.audioStream]);
     
-        return <div  style={{outline: participant.isSpeaking?  'solid':'none', outlineColor: member?.color}} className='w-full h-full aspect-video bg-tertiary rounded-[18px] overflow-hidden flex flex-center transition-all ease duration-300 outline-8'>
-            {!hasVideo(participant) && <div className='h-[50%] bg-black aspect-square flex flex-center rounded-circle text-center open-sans font-semibold text-white text-[300%]' style={{backgroundColor:member?.color, letterSpacing: '3px'}}>
-                {participant.image && <img className='w-full h-full object-cover object-center' src={participant.image} />}
-
-                {!participant.image && <p className=''>{participant.name.split(' ').map(n => n.charAt(0).toUpperCase()).splice(0, 2)}</p>}
-                </div>}
-
-            <audio ref={audioRef} className='absolute -z-10 top-0' autoPlay playsInline />
-    
-            {hasVideo(participant) && <video className='w-full h-full object-cover object-center' ref={videoRef} autoPlay playsInline />}
-        </div>
+        return <ParticipantView key={participant.sessionId}  VideoPlaceholder={CustomVideoPlaceholder} ParticipantViewUI={CustomParticipantViewUI} participant={participant} muteAudio />
     }
 
     const microphoneMutation = useMutation({
@@ -127,12 +113,12 @@ export default function CallPage() {
         },
         onSuccess: ()=>{
             toast.success("You left the call");
-            navigate(-1);
+            navigate(`/dashboard/channels/${channel?.id}`, {replace:true});
         },
         onError: ({message})=>{
             if(message.toLowerCase().includes('already been left')){
                 callContext?.setCall(undefined);
-                navigate(-1);
+                navigate(`/dashboard/channels/${channel?.id}`, {replace:true});
                 return;
             }
             toast.error("Unable to leave", {description:message})
@@ -156,15 +142,20 @@ export default function CallPage() {
     const CustomParticipantViewUI = () => {
         const { participant } = useParticipantViewContext();
         return (
-          <div className="participant-name">{participant.name || participant.sessionId}</div>
+          <div className="rounded-[20px] w-fit px-5 py-1 open-sans font-semibold z-30 bg-black bg-opacity-35 bottom-[5%] left-[2%] absolute">{participant.userId === localParticipant?.userId? 'You' : participant.name.split(' ').slice(0, 1)}</div>
         );
     };
+    
     const CustomVideoPlaceholder = ({ style }: VideoPlaceholderProps) => {
         const { participant } = useParticipantViewContext();
+
+        const member = useMemo(()=> channel?.members.find(member=>member.id === participant.userId), [participant])
         return (
-            <div className="video-placeholder" style={style}>
-            <img src={participant.image} alt={participant.sessionId} />
-            </div>
+            <div className='w-[130px] h-[130px] absolutebg-black aspect-square flex flex-center rounded-circle text-center open-sans font-semibold text-white text-[300%]' style={{backgroundColor:member?.color, letterSpacing: '3px'}}>
+                    {participant.image && <img className='w-full h-full object-cover object-center' src={participant.image} />}
+
+                    {!participant.image && <p className=''>{participant.name.split(' ').map(n => n.charAt(0).toUpperCase()).splice(0, 2)}</p>}
+                </div>
         );
     };
   return (
@@ -180,6 +171,7 @@ export default function CallPage() {
                         {channel?.channelProfile && <img className='w-full h-full object-cover object-center' src={channel.channelProfile} />}
                     </div>
                     <p className='font-semibold raleway text-xl'>{channel?.channelName}</p>
+                    <p>{participants.length} Participants</p>
 
                     {/* Spacer */}
                     <div className='flex flex-1' />
@@ -198,9 +190,9 @@ export default function CallPage() {
                 </div>
 
                 {/* My Custom UI */}
-                {/* <div className='w-full flex flex-1 flex-col bg-black pt-5 px-8 overflow-y-scroll scholarly-scrollbar'>
+                {/* <div className='w-full flex flex-1 flex-col bg-black pt-5 px-8 overflow-hidden'>
                     <div className='w-full h-full '>
-                        <div style={{gridTemplateColumns: `repeat(${getGridColumns()}, minmax(0, 1fr))`}} className='w-full h-fit grid gap-4'>
+                        <div style={{gridTemplateColumns: `repeat(3, minmax(0, 1fr))`}} className='w-full h-full grid grid-rows-1 gap-4'>
                                     {participants.map(participant => <ParticipantVideo participant={participant} />)}
                         </div>
                     </div>
@@ -210,10 +202,11 @@ export default function CallPage() {
                
 
                 {/* Using Streams UI */}
-                <div className='w-full flex-1 overflow-hidden'>
+                <div className='w-full flex-1 p-8 flex-center bg-black overflow-hidden'>
                     <PaginatedGridLayout
                         VideoPlaceholder={CustomVideoPlaceholder}
                         ParticipantViewUI={CustomParticipantViewUI}
+
                     />
 
                 </div>
@@ -232,7 +225,7 @@ export default function CallPage() {
                     <div title={cameraState.isMute? 'Turn On Camera': 'Turn Off Camera'} onClick={()=>cameraMutation.mutate()} className='p-3.5 cursor-pointer bg-tertiary text-white text-[28px] bg-opacity-70 rounded-2xl'>
                         {cameraMutation.isPending && <FaSpinner className='animate-spin' />}
                         {cameraState.isMute && !cameraMutation.isPending && <VideoSlash size={28} variant='Bold' />}
-                        {!cameraState.isMute && !cameraMutation.isPending && <Video size={28} variant='Bold' />}
+                        {!cameraState.isMute && !cameraMutation.isPending && <VideoIcon size={28} variant='Bold' />}
                     </div>
 
                     {/* Reaction Controls */}

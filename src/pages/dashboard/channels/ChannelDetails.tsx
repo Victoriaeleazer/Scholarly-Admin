@@ -141,7 +141,7 @@ export default function ChannelDetail() {
     <div className='w-full h-fit grid gap-1 pt-1 grid-cols-4'>
       {media.map(chat =>(
         <div className='relative cursor-pointer aspect-square overflow-hidden'>
-          <img className='w-full h-full object-cover' src={chat.thumbnail ?? chat.attachment} fetchPriority='low' alt="" />
+          <img className='w-full h-full object-cover' src={chat.thumbnail ?? chat.attachment} alt="" />
           { chat.attachmentType === 'video' &&<div className='flex items-center justify-center w-full h-full top-0 absolute z-[2] bg-black bg-opacity-30'>
             <PlayCircle variant='Bold' size={45} />
           </div>}

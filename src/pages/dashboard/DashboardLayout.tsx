@@ -22,7 +22,7 @@ import Button from '../../components/Button';
 import { useMutation } from '@tanstack/react-query';
 import PopupTarget from '../../components/PopupMenu/PopupTarget';
 import PopupMenu from '../../components/PopupMenu/PopupMenu';
-import { CallingState, useCall, useCalls,} from '@stream-io/video-react-sdk';
+import { CallingState, useCall, useCalls, useStreamVideoClient,} from '@stream-io/video-react-sdk';
 import CallList from './CallList';
 import { CallContext } from './CallLayout';
 import CallPage from '../calls/CallPage';
@@ -34,7 +34,7 @@ export default function DashboardLayout() {
   const navigate = useNavigate();
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const callId =  searchParams.get("call");
+  const callId = useMemo(()=>searchParams.get("call"), [searchParams])
 
   const [collapsed, setCollapsed] = useState(false);
 
@@ -56,6 +56,8 @@ export default function DashboardLayout() {
   const call = useCall();
 
   const calls = useCalls();
+
+  const callClient = useStreamVideoClient()!;
 
   const callContext = useContext(CallContext);
 
@@ -187,6 +189,8 @@ export default function DashboardLayout() {
     /// On a phone screen size, the drawer is closed immediately
     setMenuOpen(false);
   }, [currentLocation.pathname])
+
+  
 
 
   const facultyMenus = ()=>(
@@ -338,17 +342,10 @@ export default function DashboardLayout() {
     _call.state.callingState === CallingState.RINGING
   )).sort((a,b)=> b.state.createdAt.getTime() - a.state.createdAt.getTime()), [calls]);
 
-  const currentCalls = useMemo(()=>calls.filter(_call => (
-    [CallingState.JOINED, CallingState.RECONNECTING].includes(_call.state.callingState)
-  )).sort((a,b)=> b.state.createdAt.getTime() - a.state.createdAt.getTime()), [calls])
+  
 
   useEffect(()=>{
-    // if(currentCalls.length !== 0){
-    //   const currentCall = currentCalls.find(_call => _call.id === call?.id) ?? currentCalls[0];
-    //   callContext?.setCall(currentCall);
-    //   return;
-    // }
-
+    
     if(!call && incomingCalls.length !== 0){
       console.log(incomingCalls.length);
       callContext?.setIncomingCall(incomingCalls[0])
@@ -519,7 +516,7 @@ export default function DashboardLayout() {
       </Dialog>
 
       {/* Call Page */}
-      {callId && <CallPage />}
+      {callId && call && <CallPage />}
     </div>
   )
 }
