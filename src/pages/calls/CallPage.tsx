@@ -1,9 +1,9 @@
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 
-import { PaginatedGridLayout, ParticipantView, DefaultVideoPlaceholder, hasVideo, StreamVideoParticipant, useCall, useCallStateHooks, useParticipantViewContext, VideoPlaceholderProps, combineComparators, dominantSpeaker, pinned, publishingAudio, publishingVideo, reactionType, screenSharing, speaking, Video, NoiseCancellationProvider, hasAudio } from '@stream-io/video-react-sdk'
+import { PaginatedGridLayout, ParticipantView, DefaultVideoPlaceholder, hasVideo, StreamVideoParticipant, useCall, useCallStateHooks, useParticipantViewContext, VideoPlaceholderProps, combineComparators, dominantSpeaker, pinned, publishingAudio, publishingVideo, reactionType, screenSharing, speaking, Video, NoiseCancellationProvider, hasAudio, SpeakerLayout, SpeakerLayoutProps, PaginatedGridLayoutProps } from '@stream-io/video-react-sdk'
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { IoHandRightOutline, IoHandRightSharp } from "react-icons/io5";
-import {Call as PhoneCall, EmojiHappy, Grid2, Grid5, Grid7, MessageText1, Microphone, Video as VideoIcon, MicrophoneSlash1, VideoSlash, MicrophoneSlash, Microphone2, MirroringScreen} from 'iconsax-react'
+import {Call as PhoneCall, EmojiHappy, Grid2, Grid5, Grid7, MessageText1, Microphone, Video as VideoIcon, MicrophoneSlash1, VideoSlash, MicrophoneSlash, Microphone2, MirroringScreen, Maximize2} from 'iconsax-react'
 import CallChannelData from '../../interfaces/CallChannelData';
 import { getAdminUserData, getChannel } from '../../services/user-storage';
 import { useMutation } from '@tanstack/react-query';
@@ -18,22 +18,6 @@ import { NoiseCancellation } from "@stream-io/audio-filters-web";
 import ProfileIcon from "../../components/ProfileIcon";
 import AestheticTabbar from "../../components/AestheticTabbar";
 
-const CustomParticipantViewUI = () => {
-    const { participant } = useParticipantViewContext();
-    return (
-      <div className="participant-name">{participant.name || participant.userId}</div>
-    );
-};
-  
-const CustomVideoPlaceholder = ({ style }: VideoPlaceholderProps) => {
-    const { participant } = useParticipantViewContext();
-    return (
-      <div className="video-placeholder" style={style}>
-        <img src={participant.image} alt={participant.userId} />
-      </div>
-    );
-};
-
 const comparator = combineComparators(
     pinned, // 1. pinned participants first
     screenSharing, // 2. participants who are screensharing
@@ -44,14 +28,16 @@ const comparator = combineComparators(
     speaking, // 7. participants currently speaking
 
     // 8. everyone else
-  );
+);
+
+
 
 export default function CallPage() {
     const call = useCall();
 
     const navigate = useNavigate();
 
-    const {useCallMembers, useScreenShareState, useLocalParticipant, useMicrophoneState, useCameraState, useParticipants, useCallState} = useCallStateHooks()
+    const {useCallMembers, useHasOngoingScreenShare, useScreenShareState, useLocalParticipant, useMicrophoneState, useCameraState, useParticipants, useCallState} = useCallStateHooks()
 
     const callState = useCallState();
 
@@ -67,11 +53,13 @@ export default function CallPage() {
 
     const screenShareState = useScreenShareState();
 
+    const hasOngoingScreenShare = useHasOngoingScreenShare();
+
     const callData = useMemo(()=> callState.custom as CallChannelData, [callState]);
 
     const channel = useMemo(()=> getChannel(callData.id), [callData]);
 
-    const [layoutType, setLayoutType] = useState<'grid' | 'top' | 'side'>('grid')
+    const [layoutType, setLayoutType] = useState<'grid' | 'bottom' | 'right'>('grid')
 
     const [commentsOpen, openComments] = useState(true);
 
@@ -81,6 +69,8 @@ export default function CallPage() {
 
     const noiseCancellation = useMemo(() => new NoiseCancellation(), []);
 
+
+    // To disable mic and camera when the screen is left.
     useEffect(()=>{
         return ()=>{
             if(call){
@@ -89,6 +79,16 @@ export default function CallPage() {
             }
         }
     }, [])
+
+    // To automatically change the layout type to side when screensharing
+    useEffect(()=>{
+        if(hasOngoingScreenShare){
+            setLayoutType('right')
+            return;
+        }
+
+        setLayoutType('grid');
+    }, [hasOngoingScreenShare])
 
     const ParticipantVideo = (props: {participant: StreamVideoParticipant}) =>{
         const {participant} = props;
@@ -168,16 +168,36 @@ export default function CallPage() {
     const CustomParticipantViewUI = () => {
         const { participant } = useParticipantViewContext();
 
+        const isNotGrid = layoutType !== 'grid';
+
         const member = useMemo(()=>channel?.members.find(member=> member.id === participant.userId), [participant])
         return (
           <div style={{'--str-video__primary-color': member?.color} as Record<string, any>} className="absolute bottom-[5%] left-[2%] right-[2%] flex justify-between items-center z-30">
-            <div className="rounded-[20px] w-fit px-5 py-1 open-sans text-[16px] font-semibold bg-black bg-opacity-35">{participant.userId === localParticipant?.userId? 'You' : participant.name.split(' ').slice(0, 1)}</div>
+            <div style={{fontSize: isNotGrid? '16px' : '12px'}} className="rounded-[20px] w-fit px-5 py-1 open-sansfont-semibold bg-black bg-opacity-35">{participant.userId === localParticipant?.userId? 'You' : participant.name.split(' ').slice(0, 1)}</div>
 
             <div className="rounded-circle font-semibold bg-black bg-opacity-35 p-2.5 flex flex-center">
                 
-                {!hasAudio(participant) && <MicrophoneSlash size={18} variant="Bold" />}
+                {!hasAudio(participant) && <MicrophoneSlash size={isNotGrid? 18 : 14} variant="Bold" />}
 
-                {hasAudio(participant) && <Microphone2 size={18} variant="Bold"/>}
+                {hasAudio(participant) && <Microphone2 size={isNotGrid? 18: 14} variant="Bold"/>}
+            </div>
+          </div>
+        );
+    };
+
+    const CustomParticipantViewSpotlightUI = () => {
+        const { participant } = useParticipantViewContext();
+
+        const [participantInSpotlight] = participants;
+
+        const member = useMemo(()=>channel?.members.find(member=> member.id === participant.userId), [participant])
+        return (
+          <div style={{'--str-video__primary-color': member?.color} as Record<string, any>} className="absolute bottom-[5%] left-[2%] right-[2%] flex justify-between items-center z-30">
+            <div style={{fontSize: '16px'}} className="rounded-[20px] w-fit px-5 py-1 open-sansfont-semibold bg-black bg-opacity-35">{participant.userId === localParticipant?.userId? 'You' : participant.name.split(' ').slice(0, 1)}</div>
+
+            <div className="rounded-circle font-semibold bg-black bg-opacity-35 p-2.5 flex flex-center">
+                
+                {!hasAudio(participant) && <Maximize2 size={18} variant="Linear" />}
             </div>
           </div>
         );
@@ -186,15 +206,54 @@ export default function CallPage() {
     const CustomVideoPlaceholder = ({ style }: VideoPlaceholderProps) => {
         const { participant } = useParticipantViewContext();
 
+        const isInGrid = layoutType === 'grid';
+
         const member = useMemo(()=> channel?.members.find(member=>member.id === participant.userId), [participant])
         return (
-            <div className='w-[130px] h-[130px] bg-black aspect-square flex flex-center rounded-circle text-center open-sans font-semibold text-white text-[300%]' style={{backgroundColor:member?.color, letterSpacing: '3px'}}>
+            <div style={{backgroundColor:member?.color, letterSpacing: '3px', fontSize: isInGrid? '300%' :'150%' , width: isInGrid? '130px': '85px', height: isInGrid? '130px': '85px'}} className='w-[130px] h-[130px] bg-black aspect-square flex flex-center rounded-circle overflow-hidden text-center open-sans font-semibold text-white'>
                     {participant.image && <img className='w-full h-full object-cover object-center' src={participant.image} />}
 
                     {!participant.image && <p className=''>{participant.name.split(' ').map(n => n.charAt(0).toUpperCase()).splice(0, 2)}</p>}
                 </div>
         );
     };
+
+    const LayoutMap = {
+        right:{
+            component: SpeakerLayout,
+            title: "Right View",
+            props:{
+                participantsBarPosition: 'right',
+                VideoPlaceholder: CustomVideoPlaceholder,
+                ParticipantViewUIBar: CustomParticipantViewUI,
+                ParticipantViewUISpotlight: CustomParticipantViewSpotlightUI,
+                mirrorLocalParticipantVideo: false
+            } as SpeakerLayoutProps
+        },
+        grid:{
+            component: PaginatedGridLayout,
+            title: "Grid View",
+            props:{
+                VideoPlaceholder: CustomVideoPlaceholder,
+                ParticipantViewUI: CustomParticipantViewUI,
+                mirrorLocalParticipantVideo: false,
+            } as PaginatedGridLayoutProps
+        },
+        bottom:{
+            component: SpeakerLayout,
+            title: "Bottom View",
+            props:{
+                participantsBarPosition: 'bottom',
+                VideoPlaceholder: CustomVideoPlaceholder,
+                ParticipantViewUIBar: CustomParticipantViewUI,
+                ParticipantViewUISpotlight: CustomParticipantViewSpotlightUI,
+                mirrorLocalParticipantVideo: false,
+            } as SpeakerLayoutProps
+        }
+    }
+
+    const LayoutComponent = LayoutMap[layoutType].component;
+    const componentProps = LayoutMap[layoutType].props;
   
     return (
     <div className='w-full h-full fixed z-[100] bg-black flex'>
@@ -216,9 +275,9 @@ export default function CallPage() {
                         <div className='flex flex-1' />
 
                         {/* Layout Controls */}
-                        <Grid7 onClick={()=>setLayoutType('top')} style={{color: layoutType === 'top'? channel?.color : 'var(--secondary)'}} className='cursor-pointer transition-all ease duration-500' size={25} variant='Bold' />
+                        <Grid7 onClick={()=>setLayoutType('bottom')} style={{color: layoutType === 'bottom'? channel?.color : 'var(--secondary)'}} className='cursor-pointer transition-all ease duration-500' size={25} variant='Bold' />
 
-                        <Grid5 onClick={()=>setLayoutType('side')} style={{color: layoutType === 'side'? channel?.color : 'var(--secondary)'}} className='cursor-pointer transition-all ease duration-500' size={25} variant='Bold' />
+                        <Grid5 onClick={()=>setLayoutType('right')} style={{color: layoutType === 'right'? channel?.color : 'var(--secondary)'}} className='cursor-pointer transition-all ease duration-500' size={25} variant='Bold' />
 
                         <Grid2 onClick={()=>setLayoutType('grid')} style={{color: layoutType === 'grid'? channel?.color : 'var(--secondary)'}} className='cursor-pointer transition-all ease duration-500' size={25} variant='Bold' />
 
@@ -243,11 +302,7 @@ export default function CallPage() {
                     {/* Using Streams UI */}
                     <div className='w-full flex-1 bg-black overflow-hidden'>
                         <div className="w-full h-full p-8 flex flex-center">
-                            <PaginatedGridLayout
-                                VideoPlaceholder={CustomVideoPlaceholder}
-                                ParticipantViewUI={CustomParticipantViewUI}
-
-                            />
+                            <LayoutComponent {...componentProps} />
                         </div>
 
                     </div>
