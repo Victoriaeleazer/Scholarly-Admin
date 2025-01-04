@@ -49,8 +49,8 @@ export default function CallList() {
     const acceptCall = useMutation({
         mutationFn: async()=>{
             // By default, whe joining call, camera and microphone is disabled.
-            // await call.microphone.disable();
-            // await call.camera.disable();
+            await call.microphone.disable();
+            await call.camera.disable();
             
             // The join the call.
             await call.join();
@@ -69,14 +69,14 @@ export default function CallList() {
         navigate(`/dashboard/channels/${callCustomData.id}?call=${callCustomData.id}`);
     }
 
-    useEffect(()=>{
+    // useEffect(()=>{
 
-        if(callState.callingState === CallingState.LEFT){
-            callContext?.setCall(undefined);
-        }
+    //     if(callState.callingState === CallingState.LEFT){
+    //         callContext?.setCall(undefined);
+    //     }
 
-        callContext?.setCall(call);
-    }, [callState])
+    //     callContext?.setCall(call);
+    // }, [callState])
 
 
   return (

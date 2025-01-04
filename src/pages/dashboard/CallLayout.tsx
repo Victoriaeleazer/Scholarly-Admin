@@ -80,7 +80,7 @@ export default function CallLayout(){
 
   return <CallContext.Provider value={{setCall, setIncomingCall}}>
     <StreamVideo client={client}>
-      <StreamCall call={incomingCall ?? call}>
+      <StreamCall call={call ?? incomingCall}>
         <DashboardLayout />
       </StreamCall>
     </StreamVideo>

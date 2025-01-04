@@ -59,7 +59,7 @@ export default function DashboardLayout() {
 
   const callClient = useStreamVideoClient()!;
 
-  const callContext = useContext(CallContext);
+  const callContext = useContext(CallContext)!;
 
   const isPhone = !useMediaQuery('only screen and (min-width: 767px)')
 
@@ -338,19 +338,27 @@ export default function DashboardLayout() {
   })
 
 
-  const incomingCalls = useMemo(()=>calls.filter(_call => (
-    _call.state.callingState === CallingState.RINGING
-  )).sort((a,b)=> b.state.createdAt.getTime() - a.state.createdAt.getTime()), [calls]);
+  const incomingCalls = calls.filter(_call => (
+   _call.isCreatedByMe === false && _call.state.callingState === CallingState.RINGING
+  ));
+
+  const ongoingCalls = calls.filter(_call =>(
+    [CallingState.JOINED].includes(_call.state.callingState)
+  ))
 
   
 
   useEffect(()=>{
-    
-    if(!call && incomingCalls.length !== 0){
-      console.log(incomingCalls.length);
-      callContext?.setIncomingCall(incomingCalls[0])
-    }
+
+    const [incomingCall] = incomingCalls;
+    callContext.setIncomingCall(incomingCall);
   }, [incomingCalls])
+
+  useEffect(()=>{
+
+    const [ongoingCall] = ongoingCalls;
+    callContext.setCall(ongoingCall);
+  }, [ongoingCalls])
 
 
 

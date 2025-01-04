@@ -604,11 +604,25 @@ export default function ChatsPage() {
 
   const callChannel = useMutation({
     mutationFn: async({video=true}: {video?:boolean})=>{
+      const members = channel!.members.map((member)=>{
+        return {
+          user_id: member.id,
+          custom:{
+            color:member.color,
+            firstName: member.firstName,
+            lastName: member.lastName,
+            profile: member.profile
+          },
+          role:member.id ===channel?.creator?.id? 'admin' : 'user'
+        }
+      });
       const _call = callClient.call('default', channelId!+"-"+(new Date().getUTCSeconds()));
 
       // By default, whe joining call, camera and microphone is disabled.
       await _call.microphone.disable();
       await _call.camera.disable();
+
+      
 
 
       await _call.join({
@@ -622,30 +636,15 @@ export default function ChatsPage() {
             color: channel?.color
 
           },
-          members: channel!.members.map((member)=>{
-            return {
-              user_id: member.id,
-              custom:{
-                color:member.color,
-                firstName: member.firstName,
-                lastName: member.lastName,
-                profile: member.profile
-              },
-              role:member.id ===channel?.creator?.id? 'admin' : 'user'
-            }
-          })
+          members 
         }
       })
-      callContext?.setCall(_call);
 
       return _call;
     },
 
     onSuccess: async (data)=>{
       toast.success("Call Created", {description:call?"Join the call":""});
-      if(!call){
-        callContext?.setCall(data);
-      }
 
       
 
