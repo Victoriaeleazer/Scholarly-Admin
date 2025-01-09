@@ -4,9 +4,9 @@ import { Admin } from '../../interfaces/Admin'
 import { getAdminUserData, hasAdminUserData } from '../../services/user-storage'
 import { useNavigate } from 'react-router'
 import { Bar, Line, Pie } from 'react-chartjs-2'
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, ChartData, Filler } from 'chart.js'
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement } from 'chart.js'
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler)
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement)
 
 export default function DashboardPage() {
   const [admin, setAdmin] = useState<Admin | null>(null)
@@ -25,31 +25,28 @@ export default function DashboardPage() {
   }
 
   const barData = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
     datasets: [
       {
         label: 'Student Enrollment',
         data: [65, 59, 80, 81, 56, 55],
-        backgroundColor: 'rgba(86, 6, 119, 0.2)',
-        borderColor: 'rgb(86, 6, 119)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1,
       },
     ],
   }
 
-  const lineData: ChartData<"line"> = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+  const lineData = {
+    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
     datasets: [
       {
-        label:'performance',
+        label: 'Performance',
         data: [65, 59, 80, 81, 56, 55],
-        showLine:true,
-        normalized:true,
-        fill:'start',
-        borderColor: 'green',
-        pointBackgroundColor:'green',
-        tension: 0.4,
-        backgroundColor: 'rgba(0, 128, 0, 0.15)',
+        fill: true,
+        backgroundColor: 'rgba(76, 175, 80, 0.2)',
+        borderColor: 'rgba(76, 175, 80, 1)',
+        tension: 0.3,
       },
     ],
   }
@@ -88,19 +85,21 @@ export default function DashboardPage() {
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-8'>
         <div className='bg-tertiary text-secondary max-h-[400px] p-4 rounded-lg shadow-md '>
           <h2 className='text-2xl font-bold mb-4 text-white'>Student Enrollment</h2>
-          <Bar data={barData} options={{  plugins:{legend:{display:false}}}} />
+          <Bar data={barData} options={{ plugins: { legend: { display: false } } }} />
         </div>
         <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md text-secondary'>
           <h2 className='text-2xl font-bold mb-4 text-white'>Performance Over Time</h2>
-          <Line  data={lineData} options={{ maintainAspectRatio: true, plugins:{legend:{display:false}, filler:{propagate:true}, colors:{forceOverride:true}}, scales: { x: { type: 'category' }, y: { type: 'linear', beginAtZero: true } } }} />
+          <Line data={lineData} options={{ maintainAspectRatio: true, plugins: { legend: { display: false }, filler: { propagate: true }, colors: { forceOverride: true } }, scales: { x: { type: 'category' }, y: { type: 'linear', beginAtZero: true } } }} />
         </div>
         <div className='bg-white p-4 max-h-[400px] rounded-lg shadow-md'>
           <h2 className='text-2xl font-bold mb-4 text-black'>Distribution of Votes</h2>
-          <Pie className='' data={pieData} options={{ radius:120}}  />
+          <Pie data={pieData} options={{ radius: 120 }} />
         </div>
         <div className='bg-white p-4 max-h-[400px] rounded-lg shadow-md'>
           <h2 className='text-2xl font-bold mb-4 text-black'>Course Distribution</h2>
-          <Pie data={courseData} options={{ radius: 120 }}  />
+          <div className='relative h-[300px]'>
+            <Pie data={courseData} options={{ maintainAspectRatio: false }} />
+          </div>
         </div>
       </div>
     </div>
