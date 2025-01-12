@@ -80,13 +80,12 @@ export default function DashboardPage() {
 
   const calendarTileClassName = ({ date, view }: { date: Date; view: string }) => {
     if (view === 'month') {
-      return 'text-black'
+      return 'text-black '
     }
-    return ''
   }
 
   return (
-    <div className='text-white bg-transparent px-6 py-8 w-full h-fit overflow-x-hidden          overflow-y-scroll scholarly-scrollbar'>
+    <div className='text-white bg-transparent px-6 py-8 w-full h-fit overflow-x-hidden overflow-y-scroll scholarly-scrollbar'>
       <FadeSlideUp className='select-none font-light text-4xl'>
         Welcome, {admin?.role.charAt(0).toUpperCase() + admin?.role.substring(1)}{' '}
         <span className='font-extrabold'>{admin?.fullName}</span>
@@ -126,9 +125,9 @@ export default function DashboardPage() {
           <h2 className='text-2xl font-bold mb-4 text-white'>Performance Over Time</h2>
           <Line data={lineData} options={{ maintainAspectRatio: true, plugins: { legend: { display: false }, filler: { propagate: true }, colors: { forceOverride: true } }, scales: { x: { type: 'category' }, y: { type: 'linear', beginAtZero: true } } }} />
         </div>
-        <div className='bg-tertiary text-black p-4 max-h-[400px] rounded-lg shadow-md'>
+        <div className='bg-tertiary text-black p-5 max-h-[400px] rounded-lg shadow-md '>
           <h2 className='text-2xl font-bold mb-4 text-white'>Calendar</h2>
-          <div className='custom-calendar p-4 rounded-lg'>
+          <div className='custom-calendar p-4 rounded-lg bg-white w-[500px]'>
             <Calendar
               className='custom-calendar'
               tileClassName={calendarTileClassName}
