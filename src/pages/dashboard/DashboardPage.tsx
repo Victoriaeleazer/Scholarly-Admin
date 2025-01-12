@@ -7,13 +7,11 @@ import { Bar, Line, Pie } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement } from 'chart.js'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
-import './CustomCalendar.css' // Import custom CSS for calendar
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement)
 
 export default function DashboardPage() {
   const [admin, setAdmin] = useState<Admin | null>(null)
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -81,10 +79,10 @@ export default function DashboardPage() {
   }
 
   const calendarTileClassName = ({ date, view }: { date: Date; view: string }) => {
-    if (view === 'month' && selectedDate && date.toDateString() === selectedDate.toDateString()) {
-      return 'highlight'
+    if (view === 'month') {
+      return 'text-black'
     }
-    return 'text-black'
+    return ''
   }
 
   return (
@@ -102,21 +100,12 @@ export default function DashboardPage() {
           <h2 className='text-2xl font-bold mb-4 text-white'>Performance Over Time</h2>
           <Line data={lineData} options={{ maintainAspectRatio: true, plugins: { legend: { display: false }, filler: { propagate: true }, colors: { forceOverride: true } }, scales: { x: { type: 'category' }, y: { type: 'linear', beginAtZero: true } } }} />
         </div>
-        <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
+        <div className='bg-tertiary text-black p-4 max-h-[400px] rounded-lg shadow-md'>
           <h2 className='text-2xl font-bold mb-4 text-white'>Calendar</h2>
-          <div className='custom-calendar bg-tertiary p-4 rounded-lg'>
+          <div className='custom-calendar p-4 rounded-lg'>
             <Calendar
               className='custom-calendar'
               tileClassName={calendarTileClassName}
-              onClickDay={(value) => setSelectedDate(value)}
-              navigationLabel={({ date, label, locale, view }) => (
-                <span className='text-black'>{label}</span>
-              )}
-              nextLabel={<span className='text-black'>›</span>}
-              prevLabel={<span className='text-black'>‹</span>}
-              next2Label={<span className='text-black'>»</span>}
-              prev2Label={<span className='text-black'>«</span>}
-              formatShortWeekday={(locale, date) => <span className='text-black'>{date.toLocaleDateString(locale, { weekday: 'short' })}</span>}
             />
           </div>
         </div>
