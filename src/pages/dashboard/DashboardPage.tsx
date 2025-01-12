@@ -135,24 +135,12 @@ export default function DashboardPage() {
       <div className='grid grid-cols-2 gap-4 mb-4'>
       <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
     <h2 className='text-2xl font-bold mb-4 text-white'>Notice Board</h2>
-    <div className='relative h-[300px] overflow-y-auto'>
-      <ul>
-        <li className='mb-2'>Notice 1</li>
-        <li className='mb-2'>Notice 2</li>
-        <li className='mb-2'>Notice 3</li>
-      </ul>
-    </div>
+   
   </div>
   
   <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
     <h2 className='text-2xl font-bold mb-4 text-white'>Recent Activities</h2>
-    <div className='relative h-[300px] overflow-y-auto'>
-      <ul>
-        <li className='mb-2'>Activity 1</li>
-        <li className='mb-2'>Activity 2</li>
-        <li className='mb-2'>Activity 3</li>
-      </ul>
-    </div>
+  
   </div>
       </div>
      
