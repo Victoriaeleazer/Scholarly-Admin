@@ -86,7 +86,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className='text-white bg-transparent px-6 py-8 w-full h-fit overflow-x-hidden overflow-y-scroll scholarly-scrollbar'>
+    <div className='text-white bg-transparent px-6 py-8 w-full h-fit overflow-x-hidden          overflow-y-scroll scholarly-scrollbar'>
       <FadeSlideUp className='select-none font-light text-4xl'>
         Welcome, {admin?.role.charAt(0).toUpperCase() + admin?.role.substring(1)}{' '}
         <span className='font-extrabold'>{admin?.fullName}</span>
@@ -94,22 +94,26 @@ export default function DashboardPage() {
 
       
       <div className='grid grid-cols-4 gap-4 mb-4'>
-            <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
-              <h3 className='text-lg font-bold'>Total Students</h3>
-              <p className='text-2xl'>1200</p>
-            </div>
-            <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
-              <h3 className='text-lg font-bold'>Total Teachers</h3>
-              <p className='text-2xl'>75</p>
-            </div>
-            <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
-              <h3 className='text-lg font-bold'>Total Courses</h3>
-              <p className='text-2xl'>50</p>
-            </div>
-            <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
-              <h3 className='text-lg font-bold'>Total Departments</h3>
-              <p className='text-2xl'>10</p>
-            </div>
+        <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
+          <h3 className='text-lg font-bold'>Total Students</h3>
+          <p className='text-2xl'>1200</p>
+        </div>
+
+        <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
+          <h3 className='text-lg font-bold'>Total Teachers</h3>
+          <p className='text-2xl'>75</p>
+        </div>
+
+        <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
+          <h3 className='text-lg font-bold'>Total Courses</h3>
+          <p className='text-2xl'>50</p>
+        </div>
+
+        <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
+          <h3 className='text-lg font-bold'>Total Departments</h3>
+          <p className='text-2xl'>10</p>
+        </div>
+
       </div>
       
 
@@ -133,18 +137,16 @@ export default function DashboardPage() {
         </div>
         
       <div className='grid grid-cols-2 gap-4 '>
+        <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
+          <h2 className='text-2xl font-bold mb-4 text-white'>Notice Board</h2>
+        </div>
+  
       <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
-    <h2 className='text-2xl font-bold mb-4 text-white'>Notice Board</h2>
-   
-  </div>
-  
-  <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
-    <h2 className='text-2xl font-bold mb-4 text-white'>Recent Activities</h2>
-  
-  </div>
+          <h2 className='text-2xl font-bold mb-4 text-white'>Recent Activities</h2>
+      </div>
       </div>
      
-      </div>
+    </div>
     </div>
   )
 }
