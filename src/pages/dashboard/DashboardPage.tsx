@@ -92,7 +92,7 @@ export default function DashboardPage() {
         <span className='font-extrabold'>{admin?.fullName}</span>
       </FadeSlideUp>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-8'>
+      
       <div className='grid grid-cols-4 gap-4 mb-4'>
             <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
               <h3 className='text-lg font-bold'>Total Students</h3>
@@ -111,7 +111,7 @@ export default function DashboardPage() {
               <p className='text-2xl'>10</p>
             </div>
       </div>
-      </div>
+      
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-8'>
         <div className='bg-tertiary text-secondary max-h-[400px] p-4 rounded-lg shadow-md '>
