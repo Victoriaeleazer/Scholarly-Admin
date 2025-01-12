@@ -5,6 +5,8 @@ import { getAdminUserData, hasAdminUserData } from '../../services/user-storage'
 import { useNavigate } from 'react-router'
 import { Bar, Line, Pie } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement } from 'chart.js'
+import Calendar from 'react-calendar'
+import 'react-calendar/dist/Calendar.css'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement)
 
@@ -25,7 +27,7 @@ export default function DashboardPage() {
   }
 
   const barData = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
     datasets: [
       {
         label: 'Student Enrollment',
@@ -38,7 +40,7 @@ export default function DashboardPage() {
   }
 
   const lineData = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
     datasets: [
       {
         label: 'Performance',
@@ -91,9 +93,9 @@ export default function DashboardPage() {
           <h2 className='text-2xl font-bold mb-4 text-white'>Performance Over Time</h2>
           <Line data={lineData} options={{ maintainAspectRatio: true, plugins: { legend: { display: false }, filler: { propagate: true }, colors: { forceOverride: true } }, scales: { x: { type: 'category' }, y: { type: 'linear', beginAtZero: true } } }} />
         </div>
-        <div className='bg-white p-4 max-h-[400px] rounded-lg shadow-md'>
-          <h2 className='text-2xl font-bold mb-4 text-black'>Distribution of Votes</h2>
-          <Pie data={pieData} options={{ radius: 120 }} />
+        <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
+          <h2 className='text-2xl font-bold mb-4 text-white'>Calendar</h2>
+          <Calendar />
         </div>
         <div className='bg-white p-4 max-h-[400px] rounded-lg shadow-md'>
           <h2 className='text-2xl font-bold mb-4 text-black'>Course Distribution</h2>
