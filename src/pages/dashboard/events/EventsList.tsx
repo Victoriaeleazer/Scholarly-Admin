@@ -11,7 +11,7 @@ export default function EventsList({events}:props) {
   return (
   <div className='text-white '>
 
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6 mb-[350px]">
       {/* <!-- Title and Search Bar in the Same Line --> */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-3xl font-bold text-purple">Event List</h1>
@@ -42,11 +42,12 @@ export default function EventsList({events}:props) {
               <th className="px-4 py-2">Designated Time</th>
               <th className="px-4 py-2">Created Time</th>
               <th className="px-4 py-2">Event Photo</th>
+              
             </tr>
           </thead>
 
             <tbody>
-              <tr className="border-t border-b hover:bg-gray-50">
+              <tr className="border-t border-b hover:bg-gray-50 text-black">
                 <td className="px-4 py-2 text-sm">1</td>
                 <td className="px-4 py-2 text-sm">Tech Conference 2024</td>
                 <td className="px-4 py-2 text-sm">A conference about the latest in tech innovations.</td>
@@ -54,7 +55,7 @@ export default function EventsList({events}:props) {
                 <td className="px-4 py-2 text-sm">January 15, 2024, 9:00 AM</td>
                 <td className="px-4 py-2 text-sm">December 1, 2023, 10:00 AM</td>
                 <td className="px-4 py-2">
-                  {/* <!-- <img src="https://via.placeholder.com/50" alt="Event Photo" class="w-12 h-12 rounded-full object-cover"> --> */}
+                  
                 </td>
               </tr>
 
@@ -66,7 +67,7 @@ export default function EventsList({events}:props) {
                 <td className="px-4 py-2 text-sm">February 5, 2024, 12:00 PM</td>
                 <td className="px-4 py-2 text-sm">November 20, 2023, 3:00 PM</td>
                 <td className="px-4 py-2">
-                  {/* <!-- <img src="https://via.placeholder.com/50" alt="Event Photo" class="w-12 h-12 rounded-full object-cover"> --> */}
+                  
                 </td>
               </tr>
 
