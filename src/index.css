@@ -136,4 +136,9 @@ input::placeholder{
 
 }
 
+.highlight {
+  background-color: #007bff !important;
+  color: white !important;
+  border-radius: 50%;
+}
 

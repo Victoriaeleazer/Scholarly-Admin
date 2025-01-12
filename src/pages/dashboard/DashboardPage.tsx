@@ -7,11 +7,13 @@ import { Bar, Line, Pie } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement } from 'chart.js'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
+import './CustomCalendar.css' // Import custom CSS for calendar
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement)
 
 export default function DashboardPage() {
   const [admin, setAdmin] = useState<Admin | null>(null)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -27,11 +29,11 @@ export default function DashboardPage() {
   }
 
   const barData = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
     datasets: [
       {
         label: 'Student Enrollment',
-        data: [65, 59, 80, 81, 56, 55],
+        // data: [65, 59, 80, 81, 56, 55],
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1,
@@ -40,11 +42,11 @@ export default function DashboardPage() {
   }
 
   const lineData = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
     datasets: [
       {
         label: 'Performance',
-        data: [65, 59, 80, 81, 56, 55],
+        // data: [65, 59, 80, 81, 56, 55],
         fill: true,
         backgroundColor: 'rgba(76, 175, 80, 0.2)',
         borderColor: 'rgba(76, 175, 80, 1)',
@@ -78,6 +80,13 @@ export default function DashboardPage() {
     ],
   }
 
+  const calendarTileClassName = ({ date, view }: { date: Date; view: string }) => {
+    if (view === 'month' && selectedDate && date.toDateString() === selectedDate.toDateString()) {
+      return 'highlight'
+    }
+    return 'text-black'
+  }
+
   return (
     <div className='text-white bg-transparent px-6 py-8 w-full h-fit overflow-x-hidden overflow-y-scroll scholarly-scrollbar'>
       <FadeSlideUp className='select-none font-light text-4xl'>
@@ -95,7 +104,21 @@ export default function DashboardPage() {
         </div>
         <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
           <h2 className='text-2xl font-bold mb-4 text-white'>Calendar</h2>
-          <Calendar />
+          <div className='custom-calendar bg-tertiary p-4 rounded-lg'>
+            <Calendar
+              className='custom-calendar'
+              tileClassName={calendarTileClassName}
+              onClickDay={(value) => setSelectedDate(value)}
+              navigationLabel={({ date, label, locale, view }) => (
+                <span className='text-black'>{label}</span>
+              )}
+              nextLabel={<span className='text-black'>›</span>}
+              prevLabel={<span className='text-black'>‹</span>}
+              next2Label={<span className='text-black'>»</span>}
+              prev2Label={<span className='text-black'>«</span>}
+              formatShortWeekday={(locale, date) => <span className='text-black'>{date.toLocaleDateString(locale, { weekday: 'short' })}</span>}
+            />
+          </div>
         </div>
         <div className='bg-white p-4 max-h-[400px] rounded-lg shadow-md'>
           <h2 className='text-2xl font-bold mb-4 text-black'>Course Distribution</h2>
