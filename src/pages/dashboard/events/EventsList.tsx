@@ -1,93 +1,83 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router";
-interface props{
-    events: any[]
+import { Event } from "../../../interfaces/Event";
+import { SearchNormal1 } from "iconsax-react";
+
+interface Props {
+  events: Event[];
 }
 
+export default function EventsList({ events }: Props) {
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
-export default function EventsList({events}:props) {
-  
+  const { id } = useParams<{ id: string }>(); // Capture any params from the URL if needed
+
+  // Filter events based on the search term
+  const filteredEvents = events.filter((event) =>
+    event.eventTitle.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const openEventModal = (event: Event) => {
+    setSelectedEvent(event);
+  };
+
+  const closeEventModal = () => {
+    setSelectedEvent(null);
+  };
 
   return (
-  <div className='text-white '>
+    <div className='text-white w-full min-h-full h-fit overflow-y-scroll scholarly-scrollbar purple-scrollbar px-6 py-8 flex flex-col gap-8'>
 
-    <div className="container mx-auto p-6 mb-[350px]">
       {/* <!-- Title and Search Bar in the Same Line --> */}
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold text-purple">Event List</h1>
+      <div className="flex justify-between items-center flex-wrap">
+          <h1 className="text-3xl font-bold text-white">Event List</h1>
 
-        {/* <!-- Search Bar --> */}
-        <div className="relative w-80">
-          <input 
-            type="text" 
-            placeholder="Search for events..." 
-            className="w-full px-4 py-2 pl-10 text-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {/* <!-- Search Icon (Optional) --> */}
-          <svg className="absolute left-3 top-2.5 w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 16h4M10 12h4M10 8h4M4 12h.01"/>
-          </svg>
+          {/* <!-- Search Bar --> */}
+          <div className="relative w-full sm:w-80 bg-tertiary rounded-lg flex flex-center mt-4 sm:mt-0">
+            <input 
+              type="text" 
+              placeholder="Search for events..." 
+              className="w-full px-4 py-3.5 pl-10 text-secondary text-[13.5px] open-sans rounded-lg outline-none bg-tertiary focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              {/* <!-- Search Icon (Optional) --> */}
+            <SearchNormal1 size={18} className="absolute left-3 text-secondary" />
+          </div>
         </div>
-      </div>
 
-    {/* <!-- Table --> */}
-      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+      {/* <!-- Table --> */}
+      <div className="overflow-x-auto bg-tertiary shadow-md rounded-2xl">
         <table className="min-w-full table-auto">
-          <thead>
-            <tr className="bg-purple text-white text-left text-sm font-semibold">
-              <th className="px-4 py-2">ID</th>
+        <thead>
+            <tr className="text-white text-left text-sm font-semibold">
+             
               <th className="px-4 py-2">Event Title</th>
               <th className="px-4 py-2">Event Description</th>
-              <th className="px-4 py-2">Audience</th>
+              {/* <th className="px-4 py-2">Audience</th> */}
               <th className="px-4 py-2">Designated Time</th>
               <th className="px-4 py-2">Created Time</th>
               <th className="px-4 py-2">Event Photo</th>
               
             </tr>
           </thead>
+          <tbody>
+            {filteredEvents.map((event) => (
+              <tr key={event.id} className="border-t border-b odd:bg-background hover:bg-purple text-white">
+                <td className="px-4 py-2">{event.eventTitle}</td>
+                <td className="px-4 py-2">{event.eventDescription}</td>
+                {/* <td className="px-4 py-2">{event.audience}</td> */}
+                <td className="px-4 py-2">{event.designatedTime}</td>
+                <td className="px-4 py-2">{event.createdTime}</td>
+                <td className="px-4 py-2">{event.eventPhoto}</td>
 
-            <tbody>
-              <tr className="border-t border-b hover:bg-gray-50 text-black">
-                <td className="px-4 py-2 text-sm">1</td>
-                <td className="px-4 py-2 text-sm">Tech Conference 2024</td>
-                <td className="px-4 py-2 text-sm">A conference about the latest in tech innovations.</td>
-                <td className="px-4 py-2 text-sm">Tech Enthusiasts, Professionals</td>
-                <td className="px-4 py-2 text-sm">January 15, 2024, 9:00 AM</td>
-                <td className="px-4 py-2 text-sm">December 1, 2023, 10:00 AM</td>
-                <td className="px-4 py-2">
-                  
-                </td>
               </tr>
-
-              <tr className="border-t border-b hover:bg-gray-50">
-                <td className="px-4 py-2 text-sm">2</td>
-                <td className="px-4 py-2 text-sm">Music Festival</td>
-                <td className="px-4 py-2 text-sm">An outdoor festival featuring top music acts.</td>
-                <td className="px-4 py-2 text-sm">Music Lovers</td>
-                <td className="px-4 py-2 text-sm">February 5, 2024, 12:00 PM</td>
-                <td className="px-4 py-2 text-sm">November 20, 2023, 3:00 PM</td>
-                <td className="px-4 py-2">
-                  
-                </td>
-              </tr>
-
-              <tr className="border-t border-b hover:bg-gray-50">
-                <td className="px-4 py-2 text-sm">3</td>
-                <td className="px-4 py-2 text-sm">Art Gallery Exhibition</td>
-                <td className="px-4 py-2 text-sm">Showcasing modern art from emerging artists.</td>
-                <td className="px-4 py-2 text-sm">Art Lovers, Collectors</td>
-                <td className="px-4 py-2 text-sm">March 22, 2024, 6:00 PM</td>
-                <td className="px-4 py-2 text-sm">October 10, 2023, 1:00 PM</td>
-                <td className="px-4 py-2">
-                  {/* <!-- <img src="https://via.placeholder.com/50" alt="Event Photo" class="w-12 h-12 rounded-full object-cover"> --> */}
-                </td>
-              </tr>
-            </tbody>
+            ))}
+          </tbody>
         </table>
       </div>
     </div>
+  );
 
-  </div>
-)
-  
 }

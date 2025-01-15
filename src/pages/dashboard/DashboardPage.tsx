@@ -125,9 +125,9 @@ export default function DashboardPage() {
           <h2 className='text-2xl font-bold mb-4 text-white'>Performance Over Time</h2>
           <Line data={lineData} options={{ maintainAspectRatio: true, plugins: { legend: { display: false }, filler: { propagate: true }, colors: { forceOverride: true } }, scales: { x: { type: 'category' }, y: { type: 'linear', beginAtZero: true } } }} />
         </div>
-        <div className='bg-tertiary text-black p-5 max-h-[400px] rounded-lg shadow-md '>
+        <div className='bg-tertiary text-black p-1 max-h-[400px] rounded-lg shadow-md '>
           <h2 className='text-2xl font-bold mb-4 text-white'>Calendar</h2>
-          <div className='custom-calendar p-4 rounded-lg bg-white w-[500px]'>
+          <div className='custom-calendar p-4 rounded-lg bg-white '>
             <Calendar
               className='custom-calendar'
               tileClassName={calendarTileClassName}
