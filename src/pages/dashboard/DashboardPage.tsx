@@ -136,9 +136,10 @@ export default function DashboardPage() {
         </div>
         
       <div className='grid grid-cols-2 gap-4 '>
-        <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
+        {/* <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
           <h2 className='text-2xl font-bold mb-4 text-white'>Notice Board</h2>
-        </div>
+        </div> */}
+        
   
       <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
           <h2 className='text-2xl font-bold mb-4 text-white'>Recent Activities</h2>
