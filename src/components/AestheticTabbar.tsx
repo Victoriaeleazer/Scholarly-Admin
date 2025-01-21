@@ -20,7 +20,7 @@ export default function AestheticTabbar(tabProps: props) {
             ...style} as Record<string, any>}
         className={`w-full rounded-2xl h-[50px] bg-black flex box-border relative ${className} overflow-hidden`}>
         <div className='absolute top-1 bottom-1 left-1 right-1 z-1 overflow-hidden'>
-            <div style={{width: `${100 / tabs.length}%`, transform: `translateX(${index * 100}%)` , backgroundColor: 'var(--selected-tab-bg-color)', borderRadius: 'var(--selected-tab-border-radius)'}} className='h-full cursor-pointer select-none transition-transform duration-200 ease-in' />
+            <div style={{width: `${100 / tabs.length}%`, transform: `translateX(${index * 100}%)` , backgroundColor: 'var(--selected-tab-bg-color)', borderRadius: 'var(--selected-tab-border-radius)'}} className='h-full cursor-pointer select-none transition-transform duration-700 ease-in' />
 
         </div>
 

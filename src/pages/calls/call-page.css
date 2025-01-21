@@ -54,6 +54,12 @@
     width: 100%;
 }
 
+.str-video__speaker-layout__wrapper {
+    height: 100%;
+    width: 100%;
+    overflow-y: hidden;
+}
+
 .str-video__speaker-layout{
     .str-video__participant-view{
 
