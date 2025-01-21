@@ -27,11 +27,11 @@ export default function DashboardPage() {
   }
 
   const barData = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     datasets: [
       {
         label: 'Student Enrollment',
-        // data: [65, 59, 80, 81, 56, 55],
+        // data: [65, 59, 80, 81, 56, 55, 40, 30, 20, 10, 5, 1],
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1,
@@ -40,11 +40,11 @@ export default function DashboardPage() {
   }
 
   const lineData = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     datasets: [
       {
         label: 'Performance',
-        // data: [65, 59, 80, 81, 56, 55],
+        // data: [65, 59, 80, 81, 56, 55, 40, 30, 20, 10, 40, 1],
         fill: true,
         backgroundColor: 'rgba(76, 175, 80, 0.2)',
         borderColor: 'rgba(76, 175, 80, 1)',
@@ -66,17 +66,7 @@ export default function DashboardPage() {
     ],
   }
 
-  const courseData = {
-    labels: ['Computer Science', 'Mechanical Engineering', 'Electrical Engineering', 'Business Administration'],
-    datasets: [
-      {
-        label: 'Course Distribution',
-        data: [25, 15, 30, 30],
-        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
-        hoverOffset: 4,
-      },
-    ],
-  }
+
 
   const calendarTileClassName = ({ date, view }: { date: Date; view: string }) => {
     if (view === 'month') {
@@ -95,23 +85,23 @@ export default function DashboardPage() {
       <div className='grid grid-cols-4 gap-4 mb-4'>
         <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
           <h3 className='text-lg font-bold'>Total Students</h3>
-          <p className='text-2xl'>1200</p>
+          {/* <p className='text-2xl'>1200</p> */}
         </div>
 
         <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
           <h3 className='text-lg font-bold'>Total Teachers</h3>
-          <p className='text-2xl'>75</p>
+          {/* <p className='text-2xl'>75</p> */}
         </div>
 
         <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
           <h3 className='text-lg font-bold'>Total Courses</h3>
-          <p className='text-2xl'>50</p>
+          {/* <p className='text-2xl'>50</p> */}
         </div>
 
-        <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
+        {/* <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
           <h3 className='text-lg font-bold'>Total Departments</h3>
           <p className='text-2xl'>10</p>
-        </div>
+        </div> */}
 
       </div>
       
