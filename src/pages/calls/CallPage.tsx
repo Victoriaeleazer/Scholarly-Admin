@@ -1,6 +1,6 @@
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 
-import { PaginatedGridLayout, ParticipantView, DefaultVideoPlaceholder, hasVideo, StreamVideoParticipant, useCall, useCallStateHooks, useParticipantViewContext, VideoPlaceholderProps, combineComparators, dominantSpeaker, pinned, publishingAudio, publishingVideo, reactionType, screenSharing, speaking, Video, NoiseCancellationProvider, hasAudio, SpeakerLayout, SpeakerLayoutProps, PaginatedGridLayoutProps } from '@stream-io/video-react-sdk'
+import { PaginatedGridLayout, ParticipantView, DefaultVideoPlaceholder, hasVideo, StreamVideoParticipant, useCall, useCallStateHooks, useParticipantViewContext, VideoPlaceholderProps, combineComparators, dominantSpeaker, pinned, publishingAudio, publishingVideo, reactionType, screenSharing, speaking, Video, NoiseCancellationProvider, hasAudio, SpeakerLayout, SpeakerLayoutProps, PaginatedGridLayoutProps, MemberResponse } from '@stream-io/video-react-sdk'
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { IoHandRightOutline, IoHandRightSharp } from "react-icons/io5";
 import {Call as PhoneCall, EmojiHappy, Grid2, Grid5, Grid7, MessageText1, Microphone, Video as VideoIcon, MicrophoneSlash1, VideoSlash, MicrophoneSlash, Microphone2, MirroringScreen, Maximize2} from 'iconsax-react'
@@ -17,6 +17,7 @@ import './call-page.css'
 import { NoiseCancellation } from "@stream-io/audio-filters-web";
 import ProfileIcon from "../../components/ProfileIcon";
 import AestheticTabbar from "../../components/AestheticTabbar";
+import PageSlider from "../../components/PageSlider";
 
 const comparator = combineComparators(
     pinned, // 1. pinned participants first
@@ -55,6 +56,8 @@ export default function CallPage() {
 
     const hasOngoingScreenShare = useHasOngoingScreenShare();
 
+    const audioRef = useRef<HTMLAudioElement>(null);
+
     const callData = useMemo(()=> callState.custom as CallChannelData, [callState]);
 
     const channel = useMemo(()=> getChannel(callData.id), [callData]);
@@ -69,10 +72,60 @@ export default function CallPage() {
 
     const noiseCancellation = useMemo(() => new NoiseCancellation(), []);
 
-
-    // To disable mic and camera when the screen is left.
     useEffect(()=>{
+
+        if(!call) return
+
+        // We play the join sound by default when the screen is entered
+        if(audioRef.current){
+            audioRef.current.src = '/sounds/join_call.mp3'
+            audioRef.current.play();
+        }
+
+        // We listen to when a participant joins and play the joined sound.
+        const unsuscribeParticipantJoined = call.on("call.session_participant_joined", ({participant})=>{
+            if(!audioRef.current){
+                return;
+            }
+
+            audioRef.current.src = '/sounds/join_call.mp3'
+            audioRef.current.play();
+
+            const member = channel?.members.find(member => member.id === participant.user.id);
+
+            toast.success(`Someone Joined`, {
+                description: `${member?.id === admin.id? "You" : participant.user.name} joined the call`,
+                icon: <ProfileIcon className="font-medium" width={18} height={18} member={member} profile={member?.profile} />
+            })
+        })
+
+        // We listen to when a participant leaves and play the left sound.
+        const unsuscribeParticipantLeft = call.on("call.session_participant_left", ({participant})=>{
+            if(!audioRef.current){
+                return;
+            }
+
+            audioRef.current.src = '/sounds/leave_call.mp3'
+            audioRef.current.play();
+
+            const member = channel?.members.find(member => member.id === participant.user.id);
+
+            toast.error(`Someone Left`, {
+                description: `${member?.id === admin.id? "You" : participant.user.name} left the call`,
+                icon: <ProfileIcon className="font-medium" width={18} height={18} member={member} profile={member?.profile} />
+            })
+        })
+
+
         return ()=>{
+
+            // We unsubscribe from listening to when participants join or leave
+            // !!!TODO: This should be changed later on. We should be able to still hear feedback
+            // and voices from calls even when we leave the screen.
+            unsuscribeParticipantJoined();
+            unsuscribeParticipantLeft();
+
+            // To disable mic and camera when the screen is left.
             if(call){
                 call.camera.disable();
                 call.microphone.disable();
@@ -89,24 +142,6 @@ export default function CallPage() {
 
         setLayoutType('grid');
     }, [hasOngoingScreenShare])
-
-    const ParticipantVideo = (props: {participant: StreamVideoParticipant}) =>{
-        const {participant} = props;
-        
-        const member = useMemo(()=>channel?.members.find(member=> member.id === participant.userId), [participant])
-    
-        // useEffect(() => {
-        //     if (videoRef.current && participant.videoStream) {
-        //         videoRef.current.srcObject = participant.videoStream;
-        //     }
-
-        //     if (audioRef.current && participant.audioStream) {
-        //         audioRef.current.srcObject = participant.audioStream;
-        //     }
-        // }, [participant.videoStream, participant.audioStream]);
-    
-        return <ParticipantView key={participant.sessionId}  VideoPlaceholder={CustomVideoPlaceholder} ParticipantViewUI={CustomParticipantViewUI} participant={participant} muteAudio />
-    }
 
     const microphoneMutation = useMutation({
         mutationFn: async ()=>{
@@ -149,21 +184,19 @@ export default function CallPage() {
             }
             toast.error("Unable to leave", {description:message})
         }
+    });
+
+    const ringParticipant = useMutation({
+        mutationFn: async(props:{member: MemberResponse})=>{
+            const {member} = props;
+
+            return await call!.getOrCreate({ring:true, data:{members: [member]}});
+            
+        },
+        onError: ({message})=>{
+            toast.error("Failed to ring", {description: message});
+        }
     })
-
-    const getGridColumns = ()=>{
-        const count = participants.length;
-
-        if(count <=4){
-            return 2
-        }
-        if(count <=6){
-            return 3;
-        }
-        
-        return 4;
-
-    }
 
     const CustomParticipantViewUI = () => {
         const { participant } = useParticipantViewContext();
@@ -218,6 +251,56 @@ export default function CallPage() {
         );
     };
 
+    const CommentsTab = ()=>(
+        <div className="w-full h-full flex flex-center text-center">
+            Comments
+        </div>
+    )
+
+    const ParticipantsTab = ()=>{
+        const members = (channel?.members.map(member => ({user_id: member.id, role: member.role === 'admin'? 'admin': 'user' ,user:{name: `${member.firstName} ${member.lastName}`}} as MemberResponse)) ?? []);
+
+        const isParticipant = (a:string) => participants.some(p => p.userId === a);
+
+        const sortedMembers = useMemo(()=> [...members].sort((a,b)=> {
+            return (
+                b.role === 'admin'? 3 : (
+                    isParticipant(b.user_id)? -1: -3
+                )
+            )
+        }), [members])
+
+        return (
+            <div className="w-full h-full pt-4 px-6 flex flex-col text-center">
+                {sortedMembers.map((member, index)=>{
+                    const channelMember = channel?.members.find(_member => _member.id === member.user_id);
+                    return (
+                        <div  className="w-full flex flex-center select-none cursor-pointer gap-4 px-3 py-4 border-b border-secondary border-opacity-10 last:border-0">
+                            <ProfileIcon style={{opacity: participants.some(particpant => particpant.userId === member.user_id)? 1: 0.5}}  width={40} height={40} member={channelMember} profile={channelMember?.profile} />
+
+                            <div style={{opacity: participants.some(particpant => particpant.userId === member.user_id)? 1: 0.5}} className="flex flex-col font-light text-secondary items-start text-[12px] justify-center flex-1">
+                                <p className="text-[15px] font-medium text-white">{member.user.name}{channelMember?.id === admin.id && " (You)"}</p>
+                                <p>{member.role}</p>
+                            </div>
+
+                            <p onClick={()=>{
+                                if(ringParticipant.isPending){
+                                    return;
+                                }
+
+                                ringParticipant.mutate({member});
+                            }}  className="text-[14px] text-white font-bold">
+                                {(!ringParticipant.isPending || (ringParticipant.isPending && ringParticipant.variables?.member.user_id !== member.user_id)) && "Ring"}
+
+                                {ringParticipant.isPending && ringParticipant.variables.member.user_id === member.user_id && <FaSpinner className="animate-spin" />}
+                            </p>
+                        </div>
+                    );
+                })}
+            </div>
+        )
+    }
+
     const LayoutMap = {
         right:{
             component: SpeakerLayout,
@@ -257,6 +340,8 @@ export default function CallPage() {
   
     return (
     <div className='w-full h-full fixed z-[100] bg-black flex'>
+        {/* Element that plays call sound effects */}
+        <audio ref={audioRef} className="[display:none]" />
 
         <NoiseCancellationProvider noiseCancellation={noiseCancellation}>
             <div className='w-full h-full flex bg-tertiary bg-opacity-30'>
@@ -354,20 +439,38 @@ export default function CallPage() {
                     </div>
                 </div>
 
-                {/* Comment Section */}
+                {/* Comment & Participants Section */}
                 <div className={`flex bg-tertiary bg-opacity-40 h-full flex-col items-center rounded-l-[35px] transition-all ease-out duration-1000 ${commentsOpen? 'w-[30%]': 'w-0'}`}>
 
-                    <div className="w-full h-[96px] px-8 text-white flex items-center justify-between">
+                    {/* Header */}
+                    <div className="w-full h-[96px] border-b border-black px-8 text-white flex items-center justify-between">
                         <p className="text-xl font-semibold open-sans">Meeting Details</p>
 
                         <ProfileIcon width={45} height={45} profile={admin.profile} member={admin} />
                     </div>
-
+                    
+                    {/* TabBar */}
                     <div className="w-full px-8 mt-2">
                         <AestheticTabbar
                             tabs={['Comments', 'Participants']}
                             onSelectTab={(tab, index)=>setIndex(index!)}
                             index={sideIndex} />
+                    </div>
+
+                    <div className="w-full flex flex-1 overflow-hidden text-white">
+                        <div className="w-full h-full overflow-hidden">
+                            <PageSlider currentIndex={sideIndex} exactSizing slideDuration={700}>
+                                {/* Comments Section */}
+                                <CommentsTab />
+                                
+
+
+                                {/* Participants Section */}
+                                <ParticipantsTab />
+                                
+
+                            </PageSlider>
+                        </div>
                     </div>
 
                     

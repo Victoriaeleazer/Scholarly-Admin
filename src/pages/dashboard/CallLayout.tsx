@@ -1,5 +1,5 @@
 import { Call, User, StreamVideoClient, StreamVideo, StreamCall, NoiseCancellationProvider, useCalls } from "@stream-io/video-react-sdk";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router";
 import { useCustomStreamCall } from "../../hooks/stream-call-hook";
 import { useCustomStreamVideoClient } from "../../hooks/stream-client-hook";
@@ -17,6 +17,8 @@ export const CallContext = React.createContext<{
 } | null>(null);
 
 export default function CallLayout(){
+
+  const audioRef = useRef<HTMLAudioElement>(null);
   // For Calls
   const {client, initializeClient} = useCustomStreamVideoClient();
 
@@ -76,9 +78,29 @@ export default function CallLayout(){
     }
   }, [])
 
+  useEffect(()=>{
+
+    // Ringtone only plays when there's an incoming call
+    // and no ongoing call
+    if(incomingCall && !call){
+      if(audioRef.current){
+        audioRef.current.volume = 0.6;
+        audioRef.current.loop = true;
+        audioRef.current.play();
+      }
+    }
+
+    return ()=>{
+      audioRef.current?.pause();
+    }
+  }, [incomingCall])
+
   if(!client) return (<></>);
 
   return <CallContext.Provider value={{setCall, setIncomingCall}}>
+    <audio ref={audioRef} className="[display:none]" playsInline>
+      <source src="/sounds/ringtone_1.mp3"  />
+    </audio>
     <StreamVideo client={client}>
       <StreamCall call={call ?? incomingCall}>
         <DashboardLayout />
