@@ -82,7 +82,7 @@ export default function EventsList({ events }: Props) {
       {/* Event Modal */}
       {selectedEvent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-black p-6 rounded-lg w-1/2 text- white">
+          <div className="bg-tertiary p-6 rounded-lg w-1/2 text- white">
             <h2 className="text-2xl font-semibold mb-4">{selectedEvent.eventTitle}</h2>
             <p className="mb-4">{selectedEvent.eventDescription}</p>
             <p><strong>Designated Time:</strong> {selectedEvent.designatedTime}</p>
@@ -92,7 +92,7 @@ export default function EventsList({ events }: Props) {
             </div>
             <button 
               onClick={closeEventModal} 
-              className="mt-6 px-4 py-2 bg-tertiary text-white rounded-lg hover:bg-purple"
+              className="mt-6 px-4 py-2 bg- bg- bg-background text-white rounded-lg hover:bg-purple"
             >
               Close
             </button>
