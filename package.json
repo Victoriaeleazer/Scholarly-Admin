@@ -12,6 +12,8 @@
   "dependencies": {
     "@react-hook/media-query": "^1.1.1",
     "@reduxjs/toolkit": "^2.5.0",
+    "@schedule-x/calendar": "^2.15.1",
+    "@schedule-x/theme-default": "^2.15.1",
     "@stomp/stompjs": "^7.0.0",
     "@stream-io/audio-filters-web": "^0.2.2",
     "@stream-io/video-react-sdk": "^1.8.7",

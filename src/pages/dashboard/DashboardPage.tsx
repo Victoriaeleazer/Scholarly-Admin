@@ -98,10 +98,7 @@ export default function DashboardPage() {
           {/* <p className='text-2xl'>50</p> */}
         </div>
 
-        {/* <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
-          <h3 className='text-lg font-bold'>Total Departments</h3>
-          <p className='text-2xl'>10</p>
-        </div> */}
+        
 
       </div>
       
@@ -115,26 +112,26 @@ export default function DashboardPage() {
           <h2 className='text-2xl font-bold mb-4 text-white'>Performance Over Time</h2>
           <Line data={lineData} options={{ maintainAspectRatio: true, plugins: { legend: { display: false }, filler: { propagate: true }, colors: { forceOverride: true } }, scales: { x: { type: 'category' }, y: { type: 'linear', beginAtZero: true } } }} />
         </div>
-        <div className='bg-tertiary text-black p-1  rounded-lg shadow-md '>
+        <div className='bg-tertiary text-black p-1  rounded-lg shadow-md w-[400px]'>
           <h2 className='text-2xl font-bold mb-4 text-white'>Calendar</h2>
-          <div className='custom-calendar  '>
-            <Calendar
-              className='custom-calendar'
+          <div className='custom-calendar '>
+            <Calendar 
+              className=''
               tileClassName={calendarTileClassName}
             />
           </div>
         </div>
         
-      <div className='grid grid-cols-2 gap-4 '>
-        {/* <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
+      {/* <div className='grid grid-cols-2 gap-4 '>
+        { <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
           <h2 className='text-2xl font-bold mb-4 text-white'>Notice Board</h2>
-        </div> */}
+        </div> }
         
   
-      {/* <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
+      { <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
           <h2 className='text-2xl font-bold mb-4 text-white'>Recent Activities</h2>
+      </div> }
       </div> */}
-      </div>
      
     </div>
     </div>
