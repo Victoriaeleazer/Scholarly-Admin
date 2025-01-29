@@ -4,11 +4,11 @@ import { Admin } from '../../interfaces/Admin'
 import { getAdminUserData, hasAdminUserData } from '../../services/user-storage'
 import { useNavigate } from 'react-router'
 import { Bar, Line, Pie } from 'react-chartjs-2'
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement } from 'chart.js'
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler } from 'chart.js'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement)
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler)
 
 export default function DashboardPage() {
   const [admin, setAdmin] = useState<Admin | null>(null)
@@ -31,7 +31,7 @@ export default function DashboardPage() {
     datasets: [
       {
         label: 'Student Enrollment',
-        // data: [65, 59, 80, 81, 56, 55, 40, 30, 20, 10, 5, 1],
+        data: [65, 59, 80, 81, 56, 55, 40, 30, 20, 10, 5, 1],
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1,
@@ -44,7 +44,7 @@ export default function DashboardPage() {
     datasets: [
       {
         label: 'Performance',
-        // data: [65, 59, 80, 81, 56, 55, 40, 30, 20, 10, 40, 1],
+        data: [65, 59, 80, 81, 56, 55, 40, 30, 20, 10, 40, 1],
         fill: true,
         backgroundColor: 'rgba(76, 175, 80, 0.2)',
         borderColor: 'rgba(76, 175, 80, 1)',
@@ -82,7 +82,7 @@ export default function DashboardPage() {
       </FadeSlideUp>
 
       
-      <div className='grid grid-cols-4 gap-4 mb-4'>
+      <div className='grid grid-cols-4 gap-4 mb-4 py'>
         <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
           <h3 className='text-lg font-bold'>Total Students</h3>
           {/* <p className='text-2xl'>1200</p> */}
@@ -112,7 +112,7 @@ export default function DashboardPage() {
           <h2 className='text-2xl font-bold mb-4 text-white'>Performance Over Time</h2>
           <Line data={lineData} options={{ maintainAspectRatio: true, plugins: { legend: { display: false }, filler: { propagate: true }, colors: { forceOverride: true } }, scales: { x: { type: 'category' }, y: { type: 'linear', beginAtZero: true } } }} />
         </div>
-        <div className='bg-tertiary text-black p-1  rounded-lg shadow-md w-[400px]'>
+        {/* <div className='bg-tertiary text-black p-1  rounded-lg shadow-md w-[400px]'>
           <h2 className='text-2xl font-bold mb-4 text-white'>Calendar</h2>
           <div className='custom-calendar '>
             <Calendar 
@@ -120,7 +120,7 @@ export default function DashboardPage() {
               tileClassName={calendarTileClassName}
             />
           </div>
-        </div>
+        </div> */}
         
       {/* <div className='grid grid-cols-2 gap-4 '>
         { <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
