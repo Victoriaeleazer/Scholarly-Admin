@@ -14,23 +14,23 @@ export function eventsDummyData(): Event[]{
     
     return [
         {
-            id: '1', eventTitle: 'Hello Guys', eventDescription: 'Bla Bla Bla Bla Bla Bla', audience: members, designatedTime: '2024-11-12T10:11:0.000Z', createdTime: '2024-11-07T10:00:000Z', eventPhoto: 'https://theraise.eu/wp-content/uploads/2023/07/Two-entrepreneurs-competing-in-a-business-competition.png.webp',
+            id: '1', eventTitle: 'Hello Guys', eventDescription: 'Bla Bla Bla Bla Bla Bla', audience: members, designatedTime: '2024-11-12T10:11:00', createdTime: "2024-11-07T10:00:00", eventPhoto: 'https://theraise.eu/wp-content/uploads/2023/07/Two-entrepreneurs-competing-in-a-business-competition.png.webp',
             title: undefined
         },
         {
-            id: '2', eventTitle: 'Bla bla bla', eventDescription: 'Bla Bla Bla Bla Bla Bla', audience: members, createdTime: '2024-11-07T10:00:0.000Z', designatedTime: '2024-11-12T10:11:0.000Z', eventPhoto: 'https://martech.org/wp-content/uploads/2016/09/competition-business-bidding-race-ss-1920.jpg',
+            id: '2', eventTitle: 'Bla bla bla', eventDescription: 'Bla Bla Bla Bla Bla Bla', audience: members, createdTime: '2024-11-07T10:00:00', designatedTime: '2024-11-12T10:11:00', eventPhoto: 'https://martech.org/wp-content/uploads/2016/09/competition-business-bidding-race-ss-1920.jpg',
             title: undefined
         },
         {
-            id: '3', eventTitle: 'The D Day is Here!', eventDescription: 'Bla Bla Bla Bla Bla Bla', audience: members, designatedTime: '2024-11-12T10:11:0.000Z', createdTime: '2024-11-07T10:00:000Z', eventPhoto: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRksGkqU70vJ5y5s2c57Y7gGmCiiv_83lH2nA&s',
+            id: '3', eventTitle: 'The D Day is Here!', eventDescription: 'Bla Bla Bla Bla Bla Bla', audience: members, designatedTime: '2024-11-12T10:11:00', createdTime: '2024-11-07T10:00:00', eventPhoto: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRksGkqU70vJ5y5s2c57Y7gGmCiiv_83lH2nA&s',
             title: undefined
         },
         {
-            id: '4', eventTitle: 'Hello Everyone', eventDescription: 'Bla Bla Bla Bla Bla Bla', audience: members, designatedTime: '2024-11-12T10:11:0.000Z', createdTime: '2024-11-07T10:00:000Z', eventPhoto: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsHjVniQAGOQuVLDwyadpsPRW2NLc5Y0PeUA&s',
+            id: '4', eventTitle: 'Hello Everyone', eventDescription: 'Bla Bla Bla Bla Bla Bla', audience: members, designatedTime: '2024-11-12T10:11:00', createdTime: '2024-11-07T10:00:00', eventPhoto: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsHjVniQAGOQuVLDwyadpsPRW2NLc5Y0PeUA&s',
             title: undefined
         },
         {
-            id: '5', eventTitle: 'Lets Go', eventDescription: 'Bla Bla Bla Bla Bla Bla', audience: members, designatedTime: '2024-11-12T10:11:0.000Z', createdTime: '2024-11-07T10:00:000Z',
+            id: '5', eventTitle: 'Lets Go', eventDescription: 'Bla Bla Bla Bla Bla Bla', audience: members, designatedTime: '2024-11-12T10:11:00', createdTime: '2024-11-07T10:00:00',
             title: undefined
         },
     ]

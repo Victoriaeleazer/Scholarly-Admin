@@ -139,9 +139,9 @@ input::placeholder{
 
 
 
-/* Custom calendar styles
+Custom calendar styles
 .custom-calendar {
-  /* width: 570px; */
+  width: 570px;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -158,12 +158,12 @@ input::placeholder{
 }
 
 .react-calendar__tile:active {
-  background-color: rgba(0, 123, 255, 0.3);
+  background-color: rgba(16, 16, 16, 0.3);
 }
 
 .react-calendar__tile.react-calendar__tile--now {
-  background-color: rgba(0, 123, 255, 0.4);
-  color: white;
+  background-color: rgba(16, 16, 16, 0.5);
+  color: black;
 }
 
 .react-calendar__tile.react-calendar__tile--now:hover {
@@ -175,6 +175,6 @@ input::placeholder{
   padding: 10px;
   font-size: 1rem;
   color: #333;
-} */
+}
 
 

@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { useParams } from "react-router";
 import { Event } from "../../../interfaces/Event";
 import { SearchNormal1 } from "iconsax-react";
+import ProfileIcon from "../../../components/ProfileIcon";
+import formatDate from "../../../utils/DateFormat";
+import OverlappingImages from "../../../components/OverlappingImages";
+import { Member } from "../../../interfaces/Member";
 
 interface Props {
   events: Event[];
@@ -49,30 +53,36 @@ export default function EventsList({ events }: Props) {
 
       {/* <!-- Table --> */}
       <div className="overflow-x-auto bg-tertiary shadow-md rounded-2xl">
-        <table className="min-w-full table-auto">
-          <thead>
-            <tr className="text-white text-left text-sm font-semibold">
-              <th className="px-4 py-2">Event Title</th>
-              <th className="px-4 py-2">Event Description</th>
-              {/* <th className="px-4 py-2">Audience</th> */}
-              <th className="px-4 py-2">Designated Time</th>
-              <th className="px-4 py-2">Created Time</th>
-              <th className="px-4 py-2">Event Photo</th>
+        <table className="w-full h-fit rounded-lg border-separate border-spacing-0 overflow-hidden">
+          <thead className="pl-5 py-3 h-[60px] border-b">
+            <tr className="text-white text-left text-[14px] font-bold">
+              <th className="px-4  py-2">Event Title</th>
+              <th className="px-4 text-center py-2">Event Description</th>
+              <th className="px-4 text-center py-2">Designated Time</th>
+              <th className="px-4 text-center py-2">Created Time</th>
+              <th className="px-4 text-center py-2">Audience</th>
             </tr>
           </thead>
-          <tbody>
-            {filteredEvents.map((event) => (
+          <tbody className="text-[15px]">
+            {filteredEvents.map((event, index) => (
               <tr
                 key={event.id}
-                className="border-t border-b odd:bg-background hover:bg-purple text-white cursor-pointer"
+                className="border-0 odd:bg-background hover:bg-purple hover:bg-opacity-30 transition-colors ease duration-400 text-white cursor-pointer"
                 onClick={() => openEventModal(event)}
               >
-                <td className="px-4 py-2">{event.eventTitle}</td>
+                <td className="px-4 py-4"><div className="flex items-center">
+                  <ProfileIcon profile={event.eventPhoto} className="w-8 h-8 mr-2" width={"32px"} height={"32"} />
+                  <p>{event.eventTitle}</p>
+                  </div></td>
                 <td className="px-4 py-2">{event.eventDescription}</td>
                 {/* <td className="px-4 py-2">{Array.isArray(event.audience) ? event.audience.join(", ") : event.audience}</td> */}
-                <td className="px-4 py-2">{event.designatedTime}</td>
-                <td className="px-4 py-2">{event.createdTime}</td>
-                <td className="px-4 py-2">{event.eventPhoto}</td>
+                <td className="px-4 py-2">{formatDate(event.designatedTime, true)}</td>
+                <td className="px-4 py-2">{formatDate(event.createdTime, false)}</td>
+                <td className="px-4 py-2">
+                  <div className="flex flex-center">
+                    <OverlappingImages outlineColor={index % 2? 'var(--tertiary)': 'var(--background)'} images={(event.audience as Member[]).map(aud => aud.profile ?? {color: aud.color, fullName: `${aud.firstName} ${aud.lastName}`})} />
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
