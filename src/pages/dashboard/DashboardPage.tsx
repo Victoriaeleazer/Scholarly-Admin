@@ -7,6 +7,7 @@ import { Bar, Line, Pie } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler } from 'chart.js'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
+import { Book1, People } from 'iconsax-react'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler)
 
@@ -82,20 +83,20 @@ export default function DashboardPage() {
       </FadeSlideUp>
 
       
-      <div className='grid grid-cols-4 gap-4 mb-4 py'>
-        <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
-          <h3 className='text-lg font-bold'>Total Students</h3>
-          {/* <p className='text-2xl'>1200</p> */}
+      <div className='grid grid-cols-4 gap-4 mb-4 py-3'>
+      <div className='bg-tertiary text-white p-4 rounded-lg shadow-md flex gap-2'>
+        <People size="32" color="#560677" />
+          <h3 className='text-lg font-bold'>Total Students <span className='border-l border-white pl-2 text-2xl'>75</span></h3>
         </div>
 
-        <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
-          <h3 className='text-lg font-bold'>Total Teachers</h3>
-          {/* <p className='text-2xl'>75</p> */}
+        <div className='bg-tertiary text-white p-4 rounded-lg shadow-md flex gap-2'>
+        <People size="32" color="#560677" />
+          <h3 className='text-lg font-bold'>Total Teachers <span className='border-l border-white pl-2 text-2xl'>50</span></h3>
         </div>
 
-        <div className='bg-tertiary text-white p-4 rounded-lg shadow-md'>
-          <h3 className='text-lg font-bold'>Total Courses</h3>
-          {/* <p className='text-2xl'>50</p> */}
+        <div className='bg-tertiary text-white p-4 rounded-lg shadow-md flex gap-2'>
+        <Book1 size="32" color="#560677"/>
+          <h3 className='text-lg font-bold'>Total Courses <span className='border-l border-white pl-2 text-2xl'>130</span> </h3>
         </div>
 
         
