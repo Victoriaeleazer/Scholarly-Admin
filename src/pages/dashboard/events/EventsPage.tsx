@@ -18,6 +18,8 @@ export default function EventsPage() {
     const [eventType, setEventType] = useState<'announcement' | 'project' | 'qa' | ''>('');
     const [eventName, setEventName] = useState('');
     const [eventDescription, setEventDescription] = useState('');
+    const [eventDateTime, setEventDateTime] = useState('');
+    
 
     async function createEvent(eventData: { eventName: string; eventDescription: string; eventType: string }) {
       console.log('Event created:');
@@ -81,11 +83,12 @@ export default function EventsPage() {
     <input
       onChange={(e) => setEventName(e.target.value.trim())}
       required
-      placeholder="Enter Event Name"
+      placeholder="Event Name"
       multiple={false}
       className="w-full bg-background px-3 py-4 rounded-[15px] text-[14px] placeholder:text-secondary text-white focus:outline-none"
     />
-    <textarea
+
+<textarea
       onChange={(e) => setEventDescription(e.target.value.trim())}
       required
       placeholder="Enter Event Description"
@@ -93,7 +96,15 @@ export default function EventsPage() {
       draggable={false}
       className="w-full resize-none bg-background px-3 py-4 rounded-[15px] text-[14px] placeholder:text-secondary text-white focus:outline-none scholarly-scrollbar purple-scrollbar"
     />
-    <select
+
+<input
+    type="datetime-local"
+    onChange={(e) => setEventDateTime(e.target.value)}
+    required
+    className="w-full bg-background px-3 py-4 rounded-[15px] text-[14px] placeholder:text-secondary text-white focus:outline-none"
+  />
+    
+    {/* <select
       onChange={(e) => setEventType(e.target.value.trim() as 'announcement' | 'project' | 'qa')}
       required
       multiple={false}
@@ -101,11 +112,11 @@ export default function EventsPage() {
         eventType === '' ? 'text-secondary' : 'text-white'
       } focus:outline-none`}
     >
-      <option className="bg-black text-secondary" value="">Select Type</option>
-      <option className="bg-black text-white" value="announcement">Announcement</option>
-      <option className="bg-black text-white" value="project">Project</option>
+      <option className="bg-black text-secondary" value="">Concert</option>
+      <option className="bg-black text-white" value="announcement">Spelling Bee</option>
+      <option className="bg-black text-white" value="project">Inter</option>
       <option className="bg-black text-white" value="qa">QA</option>
-    </select>   
+    </select>    */}
     <Button loading={eventMutation.isPending} title="Create" type="submit" className="max-h-[55px]" />
   </form>
 </Dialog>
