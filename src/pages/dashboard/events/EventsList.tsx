@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate } from "react-router";
 import { Event } from "../../../interfaces/Event";
 import { SearchNormal1 } from "iconsax-react";
 import ProfileIcon from "../../../components/ProfileIcon";
@@ -13,26 +13,19 @@ interface Props {
 
 export default function EventsList({ events }: Props) {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-
-  const { id } = useParams<{ id: string }>(); // Capture any params from the URL if needed
+  const navigate = useNavigate();
 
   // Filter events based on the search term
   const filteredEvents = events.filter((event) =>
     event.eventTitle.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const openEventModal = (event: Event) => {
-    setSelectedEvent(event);
-  };
-
-  const closeEventModal = () => {
-    setSelectedEvent(null);
+  const openEventPage = (eventId: string) => {
+    navigate(`/dashboard/events/${eventId}`);
   };
 
   return (
     <div className="text-white w-full min-h-full h-fit overflow-y-scroll scholarly-scrollbar purple-scrollbar px-6 py-8 flex flex-col gap-8">
-
       {/* <!-- Title and Search Bar in the Same Line --> */}
       <div className="flex justify-between items-center flex-wrap">
         <h1 className="text-3xl font-bold text-white">Event List</h1>
@@ -68,19 +61,20 @@ export default function EventsList({ events }: Props) {
               <tr
                 key={event.id}
                 className="border-0 odd:bg-background hover:bg-purple hover:bg-opacity-30 transition-colors ease duration-400 text-white cursor-pointer"
-                onClick={() => openEventModal(event)}
+                onClick={() => openEventPage(event.id)}
               >
-                <td className="px-4 py-4"><div className="flex items-center">
-                  <ProfileIcon profile={event.eventPhoto} className="w-8 h-8 mr-2" width={"32px"} height={"32"} />
-                  <p>{event.eventTitle}</p>
-                  </div></td>
+                <td className="px-4 py-4">
+                  <div className="flex items-center">
+                    <ProfileIcon profile={event.eventPhoto} className="w-8 h-8 mr-2" width={"32px"} height={"32"} />
+                    <p>{event.eventTitle}</p>
+                  </div>
+                </td>
                 <td className="px-4 py-2">{event.eventDescription}</td>
-                {/* <td className="px-4 py-2">{Array.isArray(event.audience) ? event.audience.join(", ") : event.audience}</td> */}
                 <td className="px-4 py-2">{formatDate(event.designatedTime, true)}</td>
                 <td className="px-4 py-2">{formatDate(event.createdTime, false)}</td>
                 <td className="px-4 py-2">
                   <div className="flex flex-center">
-                    <OverlappingImages outlineColor={index % 2? 'var(--tertiary)': 'var(--background)'} images={(event.audience as Member[]).map(aud => aud.profile ?? {color: aud.color, fullName: `${aud.firstName} ${aud.lastName}`})} />
+                    <OverlappingImages outlineColor={index % 2 ? 'var(--tertiary)' : 'var(--background)'} images={(event.audience as Member[]).map(aud => aud.profile ?? { color: aud.color, fullName: `${aud.firstName} ${aud.lastName}` })} />
                   </div>
                 </td>
               </tr>
@@ -88,28 +82,6 @@ export default function EventsList({ events }: Props) {
           </tbody>
         </table>
       </div>
-
-      {/* Event Modal */}
-      {selectedEvent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-tertiary p-6 rounded-lg w-1/2 text- white">
-            <h2 className="text-2xl font-semibold mb-4">{selectedEvent.eventTitle}</h2>
-            <p className="mb-4">{selectedEvent.eventDescription}</p>
-            <p><strong>Designated Time:</strong> {selectedEvent.designatedTime}</p>
-            <p><strong>Created Time:</strong> {selectedEvent.createdTime}</p>
-            <div className="mt-4">
-              <img src={selectedEvent.eventPhoto} alt={selectedEvent.eventTitle} className="w-full h-auto rounded-lg" />
-            </div>
-            <button 
-              onClick={closeEventModal} 
-              className="mt-6 px-4 py-2 bg- bg- bg-background text-white rounded-lg hover:bg-purple"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }

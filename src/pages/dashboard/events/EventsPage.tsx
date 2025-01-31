@@ -101,7 +101,7 @@ export default function EventsPage() {
     type="datetime-local"
     onChange={(e) => setEventDateTime(e.target.value)}
     required
-    className="w-full bg-background px-3 py-4 rounded-[15px] text-[14px] placeholder:text-secondary text-white focus:outline-none"
+    className="w-full bg-background px-3 py-4 rounded-[15px] text-[14px] placeholder:text-secondary text-white focus:outline-none "
   />
     
     {/* <select
@@ -113,9 +113,9 @@ export default function EventsPage() {
       } focus:outline-none`}
     >
       <option className="bg-black text-secondary" value="">Concert</option>
-      <option className="bg-black text-white" value="announcement">Spelling Bee</option>
-      <option className="bg-black text-white" value="project">Inter</option>
-      <option className="bg-black text-white" value="qa">QA</option>
+      <option className="bg-black text-white" value="">Spelling Bee</option>
+      <option className="bg-black text-white" value="">Interntional Day</option>
+      <option className="bg-black text-white" value="">QA</option>
     </select>    */}
     <Button loading={eventMutation.isPending} title="Create" type="submit" className="max-h-[55px]" />
   </form>
