@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { eventsDummyData } from '../../../dummy-data/events';
+import formatDate from '../../../utils/DateFormat';
 
 export default function ViewEventPage() {
   let { eventId } = useParams();
@@ -23,8 +24,8 @@ export default function ViewEventPage() {
           <div className="bg-tertiary p-6 rounded-lg w-1/2 text- white">
             <h2 className="text-2xl font-semibold mb-4">{event.eventTitle}</h2>
             <p className="mb-4">{event.eventDescription}</p>
-            <p><strong>Designated Time:</strong> {event.designatedTime}</p>
-            <p><strong>Created Time:</strong> {event.createdTime}</p>
+            <p><strong>Designated Time:</strong> {formatDate(event.designatedTime, true)}</p>
+            <p><strong>Created Time:</strong> {formatDate(event.createdTime, false)}</p>
             <div className="mt-4">
               <img src={event.eventPhoto} alt={event.eventTitle} className="w-full h-auto rounded-lg" />
             </div>
