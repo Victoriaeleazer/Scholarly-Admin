@@ -1,6 +1,7 @@
 import { Member } from "./Member";
 
 export interface Event{
+    title: ReactNode;
     id:string,
     eventTitle:string,
     eventDescription:string,

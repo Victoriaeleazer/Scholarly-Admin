@@ -19,8 +19,8 @@ import BatchesPage from './pages/dashboard/batches/BatchesPage'
 import MyBatchesPage from './pages/dashboard/my-batches/MyBatchesPage'
 import CoursesPage from './pages/dashboard/courses/CoursesPage'
 import StaffsPage from './pages/dashboard/staffs/StaffsPage'
-// import ViewEventPage from './pages/dashboard/events/ViewEventPage'
-// import EventLayout from './pages/dashboard/events/EventLayout'
+import ViewEventPage from './pages/dashboard/events/ViewEventPage'
+import EventLayout from './pages/dashboard/events/EventLayout'
 import ChannelLayout from './pages/dashboard/channels/ChannelLayout'
 import ChatsPage from './pages/dashboard/channels/ChatsPage'
 import OpenChat from './pages/dashboard/channels/OpenChat'
@@ -59,7 +59,10 @@ createRoot(document.getElementById('root')).render(
                 <Route path='my-batches' element={<MyBatchesPage />} />
                 <Route path='staffs' element={<StaffsPage />} />
                 <Route path='mentees' element={<MenteesPage />} />
-                <Route path='events' element={<EventsPage />} />
+                <Route path='events' element={<EventLayout />} >
+                  <Route index element={<EventsPage />} />
+                  <Route path=':eventId' element={<ViewEventPage />} />
+                </Route>
                 <Route path='feedbacks' element={<FeedbacksPage />} />
                 <Route path='*' element={<PageNotFound />}/>
               </Route>
