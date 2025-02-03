@@ -26,6 +26,7 @@ import { CallingState, useCall, useCalls, useStreamVideoClient,} from '@stream-i
 import CallList from './CallList';
 import { CallContext } from './CallLayout';
 import CallPage from '../calls/CallPage';
+import {logout as logoutUser} from '../../services/user-storage'
 
 export default function DashboardLayout() {
 
@@ -434,7 +435,10 @@ export default function DashboardLayout() {
             </div>
             <p className='text-white font-light'>Hi, <span className='text-white font-semibold'>{admin.firstName}</span></p>
             <Button invert outlined className='text-[14px] max-h-[45px] rounded-[30px] mb-1' title='View Profile' />
-            <Button className='text-[14px] max-h-[45px] rounded-[30px]' negative title='Logout' />
+            <Button onClick={()=>{
+              logoutUser();
+              navigate('/login', {replace:true, relative:'route'});
+            }} className='text-[14px] max-h-[45px] rounded-[30px]' negative title='Logout' />
             <div className='flex items-center justify-center gap-2 underline decoration-secondary text-secondary text-[12px] underline-offset-[3px]'>
               <p className='cursor-pointer'>Privacy Policy</p>
               <div className='w-1 h-1 bg-secondary rounded-circle' />
