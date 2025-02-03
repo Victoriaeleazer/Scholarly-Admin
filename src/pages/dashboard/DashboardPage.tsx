@@ -4,7 +4,10 @@ import { Admin } from '../../interfaces/Admin'
 import { getAdminUserData, hasAdminUserData } from '../../services/user-storage'
 import { useNavigate } from 'react-router'
 import { Bar, Line, Pie } from 'react-chartjs-2'
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, ChartData, Filler } from 'chart.js'
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler } from 'chart.js'
+import Calendar from 'react-calendar'
+import 'react-calendar/dist/Calendar.css'
+import { Book1, People, Personalcard } from 'iconsax-react'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler)
 
@@ -25,31 +28,28 @@ export default function DashboardPage() {
   }
 
   const barData = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     datasets: [
       {
         label: 'Student Enrollment',
-        data: [65, 59, 80, 81, 56, 55],
-        backgroundColor: 'rgba(86, 6, 119, 0.2)',
-        borderColor: 'rgb(86, 6, 119)',
+        data: [65, 59, 80, 81, 56, 55, 40, 30, 20, 10, 5, 1],
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1,
       },
     ],
   }
 
-  const lineData: ChartData<"line"> = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+  const lineData = {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     datasets: [
       {
-        label:'performance',
-        data: [65, 59, 80, 81, 56, 55],
-        showLine:true,
-        normalized:true,
-        fill:'start',
-        borderColor: 'green',
-        pointBackgroundColor:'green',
-        tension: 0.4,
-        backgroundColor: 'rgba(0, 128, 0, 0.15)',
+        label: 'Performance',
+        data: [65, 59, 80, 81, 56, 55, 40, 30, 20, 10, 40, 1],
+        fill: true,
+        backgroundColor: 'rgba(76, 175, 80, 0.2)',
+        borderColor: 'rgba(76, 175, 80, 1)',
+        tension: 0.3,
       },
     ],
   }
@@ -67,16 +67,12 @@ export default function DashboardPage() {
     ],
   }
 
-  const courseData = {
-    labels: ['Computer Science', 'Mechanical Engineering', 'Electrical Engineering', 'Business Administration'],
-    datasets: [
-      {
-        label: 'Course Distribution',
-        data: [25, 15, 30, 30],
-        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
-        hoverOffset: 4,
-      },
-    ],
+
+
+  const calendarTileClassName = ({ date, view }: { date: Date; view: string }) => {
+    if (view === 'month') {
+      return 'text-black '
+    }
   }
 
   return (
@@ -85,24 +81,62 @@ export default function DashboardPage() {
         Welcome, {admin?.role.charAt(0).toUpperCase() + admin?.role.substring(1)}{' '}
         <span className='font-extrabold'>{admin?.fullName}</span>
       </FadeSlideUp>
+
+      
+      <div className='grid grid-cols-4 gap-4 mb-4 py-3'>
+      <div className='bg-tertiary text-white p-4 rounded-lg shadow-md flex gap-2'>
+        <People size="32" color="#560677" />
+          <h3 className='text-lg font-bold '>Total Students <span className='border-l border-white pl-2 text-2xl ml-1'>75</span></h3>
+        </div>
+
+        <div className='bg-tertiary text-white p-4 rounded-lg shadow-md flex gap-2'>
+        <Personalcard size="32" color="#560677"/>
+          <h3 className='text-lg font-bold'>Total Teachers <span className='border-l border-white pl-2 text-2xl ml-1'>50</span></h3>
+        </div>
+
+        <div className='bg-tertiary text-white p-4 rounded-lg shadow-md flex gap-2'>
+        <Book1 size="32" color="#560677"/>
+          <h3 className='text-lg font-bold'>Total Courses <span className='border-l border-white pl-2 text-2xl ml-1'>130</span> </h3>
+        </div>
+
+        
+
+      </div>
+      
+
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-8'>
         <div className='bg-tertiary text-secondary max-h-[400px] p-4 rounded-lg shadow-md '>
           <h2 className='text-2xl font-bold mb-4 text-white'>Student Enrollment</h2>
-          <Bar data={barData} options={{  plugins:{legend:{display:false}}}} />
+          <Bar data={barData} options={{ plugins: { legend: { display: false } } }} />
         </div>
         <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md text-secondary'>
           <h2 className='text-2xl font-bold mb-4 text-white'>Performance Over Time</h2>
-          <Line  data={lineData} options={{ maintainAspectRatio: true, plugins:{legend:{display:false}, filler:{propagate:true}, colors:{forceOverride:true}}, scales: { x: { type: 'category' }, y: { type: 'linear', beginAtZero: true } } }} />
+          <Line data={lineData} options={{ maintainAspectRatio: true, plugins: { legend: { display: false }, filler: { propagate: true }, colors: { forceOverride: true } }, scales: { x: { type: 'category' }, y: { type: 'linear', beginAtZero: true } } }} />
         </div>
-        <div className='bg-white p-4 max-h-[400px] rounded-lg shadow-md'>
-          <h2 className='text-2xl font-bold mb-4 text-black'>Distribution of Votes</h2>
-          <Pie className='' data={pieData} options={{ radius:120}}  />
-        </div>
-        <div className='bg-white p-4 max-h-[400px] rounded-lg shadow-md'>
-          <h2 className='text-2xl font-bold mb-4 text-black'>Course Distribution</h2>
-          <Pie data={courseData} options={{ radius: 120 }}  />
-        </div>
-      </div>
+        {/* <div className='bg-tertiary text-black p-1  rounded-lg shadow-md w-[400px]'>
+          <h2 className='text-2xl font-bold mb-4 text-white'>Calendar</h2>
+          <div className='custom-calendar '>
+            <Calendar 
+              className=''
+              tileClassName={calendarTileClassName}
+            />
+          </div>
+        </div> */}
+        
+      {/* <div className='grid grid-cols-2 gap-4 '>
+         <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
+          <h2 className='text-2xl font-bold mb-4 text-white'>Notice Board</h2>
+        </div> 
+        
+        
+  
+      { <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
+          <h2 className='text-2xl font-bold mb-4 text-white'>Recent Activities</h2>
+      </div> }
+      </div> */}
+      
+     
+    </div>
     </div>
   )
 }
