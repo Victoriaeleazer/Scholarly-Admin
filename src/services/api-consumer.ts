@@ -68,6 +68,9 @@ export async function sendAttachment(channelId:string, attachment:File, chat:Cha
         formData.append('thumbnail', thumbnail);
     }
 
+    console.log(formData.get("attachment"));
+    console.log(formData);
+
     const response = await axiosInstance.post(
         `${baseUrl}/chat/sendAttachment/${pathVariables}`,
         formData,
