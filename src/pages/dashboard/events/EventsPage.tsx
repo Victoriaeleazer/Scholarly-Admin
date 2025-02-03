@@ -95,7 +95,7 @@ export default function EventsPage() {
       rows={5}
       draggable={false}
       className="w-full resize-none bg-background px-3 py-4 rounded-[15px] text-[14px] placeholder:text-secondary text-white focus:outline-none scholarly-scrollbar purple-scrollbar"
-    />
+       />
 
 <input
     type="datetime-local"
