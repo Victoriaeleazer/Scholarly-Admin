@@ -1,24 +1,53 @@
 import LottieWidget from "./components/LottieWidget";
 import loadingAnim from "./assets/lottie/loading"
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 import scholarlyIcon from '../src/assets/images/scholarly.png'
 import { hasAdminUserData } from "./services/user-storage";
+import { onMessageListener, requestPermission } from "../firebase";
+import { delay } from "./services/delay";
 
 export default function App() {
 
-  let navigate = useNavigate();
+  const [token, setToken] = useState(null);
+
+  const navigate = useNavigate();
+
+  useEffect(()=>{
+    const init = async ()=>{
+      const token = await requestPermission();
+      onMessageListener();
+      if(token){
+        setToken(token);
+
+        if(typeof window !== 'undefined'){
+          window.notifToken = token;
+        }
+      }
+    }
+
+    init();
+
+    return ()=>{}
+  }, [])
 
   useEffect(()=>{
     const loggedIn = hasAdminUserData();
-    const timer = setTimeout(()=>{
-      navigate(loggedIn? "/dashboard" :"/login", {replace:true});
-    }, 5000);
     
+    const init = async ()=>{
+      if(!token){
+        return;
+      }
+
+      await delay(5000);
+      navigate(loggedIn? "/dashboard" :"/login", {replace:true});
+    }
+
+    init();
   
-    return ()=> clearTimeout(timer);
-  })
+    
+  }, [token, navigate])
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center gap-4 text-2xl text-black dark:bg-black dark:text-white">

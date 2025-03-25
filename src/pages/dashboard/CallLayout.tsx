@@ -9,6 +9,9 @@ import { hasAdminUserData, getAdminUserData, saveCallToken, getCallToken } from 
 import DashboardLayout from "./DashboardLayout";
 import { NoiseCancellation } from "@stream-io/audio-filters-web";
 
+import SessionExpiredPage from "../other/SessionExpiredPage";
+import { useAdmin } from "../../provider/AdminProvider";
+
 const apiKey = import.meta.env.VITE_STREAM_API_KEY;
 
 export const CallContext = React.createContext<{
@@ -24,16 +27,17 @@ export default function CallLayout(){
 
   const { call, setCall, incomingCall, setIncomingCall } = useCustomStreamCall();
 
-  const navigate = useNavigate();
+  const {admin} = useAdmin()
+
+  if(!admin) return <SessionExpiredPage />
+
+
 
 //   const noiseCancellation = useMemo(() => new NoiseCancellation(), []);
 
+  
+
   useEffect(()=>{
-    if(!hasAdminUserData()){
-      localStorage.clear();
-      navigate('/login', {replace:true, relative:'route'});
-       return;
-    }
 
     
     const _admin = getAdminUserData();
@@ -95,8 +99,10 @@ export default function CallLayout(){
     }
   }, [incomingCall])
 
-  if(!client) return (<></>);
+  if(!client) return (<SessionExpiredPage />)
 
+
+   //  If the token has expired or another error occurred
   return <CallContext.Provider value={{setCall, setIncomingCall}}>
     <audio ref={audioRef} className="[display:none]" playsInline>
       <source src="/sounds/ringtone_1.mp3"  />

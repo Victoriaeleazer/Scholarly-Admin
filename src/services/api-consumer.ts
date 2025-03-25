@@ -2,6 +2,8 @@ import axios, { AxiosResponse } from "axios";
 import { AdminRole } from "../interfaces/Admin";
 import { Chat } from "../interfaces/Chat";
 import { Channel } from "../interfaces/Channel";
+import { ApiResponse } from "../interfaces/ApiResponse";
+import { getAdminUserData } from "./user-storage";
 
 export const baseUrl = import.meta.env.VITE_BACKEND_API_URL;
 
@@ -25,8 +27,8 @@ export async function loginAccount(emailOrPhoneNumber:string, password:string){
     return response;
 }
 
-export async function registerAccount(email:string, phoneNumber:string, firstName:string, lastName:string, role: AdminRole | string, password:string){
-    const reqBody = {password, email, phoneNumber, firstName, lastName, role}
+export async function registerAccount(email:string, phoneNumber:string, firstName:string, lastName:string, role: AdminRole | string, password:string, playerId: string){
+    const reqBody = {password, email, phoneNumber, firstName, lastName, role, playerId}
 
     const response = await axiosInstance.post(`${baseUrl}/auth/register`, reqBody, {headers:headers});
 
@@ -128,5 +130,15 @@ export async function updateChannelPhoto(channelId: string, profile: File){
         {headers:{"Content-Type":'multipart/form-data'}}
     );
 
+    return response;
+}
+
+export async function searchUser(name: string){
+    const response = await axiosInstance.post(`${baseUrl}/chat/searchUser`, {search: name}, {headers:headers})
+    return response;
+}
+
+export async function startChat(receipientId: string){
+    const response = await axiosInstance.post(`${baseUrl}/chat/startChat/${getAdminUserData().id}/${receipientId}`, {headers:headers})
     return response;
 }

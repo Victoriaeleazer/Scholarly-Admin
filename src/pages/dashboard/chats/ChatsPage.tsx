@@ -10,7 +10,7 @@ import { ApiResponse } from '../../../interfaces/ApiResponse';
 import { FaSpinner } from 'react-icons/fa6';
 import { Client } from '@stomp/stompjs';
 import { Channel } from '../../../interfaces/Channel';
-import ChatWidget from './ChatWidget';
+import ChatWidget, { TypingWidget } from './ChatWidget';
 import { Admin } from '../../../interfaces/Admin';
 import docsPurple from "../../../assets/lottie/doc-purple.json"
 import LottieWidget from "../../../components/LottieWidget"
@@ -23,26 +23,35 @@ import { useCall, useStreamVideoClient } from '@stream-io/video-react-sdk';
 import { useAppSelector } from '../../../hooks/redux-hook';
 import { useCustomStreamCall } from '../../../hooks/stream-call-hook';
 import { CallContext } from '../CallLayout';
+import { useDirectMessage } from '../../../provider/DirectMessagesProvider';
+import { useAdmin } from '../../../provider/AdminProvider';
+import { useChats } from '../../../provider/ChatsProvider';
+import { DirectMessage } from '../../../interfaces/DirectMessage';
+import { useStompClient } from '../../../provider/StompClientContext';
+import { useTypingIndicator } from '../../../provider/TypingIndicatorProvider';
 
 // Where chatting is taking place.
 export default function ChatsPage() {
-  const {channelId} = useParams();
+  const {dmId} = useParams();
   const navigate = useNavigate();
-  const channel = useAppSelector((state)=> state.channels.value.find(channel => channel.id === channelId))
+  const dm = useDirectMessage(dmId!);
+  const {publish} = useStompClient();
+  const isCommunity = !!dm?.community;
 
-  const [chats, setChats] = useState<Chat[]>([]);
+  const {indicator, setTyping} = useTypingIndicator()
+
+  const {chats} = useChats()
   const [file, setFile] = useState<File | null>(null);
   const [imageSrc, setImageSrc] = useState('');
   
   const [thumbnailBlob, setThumbnailBlob] = useState<Blob | null>(null);
-  const [admin, setAdmin] = useState<Admin>()
+  const {admin: adminOrNull} = useAdmin();
+  const admin = adminOrNull!
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileSelectRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-
-  const [client, setClient] = useState<Client | null>(null)
   const [canScroll, setCanScroll] = useState(true);
   const [showAttachmentPopup, setShowPopup] = useState(false);
   const [text, setText] = useState("");
@@ -55,10 +64,14 @@ export default function ChatsPage() {
 
   const call = useCall();
 
+  const isTyping = indicator?.isTyping && indicator?.typer !== admin.id;
+
   
 
   const handleInput = (e: ChangeEvent<HTMLTextAreaElement> | string) => {
     setText( typeof e === 'string'? e: e.target.value);
+
+    setTyping(dmId!, text.trim().length !== 0)
 
     if(showAttachmentPopup && !file){
       setShowPopup(false);
@@ -81,7 +94,7 @@ export default function ChatsPage() {
 
       console.log(chat);
 
-      const send = await (file? sendAttachment(channelId!, file, chat, thumbnailBlob) :sendChat(channelId!, chat));
+      const send = await (file? sendAttachment(dmId!, file, chat, thumbnailBlob) :sendChat(dmId!, chat));
 
       if(send.status === 200){
         return send.data as ApiResponse;
@@ -225,12 +238,6 @@ export default function ChatsPage() {
     return type.substring(0, indexOfSlash);
   }
 
-  const insertInSortedOrder = (chats: Chat[], newChat: Chat): Chat[] => {
-    const index = chats.findIndex(chat => new Date(chat.timestamp).getTime() > new Date(newChat.timestamp).getTime());
-    if (index === -1) return [...chats, newChat];
-    return [...chats.slice(0, index), newChat, ...chats.slice(index)];
-  }
-
   const fileTypes = ()=> {
     if(selectType === 'document'){
       return '*/*';
@@ -239,127 +246,22 @@ export default function ChatsPage() {
     return `${selectType}/*`;
   }
 
-  const distinctChats = (_chats: Chat[]) : Chat[] =>{
-    const chat: Chat[] = [];
-
-    _chats.forEach((_chat)=>{
-      const i = chat.findIndex(chat => chat.id === _chat.id);
-      if(i === -1){
-        chat.push(_chat);
-      }else{
-        chat[i] = _chat;
-      }
-    })
-
-    return chat;
-  }
-
   useEffect(()=>{
-    if(!hasAdminUserData()){
-      toast.error("Please Log out and Login once more");
-      navigate(-1);
-      return;
-    }
-    setAdmin(getAdminUserData());
-    
-    const savedChats = getChats(channelId);
-    if(JSON.stringify(savedChats) !== JSON.stringify(chats)){
-      setChats(savedChats);
-    }
-    const createdClient = new Client({
-      brokerURL: websocket_url,
-      onConnect:()=>{
-        console.log('Connected to chats websocket')
-        setClient(createdClient);
-        
-      
-        createdClient.subscribe(`/chats/${channelId}`, async (chatsApiResponse)=>{
-
-          const data = (JSON.parse(chatsApiResponse.body) as ApiResponse).data;
-          
-          // If the response gotten is an array, then we are overwriting
-          // the entire list since arrays are only returned if we are fetching for
-          // list of chats.
-          // Handle array response (overwrite)
-          if (Array.isArray(data)) {
-            // return;
-            // console.warn("Is Array!");
-            const newChats = data
-              .map(chat => chat as Chat)
-              .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-            setChats(newChats);
-            return;
-          }
-    
-          // Handle single chat response (update)
-          /// If it is not given as an array, then that means its a chat,
-          // Hence, we make sure that any old version of this gotten chat
-          // is removed and then the new one is added last (i.e overwritten and shown as latest).
-          const chatData = data as Chat;
-          await delay(200);
-          const hasDuplicate = Array.from(chats).filter(chat => chat.id.includes(chatData.id) || chat.id.trim() == chatData.id).length != 0;
-          console.warn(chatData.id, new Date().getSeconds());
-    
-          const oldChats : Chat[] = [...chats]
-          
-
-          if(hasDuplicate){
-            console.warn("Is a duplicate");
-            const index = oldChats.findIndex(_chat => _chat.id === chatData.id);
-            oldChats[index] = chatData;
-            console.log("Updated Chats Length Is: ", oldChats.length);
-            setChats(oldChats);
-          }else {
-            console.log("Updated Chats Length Is: ", (chats.length+1));
-            setChats(chats => distinctChats([...chats, chatData]));
-          }
-    
-    
-        }, {id: channelId!});
-
-        // /// To always load the channels
-        createdClient.publish({
-          destination:`/scholarly/getChats/${channelId}`
-        });
-
-      },
-      onStompError:()=>console.log("Stomp Error"),
-      onWebSocketError:()=>console.log('Error'),
-      onDisconnect:()=> console.log("Disconnected")
-    });
-    createdClient.activate();
-
-    // if(attachmentRef.current){
-    //   attachmentRef.current.style.display = 'absolute';
-    // }
-
-    return ()=>{
-      // if(createdClient && createdClient.active){
-      //   createdClient.deactivate({force:true});
-      // }
-    };
-  },[])
-
-  useEffect(()=>{
-    if(!channel){
-      toast.error("This channel seems to not be found");
+    if(!dm){
+      toast.error("This DM seems to not be found");
       navigate(-1);
     }
-  }, [channel])
+  }, [dm])
   
 
   useEffect(()=>{
-    console.log("Chats Length is", chats.length);
-    saveChats(channelId!, chats);
-    
-
     if(!listRef.current) return;
 
     if(!canScroll) return;
 
     listRef.current.scrollTo({behavior:'smooth', top:listRef.current.scrollHeight});
 
-  }, [chats, canScroll])
+  }, [chats, canScroll, isTyping])
 
   // useEffect(()=>{
   //   const a = setTimeout(async()=>{
@@ -398,18 +300,22 @@ export default function ChatsPage() {
   const header = ()=>(
     <Link to={'details'} className='w-full cursor-pointer px-8 py-4 bg-transparent flex gap-7 items-center justify-center'>
       <div className='w-[45px] h-[45px] rounded-circle overflow-hidden'>
-            {channel?.channelProfile && <img src={channel.channelProfile} alt='Channel Photo' className='w-full h-full object-cover' />}
-            {!channel?.channelProfile && <div className='w-full h-full flex items-center justify-center open-sans font-semibold text-[17px] text-center' style={{backgroundColor:channel?.color}}>{channel?.channelName.split(' ').map(name=> name.charAt(0).toUpperCase()).slice(0, Math.min(2, channel.channelName.split(' ').length))}</div>}
+            {dm?.profile && <img src={dm.profile} alt='Channel Photo' className='w-full h-full object-cover' />}
+            {!dm?.profile && <div className='w-full h-full flex items-center justify-center open-sans font-semibold text-[17px] text-center' style={{backgroundColor:dm?.color}}>{dm?.name.split(' ').map(name=> name.charAt(0).toUpperCase()).slice(0, Math.min(2, dm.name.split(' ').length))}</div>}
           </div>
       <div className='flex flex-col gap-0 flex-1 overflow-hidden'>
-        <p className='text-white font-bold text-[16px] whitespace-nowrap text-ellipsis'>{channel?.channelName}</p>
+        <p className='text-white font-bold text-[16px] whitespace-nowrap text-ellipsis'>{dm?.name}</p>
         <div style={{'--overlapping-outline-color':'#101010'} as React.CSSProperties & Record<string, string>} className='flex items-center justify-start gap-2'>
-          <OverlappingImages size={20} images={channel?.members.map(member => member.profile ?? {fullName: `${member.firstName} ${member.lastName}`, color: member.color ?? 'green'}) ?? []} />
-          <p className='text-secondary open-sans text-xs font-semibold'>{channel?.members.length} Member{channel?.members.length ===1?'':'s'}</p>
+         {isCommunity && !isTyping && <>
+            <OverlappingImages size={20} images={dm?.recipients.map(member => member.profile ?? {fullName: `${member.firstName} ${member.lastName}`, color: member.color ?? 'green'}) ?? []} />
+            <p className='font-semibold'>{dm?.recipients.length} Member{dm?.recipients.length ===1?'':'s'}</p>
+         </>}
+         {!isCommunity && !isTyping && <p className='text-secondary open-sans text-xs'>Last seen at 7:10 AM</p>}
+         {isTyping && <p className='text-blue open-sans text-xs font-bold'>{isCommunity? "": "Typing..."}</p>}
         </div>
       </div>
       {callChannel.isPending && !callChannel.variables.video && <FaSpinner className='animate-spin' />}
-      {!callChannel.isPending && <Call className={`${!(call && call.id.includes(channelId ?? ''))? 'text-white': 'text-green-500 animate-bounce'}`} onClick={(e)=>{e.stopPropagation();e.preventDefault();callChannel.mutate({video: false})}} variant='Bold' />}
+      {!callChannel.isPending && <Call className={`${!(call && call.id.includes(dmId ?? ''))? 'text-white': 'text-green-500 animate-bounce'}`} onClick={(e)=>{e.stopPropagation();e.preventDefault();callChannel.mutate({video: false})}} variant='Bold' />}
       <Video onClick={(e)=>{e.stopPropagation();e.preventDefault();callChannel.mutate({video: false})}} variant='Bold' />
     </Link>
   )
@@ -497,6 +403,7 @@ export default function ChatsPage() {
     />
   )
 
+  const lastReadIndex = chats.findIndex(chat => chat.readReceipt.length !== 2 && chat.senderId === admin.id);
   const chatBody = ()=>(
     <div className="w-full flex flex-1 relative bg-black overflow-hidden">
       <div ref={listRef} onScroll={handleScroll} className='flex w-full flex-1 gap-1 overflow-x-hidden overflow-y-scroll flex-col scroll-smooth pt-10 pb-3 px-4 scholarly-scrollbar'>
@@ -505,8 +412,8 @@ export default function ChatsPage() {
           const isFirstMessage = index === 0;
           const isLastMessage = index === chats.length-1;
           const isSender = chat.senderId === admin?.id;
-          const readImages = (channel!.members as Member[]).filter(member=> chat.readReceipt.includes(member.id) && member.id !== admin?.id).map(member => member.profile ?? {fullName: `${member.firstName} ${member.lastName}`, color: member.color ?? 'green'});
-          const sender = channel!.members.find(member => member.id === chat.senderId);
+          const readImages = dm!.recipients.filter(member=> chat.readReceipt.includes(member.id) && member.id !== admin?.id).map(member => member.profile ?? {fullName: `${member.firstName} ${member.lastName}`, color: member.color ?? 'green'});
+          const sender = dm!.recipients.find(member => member.id === chat.senderId);
           let sameSender = false;
           let firstTimeSender = false;
           let lastTimeSender = false;
@@ -543,30 +450,24 @@ export default function ChatsPage() {
             ...chat,
             readReceipt: [...chat.readReceipt, admin!.id]
           } as Chat;
-          const readChannel = {
-            ...channel,
+          const readDM = {
+            ...dm,
             latestMessage: readChat,
             unreadMessages:0,
-          } as Channel
+          } as DirectMessage
 
           const markChat = ()=>{
 
             // We send to the user's chat & channel websocket that he's read the chat
-            client?.publish({
-              destination:`/chats/${channelId}`,
-              body: JSON.stringify({
-                message:'Chat Marked As Read',
-                data: readChat
-              })
-            });
-            client?.publish({
-              destination: `/channels/${admin?.id}`,
-              body: JSON.stringify({
+            publish(`/chats/${dmId}`, JSON.stringify({
+              message:'Chat Marked As Read',
+              data: readChat
+            }));
+           publish(`/dms/${admin?.id}`, JSON.stringify({
                 message:"Chat Marked As Read",
-                data: readChannel
-              })
-            })
-            markChatAsRead(channelId!,chat.id, admin!.id )
+                data: readDM
+            }));
+            markChatAsRead(dmId!,chat.id, admin!.id )
           }
 
 
@@ -575,8 +476,10 @@ export default function ChatsPage() {
             chat={chat}
             read={chat.readReceipt.includes(admin?.id ?? '')}
             markAsRead={markChat}
-            channelColor={channel?.color}
+            isLastRead={(index+1) === lastReadIndex || (lastReadIndex === -1 && chats.length-1 === index)}
+            channelColor={!isCommunity? 'var(--purple)' :  dm?.color}
             sender={sender}
+            isGroup={isCommunity}
             readImages={readImages}
             differentDay={differentDay}
             differentDayBelow={differentDayBelow}
@@ -587,7 +490,11 @@ export default function ChatsPage() {
             sameSender={sameSender}
             />
         })}
+
+        {/* Chat showing typing indicator */}
+      <TypingWidget sender={dm!.recipients.find(user => user.id == indicator?.typer)} show={isTyping} />
       </div>
+
 
       {/* Icon That appears when it's time to scroll */}
       <div 
@@ -604,7 +511,7 @@ export default function ChatsPage() {
 
   const callChannel = useMutation({
     mutationFn: async({video=true}: {video?:boolean})=>{
-      const members = channel!.members.map((member)=>{
+      const members = dm!.recipients.map((member)=>{
         return {
           user_id: member.id,
           custom:{
@@ -613,10 +520,10 @@ export default function ChatsPage() {
             lastName: member.lastName,
             profile: member.profile
           },
-          role:member.id ===channel?.creator?.id? 'admin' : 'user'
+          role:member.role == 'admin'? 'admin' : 'user'
         }
       });
-      const _call = callClient.call('default', channelId!+"-"+(new Date().getUTCSeconds()));
+      const _call = callClient.call('default', dmId!+"-"+(new Date().getUTCSeconds()));
 
       // By default, whe joining call, camera and microphone is disabled.
       await _call.microphone.disable();
@@ -631,9 +538,9 @@ export default function ChatsPage() {
         video:true,
         data:{
           custom:{
-            name: channel?.channelName,
-            id: channel?.id,
-            color: channel?.color
+            name: dm?.name,
+            id: dm?.id,
+            color: dm?.color
 
           },
           members 

@@ -13,6 +13,7 @@ import { isPhoneNumber, validatePhoneNumber } from '../../utils/PhoneUtils';
 import PageSlider from '../../components/PageSlider';
 import DropDownInput from '../../components/DropdownInput';
 import { AdminRole } from '../../interfaces/Admin';
+import { onMessageListener } from '../../../firebase';
 // import plant from './assets/plant.jpg'
 
 export default function RegisterPage () {
@@ -32,8 +33,13 @@ export default function RegisterPage () {
 
     const [pageIndex, setPageIndex] = useState(0);
 
-    const isPhone = !useMediaQuery('only screen and (min-width: 767px)')
+    // const [playerId, setPlayerId] = useState("");
+
+    const isPhone = !useMediaQuery('only screen and (min-width: 767px)') 
     
+    useEffect(()=>{
+      onMessageListener();
+    }, [])
 
 
     // Handle names form submission
@@ -118,8 +124,9 @@ export default function RegisterPage () {
   };
 
   async function register(){
+    const playerID : string = (window as any).notifToken;
     toast.loading("Creating your admin account", {id:'loading-register-toast', dismissible:loading});
-    const response = await registerAccount(email, phoneNumber, firstName, lastName, role, password);
+    const response = await registerAccount(email, phoneNumber, firstName, lastName, role, password, playerID);
 
     toast.dismiss('loading-register-toast');
 

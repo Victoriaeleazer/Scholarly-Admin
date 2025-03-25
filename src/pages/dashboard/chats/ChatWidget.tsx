@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react'
 import { Chat } from '../../../interfaces/Chat'
-import { ExportSquare, PlayCircle } from 'iconsax-react';
+import { ExportSquare, PlayCircle, TickCircle } from 'iconsax-react';
 import docsPurple from "../../../assets/lottie/doc-purple.json"
 import LottieWidget from "../../../components/LottieWidget"
 import { HiDownload } from 'react-icons/hi';
 import OverlappingImages, { colorAndName } from '../../../components/OverlappingImages';
 import { Member } from '../../../interfaces/Member';
 import { useInView } from 'react-intersection-observer';
+import typingAnim from '../../../assets/lottie/typing.json';
 
 interface props{
     chat: Chat,
@@ -15,6 +16,8 @@ interface props{
     sender?:Member,
     read?:boolean,
     isSender?:boolean,
+    isGroup?: boolean,
+    isLastRead?: boolean,
     firstSender?:boolean,
     lastSender?:boolean,
     sameSender?:boolean,
@@ -24,11 +27,13 @@ interface props{
     readImages:(string | colorAndName)[],
 }
 
-export default function ChatWidget({chat, isSender=false, markAsRead, read=false, channelColor, sender, readImages, differentDay=false, differentDayBelow=false, firstSender=true, sameSender=false, lastMessageSent=false, lastSender=false}: props) {
+export default function ChatWidget({chat, isSender=false, isLastRead=false, isGroup=false, markAsRead, read=false, channelColor, sender, readImages, differentDay=false, differentDayBelow=false, firstSender=true, sameSender=false, lastMessageSent=false, lastSender=false}: props) {
   
     const {ref, inView} = useInView({
         threshold: 0.4,
     })
+
+    const showViews = !isGroup? (isLastRead && isSender): (lastMessageSent || lastSender || differentDayBelow) && isSender && chat.readReceipt.length-1 !==0;
 
     useEffect(()=>{
         if(inView && !read){
@@ -79,6 +84,7 @@ export default function ChatWidget({chat, isSender=false, markAsRead, read=false
                     </>
                 )}
                 </div>}
+            
             <div className={`${isSender? 'max-w-[47%] items-end' : 'max-w-[40%] items-start'} w-fit flex flex-col gap-[3px]`}>
                 {chat.attachment && (
                     <div className='overflow-hidden rel max-h-[350px] rounded-[25px] relative w-full'>
@@ -88,12 +94,12 @@ export default function ChatWidget({chat, isSender=false, markAsRead, read=false
                         {['image', 'video'].includes(chat.attachmentType) && <img className='w-full select-none h-auto min-h-[200px] bg-tertiary max-h-[350px] object-cover' src={chat.thumbnail ?? chat.attachment} />}
                         {!['image', 'video'].includes(chat.attachmentType) && (
                             <div onClick={()=>window.open(chat.attachment)} className='w-full bg-white bg-opacity-[0.03] cursor-pointer px-3 flex items-center justify-center'>
-                                <LottieWidget lottieAnimation={docsPurple} className='w-[80px] h-[75px] object-cover' />
+                                <LottieWidget lottieAnimation={docsPurple} className='w-[72px] h-[67px] object-cover' />
                                 <div className='flex flex-col justify-center gap-1 select-none flex-1 text-secondary'>
                                     <p className='text-white font-semibold whitespace-nowrap text-ellipsis text-[13.5px]'>{chat.fileName}</p>
-                                    <div className="flex items-center justify-between gap-0">
-                                        <p className='text-[12px]'>{chat.fileName?.substring(chat.fileName.lastIndexOf('.')+1)} file</p>
-                                        <ExportSquare size={15} className='text-secondary text-[25px] mr-2' />
+                                    <div className="flex items-center justify-between gap-[3px]">
+                                        <p className='text-[11px]'>{chat.fileName?.substring(chat.fileName.lastIndexOf('.')+1)} file</p>
+                                        <ExportSquare size={10} className='text-secondary text-[25px] mr-2' />
                                     </div>
                                 </div>
                             </div>
@@ -101,8 +107,8 @@ export default function ChatWidget({chat, isSender=false, markAsRead, read=false
                     </div>
                 )}
                 {chat.message && (
-                    <div className={`rounded-[20px] select-none w-fit py-2 px-4 flex flex-col items-center justify-center text-white text-[15px] cursor-pointer`} style={{
-                        backgroundColor: isSender? (channelColor??'var(--purple)'): 'var(--tertiary)',
+                    <div className={`rounded-[20px] select-none w-fit py-2 px-4 flex flex-col items-center justify-center text-white text-[15px] cursor-pointer transition-colors ease duration-200`} style={{
+                        background: isSender? (channelColor??'var(--purple)'): 'var(--tertiary)',
                         borderBottomRightRadius: !isSender? '20px': firstSender || differentDay? '8px':'20px',
                         borderTopRightRadius: !isSender?'20px': ((lastSender || lastMessageSent) && !differentDay) && !firstSender? '8px': differentDayBelow? '8px' : '20px',
                         borderBottomLeftRadius: isSender? '20px': firstSender || differentDay? '8px':'20px',
@@ -112,7 +118,8 @@ export default function ChatWidget({chat, isSender=false, markAsRead, read=false
                         {chat.message}
                     </div>
                 )}
-                {(lastMessageSent || lastSender || differentDayBelow) && isSender && chat.readReceipt.length-1 !==0  && readReceipt()}
+                {showViews && isGroup && readReceipt()}
+                <div className={`flex self-end allow-discrete transition-all duration-500 ease text-white items-center gap-2 pb-2 ${showViews && !isGroup? '': 'hidden'}`}><span className='text-secondary text-[13px] font-medium'>Seen</span><TickCircle size={12} variant='Bold' /></div>
             </div>
         </div>
     )
@@ -146,4 +153,30 @@ export default function ChatWidget({chat, isSender=false, markAsRead, read=false
         
     </div>
   )
+}
+
+export function TypingWidget({sender, show=false}: {sender?: Member, show?: boolean }){
+    return <div className={`font-[RaleWay] w-full allow-discrete items-center mt-2 flex-col gap-5 justify-center transition-all ease duration-[2s] ${show? 'h-fit flex': 'h-0 hidden'}`}>
+        <div className='w-full flex items-center gap-2 justify-start'>
+            {/* Sender Image */}
+            <div className='w-[30px] h-[30px] flex rounded-circle self-end overflow-hidden'>
+                <>
+                    {sender && !sender.profile && <div style={{backgroundColor:sender?.color}} className='w-full h-full text-white text-center open-sans font-semi flex flex-center text-xs'><p>{sender.firstName.charAt(0).toUpperCase() + sender.lastName.charAt(0).toUpperCase()}</p></div>}
+                    {sender && sender.profile && <img src={sender.profile} className='w-full h-full object-cover' />}
+                </>
+            </div>
+
+            {/* Message */}
+            <div className='max-w-[40%] items-start w-fit flex flex-col gap-[3px]'>
+                <div className='rounded-[20px] select-none w-[80px] h-[38.5px] overflow-hidden flex flex-col items-center bg-tertiary justify-center text-white text-[15px] cursor-pointer transition-colors ease duration-200' style={{
+                    borderBottomRightRadius: '20px',
+                    borderTopRightRadius: '20px',
+                    borderBottomLeftRadius: '8px',
+                    borderTopLeftRadius: '20px'
+                }}>
+                    <LottieWidget lottieAnimation={typingAnim} className='w-full h-full object-fill -translate-y-1 scale-[.85] scale-x-[.85]' />
+                </div>
+            </div>
+        </div>
+    </div>
 }

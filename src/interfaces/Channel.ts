@@ -1,5 +1,6 @@
 import { Member } from "./Member";
 import {Chat} from './Chat'
+import { Community } from "./Community";
 
 export interface Channel{
     id:string,
@@ -13,5 +14,8 @@ export interface Channel{
     channelType: 'announcement' | 'project' | 'qa',
     latestMessage:Chat,
     unreadMessages:number,
+
+    communityId: string,
+    community?: Community,
 
 }

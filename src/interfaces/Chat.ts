@@ -3,13 +3,13 @@ export interface Chat{
     id:string,
     senderId:string,
     senderProfile:string,
-    channelId:string,
+    dmId:string,
     message?:string,
     attachment?:string,
     fileName?:string,
     thumbnail?:string,
     attachmentType:'image' | 'video' | 'audio' | 'document',
-    messageType:'chat' | 'update' |'member' | 'create'
+    messageType:'chat' | 'update' |'member' | 'create' | 'type'
     timestamp:string,
     readReceipt:string[],
 }

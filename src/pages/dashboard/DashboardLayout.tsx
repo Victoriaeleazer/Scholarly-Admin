@@ -27,6 +27,9 @@ import CallList from './CallList';
 import { CallContext } from './CallLayout';
 import CallPage from '../calls/CallPage';
 import {logout as logoutUser} from '../../services/user-storage'
+import { useNotifications } from '../../provider/NotificationsProvider';
+import { useAdmin } from '../../provider/AdminProvider';
+import SessionExpiredPage from '../other/SessionExpiredPage';
 
 export default function DashboardLayout() {
 
@@ -43,7 +46,12 @@ export default function DashboardLayout() {
 
   const [profilePopup, showProfilePopup] = useState(false);
 
-  const [admin, setAdmin] = useState<Admin>(getAdminUserData());
+  const {admin: adminOrNull} = useAdmin();
+
+  // If no user is logged in but a client happens to be on this page
+  if(!adminOrNull) return <SessionExpiredPage />
+
+  const admin = adminOrNull!;
 
   const [notificationShow, showNotification] = useState(false);
 
@@ -66,11 +74,7 @@ export default function DashboardLayout() {
 
   const isTablet = !useMediaQuery('only screen and (min-width: 1106px)') && !isPhone
 
-  const dispatch = useAppDispatch();
-
-  const channels = useAppSelector((state)=> state.channels.value);
-
-  const notifications = useAppSelector((state)=> state.notifications.value)
+  const {notifications} = useNotifications()
 
   const unreadNotifications = notifications.filter(notification => !notification.read).length
 
@@ -78,81 +82,7 @@ export default function DashboardLayout() {
 
   const selectedInvitation = selectedNotification?.category === 'invitation';
 
-  useEffect(()=>{
-    
-    
-    /// Universal Websocket object
-    const websocket = new WebSocket(websocket_url);
 
-    const channelCompareFn = (a:Channel, b:Channel)=> (new Date(b.latestMessage.timestamp).getTime() - new Date(a.latestMessage.timestamp).getTime());
-    const notificationCompareFn = (a:Notification, b:Notification)=> (new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-
-    /// Websocket that listens to channels and updates them
-    const client = Stomp.over(websocket);
-    client.onConnect = ()=>{
-      console.log("Connected to scholarly websocket");
-      
-      // we subscribe to channels websocket
-      client.subscribe(`/channels/${admin?.id}`, (message)=>{
-        const body = JSON.parse(message.body);
-
-        const data = (body as ApiResponse).data;
-
-        if (Array.isArray(data)) {
-          const channels = data.map((channel) => channel as Channel);
-          dispatch(setChannels(distinctList(channels, 'id', channelCompareFn)));
-        } else {
-          const channelData = data as Channel;
-          dispatch(setChannels(distinctList([...channels, channelData], 'id', channelCompareFn)))
-        }
-
-      })
-
-      // we subscribe to notifications websocket
-      client.subscribe(`/notifications/${admin?.id}`, (message)=>{
-        const body = JSON.parse(message.body);
-
-        const data = (body as ApiResponse).data;
-
-        if (Array.isArray(data)) {
-          const _notifications = data.map((data) => data as Notification);
-        
-          dispatch(setNotifications(distinctList(_notifications, 'id', notificationCompareFn)));
-          
-          const _unread = _notifications.filter(notification => !notification.read).length;
-          if(_unread > 0){
-          toast.info("Unread Notifications", {id:'notifications',description:`You have ${_unread} unread notification${_unread !== 1 && "s"}`})
-
-          }
-        } else {
-          const notification = data as Notification;
-          if(!notification.read){
-            toast.info(notification.title, {id:'notifications',description:notification.content});
-          }
-          dispatch(setNotifications(distinctList([...Array.from(notifications), notification], 'id', notificationCompareFn)))
-        }
-
-      })
-
-      client.publish({destination: `/scholarly/getChannels/${admin?.id}`})
-      client.publish({destination: `/scholarly/getNotifications/${admin?.id}`})
-    }
-    client.onDisconnect = ()=>{
-      console.log("Disconnected from channels web socket")
-    }
-    client.debug = ()=>{}
-
-    client.activate();
-
-    return ()=>{
-
-      //Disconnect WebSocket
-      if(client.connected || client.active){
-        client.deactivate({force: true});
-      }
-    }
-
-  }, [])
 
   useEffect(()=>{
     if(!collapsed && isTablet){
@@ -167,29 +97,12 @@ export default function DashboardLayout() {
     }
   }, [isTablet])
 
+
   useEffect(()=>{
-    if(!hasAdminUserData()){
-      localStorage.clear();
-      navigate('/login', {replace:true, relative:'route'});
-      return;
-   }
-
-    //  If the token has expired
-    const defaultDate = new Date();
-    defaultDate.setHours(1);
-    defaultDate.setMinutes(0);
-    defaultDate.setFullYear(defaultDate.getUTCFullYear() -1)
-    if(new Date(admin.tokenExpiration ?? defaultDate.toISOString()).getTime() <= new Date().getTime()){
-      localStorage.clear();
-      toast.info("Session Expired", {description: "Your current session has expired, please login"})
-      navigate('/login', {replace:true, relative:'route'});
-      return;
-    }
-
     /// In order to make sure that when the user clicks or navigates
     /// On a phone screen size, the drawer is closed immediately
     setMenuOpen(false);
-  }, [currentLocation.pathname])
+  }, [currentLocation.pathname, adminOrNull])
 
   
 
@@ -239,7 +152,7 @@ export default function DashboardLayout() {
       <DashboardNavItem selected={currentLocation.pathname.includes('/announcements')} navItem={{icon:<Message/>, selectedIcon:<Message variant='Bold'/>, link:'./announcements', name:'Announcements'}} />
       <DashboardNavItem selected={currentLocation.pathname.includes('/events')} navItem={{icon:<Calendar/>, selectedIcon:<Calendar variant='Bold'/>, link:'./events', name:'Events'}} />
       <DashboardNavItem selected={currentLocation.pathname.includes('/students')} navItem={{icon:<Personalcard/>, selectedIcon:<Personalcard variant='Bold'/>, link:'./students', name:'Students'}} />
-      <DashboardNavItem selected={currentLocation.pathname.includes('/channels')} navItem={{icon:<Messages/>, selectedIcon:<Messages variant='Bold'/>, link:'./channels', name:'Chats'}} />
+      <DashboardNavItem selected={currentLocation.pathname.includes('/chats')} navItem={{icon:<Messages/>, selectedIcon:<Messages variant='Bold'/>, link:'./chats', name:'Chats'}} />
 
       {/* Varying Menus. (Menus that vary based on User Roles) */}
 

@@ -13,6 +13,7 @@ import { isPhoneNumber, validatePhoneNumber } from '../../utils/PhoneUtils';
 import { saveAdminUserData, saveCallToken } from '../../services/user-storage';
 import { Admin } from '../../interfaces/Admin';
 import { StreamVideoClient, User } from '@stream-io/video-react-sdk';
+import { useAdmin } from '../../provider/AdminProvider';
 // import plant from './assets/plant.jpg'
 
 export default function LoginPage () {
@@ -24,6 +25,7 @@ export default function LoginPage () {
     const [sideHovered, setSideHovered] = useState(false);
 
     const navigate = useNavigate();
+    const {setAdmin} = useAdmin()
 
     const isPhone = !useMediaQuery('only screen and (min-width: 767px)')
 
@@ -91,6 +93,7 @@ export default function LoginPage () {
       console.log("Login Successful", response.data.data)
       setLoading(false);
       saveAdminUserData(admin);
+      setAdmin(admin);
       navigate('/dashboard', {replace:true});
       return;
     }
