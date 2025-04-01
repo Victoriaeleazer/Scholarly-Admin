@@ -8,7 +8,7 @@ export interface Community{
     communityDescription: string,
     communityProfile: string,
 
-    creator: string | Member,
+    creator: Member,
     createdAt: string,
     color: string,
     members: (string | Member)[]

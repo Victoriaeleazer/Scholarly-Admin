@@ -5,6 +5,7 @@ import {Event} from "../interfaces/Event"
 import { DirectMessage } from "../interfaces/DirectMessage";
 import { Mentee } from "../interfaces/Mentee";
 import { Notification } from "../interfaces/Notification";
+import { Batch } from "../interfaces/Batch";
 
 export function saveAdminUserData(data:Admin){
     localStorage.setItem('userdata', JSON.stringify(data))
@@ -81,6 +82,22 @@ export function saveEvents (events: Event[]){
 
 export function getEvents(): Event[]{
     return JSON.parse(localStorage.getItem('events') ?? '[]');
+}
+
+export function saveBatches (batches: Batch[]){
+    localStorage.setItem("batches", JSON.stringify(batches))
+}
+
+export function getBatches(): Batch[]{
+    return JSON.parse(localStorage.getItem('batches') ?? '[]');
+}
+
+export function saveMyBatches (batches: Batch[]){
+    localStorage.setItem("my-batches", JSON.stringify(batches))
+}
+
+export function getMyBatches(): Batch[]{
+    return JSON.parse(localStorage.getItem('my-batches') ?? '[]');
 }
 
 export function logout(){

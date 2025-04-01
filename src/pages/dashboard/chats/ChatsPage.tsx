@@ -2,7 +2,7 @@ import React, { ChangeEvent, useContext, useEffect, useRef, useState } from 'rea
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router'
 import { getAdminUserData, getChannel, getChats, hasAdminUserData, saveChats } from '../../../services/user-storage';
 import { toast } from 'sonner';
-import { ArrowDown2, Call, CloseCircle, DocumentText, EmojiHappy, Image, Microphone, Music, Paperclip, PlayCircle, Send,Video, VideoPlay } from 'iconsax-react';
+import { ArrowDown2, ArrowRight2, Call, CloseCircle, DocumentText, EmojiHappy, Image, Microphone, Music, Paperclip, PlayCircle, Send,Video, VideoPlay } from 'iconsax-react';
 import { markChatAsRead, sendAttachment, sendChat, websocket_url } from '../../../services/api-consumer';
 import { Chat } from '../../../interfaces/Chat';
 import { useMutation } from '@tanstack/react-query';
@@ -38,32 +38,40 @@ export default function ChatsPage() {
   const {publish} = useStompClient();
   const isCommunity = !!dm?.community;
 
-  const {indicator, setTyping} = useTypingIndicator()
 
   const {chats} = useChats()
+
+  // For Attachments (Image, Video, etc)
   const [file, setFile] = useState<File | null>(null);
   const [imageSrc, setImageSrc] = useState('');
-  
   const [thumbnailBlob, setThumbnailBlob] = useState<Blob | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+
   const {admin: adminOrNull} = useAdmin();
   const admin = adminOrNull!
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileSelectRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
   const [canScroll, setCanScroll] = useState(true);
   const [showAttachmentPopup, setShowPopup] = useState(false);
   const [text, setText] = useState("");
   const [selectType, setSelectType] = useState<'image' | 'audio' | 'document' | 'video'>('document');
 
+  // For the Audio Recording
+  const [recording, setRecording] = useState(false)
+  const [audioURL, setAudioURL] = useState("")
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const audioChunksRef = useRef<Blob[]>([])
+
+  // For Calls
   const callClient = useStreamVideoClient()!;
-
   const callContext = useContext(CallContext);
-  
-
   const call = useCall();
 
+  // For Typing Indicators
+  const {indicator, setTyping} = useTypingIndicator()
   const isTyping = indicator?.isTyping && indicator?.typer !== admin.id;
 
   
@@ -297,26 +305,61 @@ export default function ChatsPage() {
     }
   });
 
+  const profileIcon = ()=>{
+          if(!isCommunity){
+              return <div className='w-[45px] h-[45px] rounded-circle overflow-hidden'>
+              {dm?.profile && <img src={dm.profile} alt='Channel Photo' className='w-full h-full object-cover' />}
+              {!dm?.profile&& <div className='w-full h-full flex items-center justify-center open-sans font-medium text-[15px] text-center' style={{backgroundColor:dm?.color}}>{(dm?.name ?? "Someone").split(' ').map(name=> name.charAt(0).toUpperCase()).slice(0, Math.min(2, (dm?.name ?? "Someone").split(' ').length))}</div>}
+            </div>;
+          }
+  
+          return <div className='w-[45px] h-[45px] relative'>
+              {/* Community Photo */}
+              <div className='w-[77%] h-[77%] absolute top-0 left-0 rounded-circle overflow-hidden'>
+                  {dm?.community.communityProfile  && <img src={dm?.community.communityProfile} alt='Channel Photo' className='w-full h-full object-cover' />}
+                  {!dm?.community.communityProfile && <div className='w-full h-full flex items-center justify-center open-sans font-medium text-[15px] text-center' style={{backgroundColor:dm?.community.color}}>{(dm?.community.communityName ?? "Someone").split(' ').map(name=> name.charAt(0).toUpperCase()).slice(0, Math.min(2, (dm.name ?? "Someone").split(' ').length))}</div>}
+              </div>
+  
+              {/* DM Photo */}
+              <div className='w-[86%] h-[86%] absolute border-[2.5px] border-tertiary z-10 bottom-[2px] right-0 rounded-circle overflow-hidden'>
+                  {dm.profile && <img src={dm.profile} alt='Channel Photo' className='w-full h-full object-cover' />}
+                  {!dm.profile&& <div className='w-full h-full flex items-center justify-center open-sans font-medium text-[15px] text-center' style={{backgroundColor:dm.color}}>{(dm.name ?? "Someone").split(' ').map(name=> name.charAt(0).toUpperCase()).slice(0, Math.min(2, (dm.name ?? "Someone").split(' ').length))}</div>}
+              </div>;
+  
+          </div>
+  }
+  
+  const dmName = ()=>{
+      if(!isCommunity){
+          return <p className='whitespace-nowrap font-bold text-ellipsis overflow-hidden'>{dm?.name}</p>
+      }
+
+      return <div className='flex w-full font-bold items-center justify-start gap-2'>
+          <p className='text-white text-opacity-80'>{dm?.community.communityName ?? dm?.name}</p>
+          <ArrowRight2 size={12} variant='Bold'/>
+          <p>{dm.name}</p>
+
+      </div>
+
+  }
+
   const header = ()=>(
     <Link to={'details'} className='w-full cursor-pointer px-8 py-4 bg-transparent flex gap-7 items-center justify-center'>
-      <div className='w-[45px] h-[45px] rounded-circle overflow-hidden'>
-            {dm?.profile && <img src={dm.profile} alt='Channel Photo' className='w-full h-full object-cover' />}
-            {!dm?.profile && <div className='w-full h-full flex items-center justify-center open-sans font-semibold text-[17px] text-center' style={{backgroundColor:dm?.color}}>{dm?.name.split(' ').map(name=> name.charAt(0).toUpperCase()).slice(0, Math.min(2, dm.name.split(' ').length))}</div>}
-          </div>
+      {profileIcon()}
       <div className='flex flex-col gap-0 flex-1 overflow-hidden'>
-        <p className='text-white font-bold text-[16px] whitespace-nowrap text-ellipsis'>{dm?.name}</p>
+        {dmName()}
         <div style={{'--overlapping-outline-color':'#101010'} as React.CSSProperties & Record<string, string>} className='flex items-center justify-start gap-2'>
          {isCommunity && !isTyping && <>
-            <OverlappingImages size={20} images={dm?.recipients.map(member => member.profile ?? {fullName: `${member.firstName} ${member.lastName}`, color: member.color ?? 'green'}) ?? []} />
-            <p className='font-semibold'>{dm?.recipients.length} Member{dm?.recipients.length ===1?'':'s'}</p>
+            <OverlappingImages size={19} images={dm?.recipients.map(member => member.profile ?? {fullName: `${member.firstName} ${member.lastName}`, color: member.color ?? 'green'}) ?? []} />
+            <p className='font-semibold text-xs raleway text-secondary'>{dm?.recipients.length} Member{dm?.recipients.length ===1?'':'s'}</p>
          </>}
          {!isCommunity && !isTyping && <p className='text-secondary open-sans text-xs'>Last seen at 7:10 AM</p>}
-         {isTyping && <p className='text-blue open-sans text-xs font-bold'>{isCommunity? "": "Typing..."}</p>}
+         {isTyping && <p className='text-blue open-sans text-xs font-bold'>{isCommunity? `${dm.recipients.find(dm => dm.id === indicator.typer)?.firstName} is typing..`: "Typing..."}</p>}
         </div>
       </div>
       {callChannel.isPending && !callChannel.variables.video && <FaSpinner className='animate-spin' />}
-      {!callChannel.isPending && <Call className={`${!(call && call.id.includes(dmId ?? ''))? 'text-white': 'text-green-500 animate-bounce'}`} onClick={(e)=>{e.stopPropagation();e.preventDefault();callChannel.mutate({video: false})}} variant='Bold' />}
-      <Video onClick={(e)=>{e.stopPropagation();e.preventDefault();callChannel.mutate({video: false})}} variant='Bold' />
+      {!callChannel.isPending && <div title={call? "Join Meet" : "Start a Meet"}><Video className={`${!(call && call.id.includes(dmId ?? ''))? 'text-white': 'text-green-500 animate-bounce'}`} onClick={(e)=>{e.stopPropagation();e.preventDefault();callChannel.mutate({video: false})}} variant='Bold' /></div>}
+      {/* <Video onClick={(e)=>{e.stopPropagation();e.preventDefault();callChannel.mutate({video: false})}} variant='Bold' /> */}
     </Link>
   )
 
@@ -362,9 +405,9 @@ export default function ChatsPage() {
             </PopupTarget>
           </div>
 
-          <div title='Send VN' className="cursor-pointer">
+          {/* <div title='Send VN' className="cursor-pointer">
             <Microphone size={28} />
-          </div>
+          </div> */}
         </div>
 
         <div className={`text-purple cursor-pointer transition-all ease duration-500 flex items-center justify-center ${text.trim().length !== 0 || file? 'w-[28px] opacity-100 ':'opacity-0 fixed -z-50 right-8 w-0'}`}>
@@ -412,8 +455,8 @@ export default function ChatsPage() {
           const isFirstMessage = index === 0;
           const isLastMessage = index === chats.length-1;
           const isSender = chat.senderId === admin?.id;
-          const readImages = dm!.recipients.filter(member=> chat.readReceipt.includes(member.id) && member.id !== admin?.id).map(member => member.profile ?? {fullName: `${member.firstName} ${member.lastName}`, color: member.color ?? 'green'});
-          const sender = dm!.recipients.find(member => member.id === chat.senderId);
+          const readImages = (dm?.recipients ?? []).filter(member=> chat.readReceipt.includes(member.id) && member.id !== admin?.id).map(member => member.profile ?? {fullName: `${member.firstName} ${member.lastName}`, color: member.color ?? 'green'});
+          const sender =  (dm?.recipients ?? []).find(member => member.id === chat.senderId);
           let sameSender = false;
           let firstTimeSender = false;
           let lastTimeSender = false;

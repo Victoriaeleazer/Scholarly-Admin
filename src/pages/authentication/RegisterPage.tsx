@@ -13,7 +13,7 @@ import { isPhoneNumber, validatePhoneNumber } from '../../utils/PhoneUtils';
 import PageSlider from '../../components/PageSlider';
 import DropDownInput from '../../components/DropdownInput';
 import { AdminRole } from '../../interfaces/Admin';
-import { onMessageListener } from '../../../firebase';
+import { onMessageListener, requestPermission } from '../../../firebase-notification';
 // import plant from './assets/plant.jpg'
 
 export default function RegisterPage () {
@@ -124,7 +124,8 @@ export default function RegisterPage () {
   };
 
   async function register(){
-    const playerID : string = (window as any).notifToken;
+    const playerID = await requestPermission();
+    console.log("Notif token is: ", playerID)
     toast.loading("Creating your admin account", {id:'loading-register-toast', dismissible:loading});
     const response = await registerAccount(email, phoneNumber, firstName, lastName, role, password, playerID);
 

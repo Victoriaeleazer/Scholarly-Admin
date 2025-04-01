@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { getMessaging, getToken, Messaging, onMessage } from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -13,40 +13,10 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
-
-onMessage(messaging, payload =>{
-    console.log("Message received: ", payload);
-})
-
-export const requestPermission = async ()=>{
-    console.log("Requesting User Notification Permission.....")
-    const permission = await Notification.requestPermission();
-    
-    if(permission === 'granted'){
-        console.log("Notification User Permission Granted...");
-
-        const token = await getToken(messaging, {
-            vapidKey:"BP8inz1fqEJJ8a3_86Y7-DNkHDT_Q2Aamib3QVvOMti394vxAjOuQ-TQsfty2zPWMduvUy5nUH9rn99lITgXxRA"
-        }).then(token =>{
-            console.log("Token is:", token);
-            return token;
-        });
-
-        return token;
-    }
-
-    console.log("Permission Denied");
-    
+let messaging: Messaging | null = null;
+if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+    messaging = getMessaging(app);
 }
 
-requestPermission();
+export {messaging, app}
 
-export const onMessageListener = ()=>{
-    return new Promise(resolve => {
-        onMessage(messaging, payload => {
-            console.log("Message received: ", payload);
-            resolve(payload);
-        })
-    })
-}

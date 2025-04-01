@@ -14,6 +14,7 @@ import { saveAdminUserData, saveCallToken } from '../../services/user-storage';
 import { Admin } from '../../interfaces/Admin';
 import { StreamVideoClient, User } from '@stream-io/video-react-sdk';
 import { useAdmin } from '../../provider/AdminProvider';
+import { requestPermission } from '../../../firebase-notification';
 // import plant from './assets/plant.jpg'
 
 export default function LoginPage () {
@@ -77,9 +78,11 @@ export default function LoginPage () {
   };
 
   async function login(){
+    const playerID = await requestPermission();
+    console.log("Notif token is: ", playerID)
 
     toast.loading("Logging You In", {id:'loading-toast', dismissible:loading});
-    const response = await loginAccount(emailOrPhone, password);
+    const response = await loginAccount(emailOrPhone, password, playerID);
     toast.dismiss('loading-toast');
 
     if(response.status === 200){

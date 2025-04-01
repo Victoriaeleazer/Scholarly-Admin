@@ -1,12 +1,12 @@
 import { Admin } from "./Admin";
 import { Course } from "./Course";
-import { Member } from "./Member";
+import { User } from "./User";
 
 export interface Batch{
     id:string,
-    course: string | Course,
-    startPeriod:string,
-    endPeriod:string,
-    admin: string | Admin,
-    candidates: string[] | Member[]
+    course: Course,
+    faculty: User, // More strictly an admin
+    startDate: string,
+    endDate: string,
+    students:  User[]
 }

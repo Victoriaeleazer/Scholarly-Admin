@@ -12,7 +12,7 @@ import { data, Link, useLocation, useNavigate, useParams } from 'react-router';
 import { useAppSelector } from '../../../hooks/redux-hook';
 import Dialog from '../../../components/Dialog';
 import Button from '../../../components/Button';
-import { createChannel, searchUser, startChat } from '../../../services/api-consumer';
+import { createChannel, createCommunity, searchUser, startChat } from '../../../services/api-consumer';
 import { toast } from 'sonner';
 import {ApiResponse} from '../../../interfaces/ApiResponse';
 import { useMutation } from '@tanstack/react-query';
@@ -23,6 +23,7 @@ import { Member } from '../../../interfaces/Member';
 import { FaSpinner } from 'react-icons/fa6';
 import { TypingIndicatorProvider } from '../../../provider/TypingIndicatorProvider';
 import DMWidget from './DMWidget';
+import { Community } from '../../../interfaces/Community';
 
 
 // This is the page where we see all the channels & chats
@@ -50,8 +51,8 @@ export default function DMsPage() {
   const [isAddingUser, setAddingUser] = useState(false)
   const [searchedUsers, setSearchedUsers] = useState<Member[]>([])
 
-  const [channelName, setChannelName] = useState('');
-  const [channelDescription, setChannelDesc] = useState('');
+  const [communityName, setCommunityName] = useState('');
+  const [communityDescription, setCommunityDescription] = useState('');
   const [channelType, setChannelType] = useState<'announcement' | 'qa' | 'project' | ''>('');
 
 
@@ -80,8 +81,8 @@ export default function DMsPage() {
 
   function chatsLayout(){
     return <div className='flex flex-col items-center text-center h-fit flex-1 overflow-x-hidden overflow-y-scroll scholarly-scrollbar w-full'>
-      {filteredDMs.map(dm => (
-        <TypingIndicatorProvider dmId={dm.id}>
+      {filteredDMs.map((dm, index) => (
+        <TypingIndicatorProvider key={index} dmId={dm.id}>
           <DMWidget dm={dm} />
         </TypingIndicatorProvider>
       ))}
@@ -122,8 +123,9 @@ export default function DMsPage() {
     </div>
   ) 
 
-  async function create(channel: Channel | any){
-    const response = await createChannel(channel, admin.id);
+  async function create(community: Community | any){
+    const response = await createCommunity(community, admin.id);
+    console.log(response)
     
     if(response.status !== 200){
       throw new Error((response.data as ApiResponse).message);
@@ -132,7 +134,7 @@ export default function DMsPage() {
     return response.data as ApiResponse;
   }
 
-  const channelMutation = useMutation({
+  const createCommunityMutation = useMutation({
     mutationFn: create,
     onSuccess: (data)=>{
       toast.success(data.message)
@@ -203,22 +205,15 @@ export default function DMsPage() {
         cancelable={false}
         onClose={()=>showPopup(false)}
         className='flex flex-col items-center justify-center gap-4 text-left w-[400px]'>
-        <p className='text-white mb-3 text-[23px] font-semibold self-start'>Create Channel</p>
+        <p className='text-white mb-3 text-[23px] font-semibold self-start'>Start A Community</p>
         <form className='flex flex-col items-center justify-center gap-4 text-left w-full'
         onSubmit={(e)=>{
           e.preventDefault();
-          channelMutation.mutate({channelName, channelDescription, channelType});
+          createCommunityMutation.mutate({communityName, communityDescription});
         }}>
-          <input onChange={(e)=>setChannelName(e.target.value.trim())} required placeholder='Enter Channel Name' multiple={false} className='w-full bg-background px-3 py-4 rounded-[15px] text-[14px] placeholder:text-secondary text-white focus:outline-none' />
-          <textarea onChange={(e)=>setChannelDesc(e.target.value.trim())} required placeholder='Enter Channel Description' rows={5} draggable={false} className='w-full resize-none bg-background px-3 py-4 rounded-[15px] text-[14px] placeholder:text-secondary text-white focus:outline-none scholarly-scrollbar purple-scrollbar' />
-          <select onChange={(e)=>setChannelType(e.target.value.trim() as 'announcement' | 'qa' | 'project')} required multiple={false} className={`w-full bg-background px-3 py-4 rounded-[15px] text-[14px] placeholder:text-secondary ${channelType === ''? 'text-secondary' : 'text-white'} focus:outline-none`}>
-            <option className='bg-black text-secondary' value={''}>Select Type</option>
-            <option className='bg-black text-white' value={'announcement'}>Announcement</option>
-            <option className='bg-black text-white' value={'project'}>Project</option>
-            <option className='bg-black text-white' value={'qa'}>QA</option>
-
-          </select>
-          <Button loading={channelMutation.isPending} title='Create' type='submit' className='max-h-[55px]' />
+          <input onChange={(e)=>setCommunityName(e.target.value.trim())} required placeholder='Enter Community Name' multiple={false} className='w-full bg-background px-3 py-4 rounded-[15px] text-[14px] placeholder:text-secondary text-white focus:outline-none' />
+          <textarea onChange={(e)=>setCommunityDescription(e.target.value.trim())} required placeholder='Enter Community Description' rows={5} draggable={false} className='w-full resize-none bg-background px-3 py-4 rounded-[15px] text-[14px] placeholder:text-secondary text-white focus:outline-none scholarly-scrollbar purple-scrollbar' />
+          <Button loading={createCommunityMutation.isPending} title='Create' type='submit' className='max-h-[55px]' />
         </form>
 
       </Dialog>
@@ -249,7 +244,7 @@ export default function DMsPage() {
       </Fab>
 
       {/* Fab to create community */}
-      <Fab style={{zIndex: 2, backgroundColor: !trayOpen? 'black' : 'var(--purple)'}} title='Create Community' className={`absolute shadow-sm right-[40px] p-[8px] duration-[500ms] ${trayOpen? 'bottom-[110px] visible' : 'bottom-5 [visibility:hidden]' }`}>
+      <Fab onClick={()=>showPopup(true)} style={{zIndex: 2, backgroundColor: !trayOpen? 'black' : 'var(--purple)'}} title='Create Community' className={`absolute shadow-sm right-[40px] p-[8px] duration-[500ms] ${trayOpen? 'bottom-[110px] visible' : 'bottom-5 [visibility:hidden]' }`}>
         <People size={21} />
       </Fab>
 

@@ -5,6 +5,8 @@ import { MenteesProvider } from "./MenteesProvider"
 import { NotificationsProvider } from "./NotificationsProvider"
 import { DirectMessagesProvider } from "./DirectMessagesProvider"
 import { EventsProvider } from "./EventsProvider"
+import { ChannelsProvider } from "./ChannelsProvider"
+import { BatchesProvider } from "./BatchesProvider"
 
 const WebsocketStore = ({children}: {children?:React.JSX.Element}) =>{
     return <AdminProvider>
@@ -12,9 +14,13 @@ const WebsocketStore = ({children}: {children?:React.JSX.Element}) =>{
             <MenteesProvider>
                 <NotificationsProvider>
                     <DirectMessagesProvider>
-                        <EventsProvider>
-                            {children}
-                        </EventsProvider>
+                        <ChannelsProvider>
+                            <EventsProvider>
+                                <BatchesProvider>
+                                    {children}
+                                </BatchesProvider>
+                            </EventsProvider>
+                        </ChannelsProvider>
                     </DirectMessagesProvider>
                 </NotificationsProvider>
             </MenteesProvider>

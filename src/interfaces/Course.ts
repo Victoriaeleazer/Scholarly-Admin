@@ -1,4 +1,7 @@
 export interface Course{
     id:string,
-    courseName:string
+    name:string,
+    photo?: string,
+    recommendedPrice?: number
+
 }

@@ -2,7 +2,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react"
 import { useStompClient } from "./StompClientContext";
 import { useAdmin } from "./AdminProvider";
-import {ApiResponse} from '../interfaces/ApiResponse';
+import {ApiResponse, Delete} from '../interfaces/ApiResponse';
 import { getDMs, saveDMs} from "../services/user-storage";
 import { distinctList } from "../utils/ArrayUtils";
 import { DirectMessage } from "../interfaces/DirectMessage";
@@ -67,6 +67,19 @@ export function DirectMessagesProvider({children} : {children?:React.JSX.Element
     useEffect(()=>{
         subscribe(`/dms/${admin?.id}`, message =>{
             const body = JSON.parse(message.body);
+
+            if(body.deleted !== undefined || body.deleted){
+                console.log("DM Delete Request Gotten: ", body);
+                const deleteData = body as Delete;
+                const exists = dms.some(dm => dm.id === deleteData.id);
+
+                if(deleteData.deleted && exists){
+                    const _dms = dms.filter(c => c.id !== deleteData.id);
+                    setDirectMessages(distinctList(_dms, 'id', dmsCompareFn));
+                }
+
+                return;
+            }
             
             const data = (body as ApiResponse).data;
             console.log("DMs gotten: ", data);
