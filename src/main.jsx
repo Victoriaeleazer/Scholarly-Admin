@@ -55,9 +55,9 @@ createRoot(document.getElementById('root')).render(
                     </Route>
                     <Route path='announcements' element={<AnnouncementPage />} />
                     <Route path='students' element={<StudentsPage />} />
-                    <Route path='batches' element={<BatchesPage />} />
+                    <Route path='cohorts' element={<BatchesPage />} />
                     <Route path='courses' element={<CoursesPage />} />
-                    <Route path='my-batches' element={<MyBatchesPage />} />
+                    <Route path='my-cohorts' element={<MyBatchesPage />} />
                     <Route path='staffs' element={<StaffsPage />} />
                     <Route path='mentees' element={<MenteesPage />} />
                     <Route path='events' element={<EventLayout />} >

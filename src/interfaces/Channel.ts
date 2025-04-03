@@ -1,4 +1,4 @@
-import { Member } from "./Member";
+import { User } from "./User";
 import {Chat} from './Chat'
 import { Community } from "./Community";
 
@@ -7,10 +7,10 @@ export interface Channel{
     channelName:string,
     channelDescription:string,
     channelProfile?:string,
-    creator?: Member,
+    creator?: User,
     color:string,
     createdAt:string,
-    members:Member[],
+    members:User[],
     channelType: 'announcement' | 'project' | 'qa',
     latestMessage:Chat,
     unreadMessages:number,

@@ -1,10 +1,9 @@
 import { useMediaQuery } from '@react-hook/media-query';
-import { Add } from 'iconsax-react';
 import React, { useState } from 'react'
-import Fab from '../../../components/Fab';
 import LottieWidget from '../../../components/LottieWidget';
 
 import noBatchesAnim from '../../../assets/lottie/no-batches.json'
+import BatchesList from './BatchesList';
 
 export default function MyBatchesPage() {
     const [batches, setBatches] = useState([]);
@@ -12,18 +11,18 @@ export default function MyBatchesPage() {
 
     
     
-    // The Layout to show there no batches
-    if(batches.length<=0){
-        return (
-            <div className={`w-full h-full bg-transparent items-center justify-center px-6 py-8 flex flex-col text-white text-center ${isPhone?'gap-2':'gap-10'} overflow-x-hidden overflow-y-scroll scholarly-scrollbar relative`}>
-                <LottieWidget lottieAnimation={noBatchesAnim} className={`w-[40%] h-[40%] object-contain`} />
-                <p>You're not taking any batch yet.</p>
-            </div>
-        )
-    }
+    const NoBatchesLayout = ()=>(
+        <div className={`w-full h-full bg-transparent items-center justify-center px-6 py-8 flex flex-col text-white text-center ${isPhone?'gap-2':'gap-10'} overflow-x-hidden overflow-y-scroll scholarly-scrollbar relative`}>
+            <LottieWidget lottieAnimation={noBatchesAnim} className={`w-[40%] h-[40%] object-contain`} />
+            <p>You're not taking any batch yet.</p>
+        </div>
+    )
 
     // The Layout to show when there batches
     return (
-        <div></div>
+        <div className='w-full h-full bg-transparent'>
+            <BatchesList />
+
+        </div>
     );
 }

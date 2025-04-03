@@ -57,7 +57,7 @@ export const useBatch = (batchId: string) : Batch =>{
     return event;
 }
 
-const batchesCompareFn = (a:Batch, b:Batch)=> (new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+const batchesCompareFn = (a:Batch, b:Batch)=> (new Date(b.startPeriod).getTime() - new Date(a.startPeriod).getTime());
 
 /**
  * Provider responsible for exposing batches context in the app globally.

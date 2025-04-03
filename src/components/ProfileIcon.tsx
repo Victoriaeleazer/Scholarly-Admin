@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react'
-import { Member } from '../interfaces/Member';
+import { User } from '../interfaces/User';
 import { Admin } from '../interfaces/Admin';
 
 interface props{
@@ -7,7 +7,7 @@ interface props{
     height: string | number,
     className?: string,
     style?: CSSProperties,
-    member?: Member | Admin,
+    member?: User | Admin,
     profile?: string,
 }
 
