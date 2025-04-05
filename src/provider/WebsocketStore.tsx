@@ -7,23 +7,29 @@ import { DirectMessagesProvider } from "./DirectMessagesProvider"
 import { EventsProvider } from "./EventsProvider"
 import { ChannelsProvider } from "./ChannelsProvider"
 import { BatchesProvider } from "./BatchesProvider"
+import { CoursesProvider } from "./CoursesProvider"
+import { AdminsProvider } from "./AdminsProvider"
 
 const WebsocketStore = ({children}: {children?:React.JSX.Element}) =>{
     return <AdminProvider>
         <StompClientProvider>
-            <MenteesProvider>
-                <NotificationsProvider>
-                    <DirectMessagesProvider>
-                        <ChannelsProvider>
-                            <EventsProvider>
-                                <BatchesProvider>
-                                    {children}
-                                </BatchesProvider>
-                            </EventsProvider>
-                        </ChannelsProvider>
-                    </DirectMessagesProvider>
-                </NotificationsProvider>
-            </MenteesProvider>
+            <AdminsProvider>
+                <MenteesProvider>
+                    <NotificationsProvider>
+                        <DirectMessagesProvider>
+                            <ChannelsProvider>
+                                <EventsProvider>
+                                    <BatchesProvider>
+                                        <CoursesProvider>
+                                            {children}
+                                        </CoursesProvider>
+                                    </BatchesProvider>
+                                </EventsProvider>
+                            </ChannelsProvider>
+                        </DirectMessagesProvider>
+                    </NotificationsProvider>
+                </MenteesProvider>
+            </AdminsProvider>
     </StompClientProvider>
 
         </AdminProvider>

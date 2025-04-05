@@ -6,6 +6,7 @@ import { DirectMessage } from "../interfaces/DirectMessage";
 import { Mentee } from "../interfaces/Mentee";
 import { Notification } from "../interfaces/Notification";
 import { Batch } from "../interfaces/Batch";
+import { Course } from "../interfaces/Course";
 
 export function saveAdminUserData(data:Admin){
     localStorage.setItem('userdata', JSON.stringify(data))
@@ -98,6 +99,22 @@ export function saveMyBatches (batches: Batch[]){
 
 export function getMyBatches(): Batch[]{
     return JSON.parse(localStorage.getItem('my-batches') ?? '[]');
+}
+
+export function saveCourses (courses: Course[]){
+    localStorage.setItem("courses", JSON.stringify(courses))
+}
+
+export function getCourses(): Course[]{
+    return JSON.parse(localStorage.getItem('courses') ?? '[]');
+}
+
+export function saveAdmins (admins: Admin[]){
+    localStorage.setItem("admins", JSON.stringify(admins))
+}
+
+export function getAdmins(): Admin[]{
+    return JSON.parse(localStorage.getItem('admins') ?? '[]');
 }
 
 export function logout(){

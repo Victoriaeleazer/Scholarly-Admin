@@ -12,3 +12,6 @@ export interface Batch{
     members:  User[],
     paidMembers: User[],
 }
+
+export enum Days {Mon="Monday", Tue="Tuesday", Wed="Wednesday", Thur="Thursday", Fri="Friday", Sat="Saturday", Sun="Sunday"};
+export enum Months {January, February, March, April, May, June, July, August, September, October, November, December }

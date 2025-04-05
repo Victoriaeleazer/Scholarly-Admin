@@ -30,6 +30,7 @@ import { store } from './store'
 import ChatDetails from './pages/dashboard/chats/ChatDetails'
 import CallLayout from './pages/dashboard/CallLayout'
 import WebsocketStore from './provider/WebsocketStore'
+import StaffsLayout from './pages/dashboard/staffs/StaffsLayout'
 
 
 const queryClient = new QueryClient();
@@ -58,7 +59,9 @@ createRoot(document.getElementById('root')).render(
                     <Route path='cohorts' element={<BatchesPage />} />
                     <Route path='courses' element={<CoursesPage />} />
                     <Route path='my-cohorts' element={<MyBatchesPage />} />
-                    <Route path='staffs' element={<StaffsPage />} />
+                    <Route path='staffs' element={<StaffsLayout />}>
+                      <Route index element={<StaffsPage />} />
+                    </Route>
                     <Route path='mentees' element={<MenteesPage />} />
                     <Route path='events' element={<EventLayout />} >
                       <Route index element={<EventsPage />} />

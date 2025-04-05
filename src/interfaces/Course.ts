@@ -1,7 +1,12 @@
+import { User } from "./User";
+
 export interface Course{
     id:string,
-    name:string,
-    photo?: string,
-    recommendedPrice?: number
+    courseName:string,
+    coursePhoto: string,
+    courseDescription: string,
+    recommendedPrice?: number,
+    createdAt: string,
+    students: User[]
 
 }

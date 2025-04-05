@@ -111,7 +111,7 @@ export function BatchesProvider({children}: {children?: React.JSX.Element}){
             }
         });
 
-        subscribe(`/batches/${admin?.id}`, (message)=>{
+        subscribe(`/my-batches/${admin?.id}`, (message)=>{
             const body = JSON.parse(message.body);
 
             const data = (body as ApiResponse).data;
@@ -129,7 +129,7 @@ export function BatchesProvider({children}: {children?: React.JSX.Element}){
             }
         });
 
-        publish(`/scholarly/getBatches/${admin?.id}`)
+        publish(`/scholarly/getFacultyBatches/${admin?.id}`)
         publish(`/scholarly/getBatches`)
 
     }, [admin])

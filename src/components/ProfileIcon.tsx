@@ -3,8 +3,8 @@ import { User } from '../interfaces/User';
 import { Admin } from '../interfaces/Admin';
 
 interface props{
-    width: string | number,
-    height: string | number,
+    width?: string | number,
+    height?: string | number,
     className?: string,
     style?: CSSProperties,
     member?: User | Admin,

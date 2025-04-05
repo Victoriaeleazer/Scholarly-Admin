@@ -9,7 +9,7 @@ export default function BatchesList() {
     const [searchTerm, setSearchTerm] = useState("");
 
 
-    const filteredBatches = useMemo(()=>myBatches.filter(batch => batch.course.name.includes(searchTerm.trim().toLowerCase())),[myBatches])
+    const filteredBatches = useMemo(()=>myBatches.filter(batch => batch.course.courseName.includes(searchTerm.trim().toLowerCase())),[myBatches])
 
 
   return (

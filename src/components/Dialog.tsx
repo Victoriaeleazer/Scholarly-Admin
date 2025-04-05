@@ -4,6 +4,7 @@ import {FaPlus, FaX} from 'react-icons/fa6'
 
 interface props{
     className?: string,
+    zIndex?: number,
     show?:boolean,
     animType?: 'slide-down' | 'popin',
     negative?:boolean,
@@ -13,16 +14,16 @@ interface props{
     children?:ReactNode
 }
 
-export default function Dialog({show=false, discrete=true, negative=false, animType='popin', onClose, cancelable=onClose?true:false, className='', children}:props){
+export default function Dialog({show=false, zIndex=800, discrete=true, negative=false, animType='popin', onClose, cancelable=onClose?true:false, className='', children}:props){
 
 
     return (
-        <div style={{transitionBehavior:discrete? 'allow-discrete':'normal'}} onClick={cancelable?(e)=>{
+        <div style={{transitionBehavior:discrete? 'allow-discrete':'normal', zIndex}} onClick={cancelable?(e)=>{
             if(onClose){
                 e.stopPropagation();
                 onClose();
             }
-        }:undefined} className={`${!show? 'hidden opacity-0':' opacity-100'} fixed z-[1000] inset-0 bg-black bg-opacity-70 flex items-center justify-center [transition-property:all] duration-1000 ease`}>
+        }:undefined} className={`${!show? 'hidden opacity-0':' opacity-100'} fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center [transition-property:all] duration-1000 ease`}>
             <div
                 onClick={(e)=>e.stopPropagation()}
                 style={{animationDuration:'0.5s'}}

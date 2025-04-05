@@ -1,7 +1,7 @@
 import { useMediaQuery } from '@react-hook/media-query'
 import React, { ReactNode, useEffect, useReducer, useState } from 'react'
 import Fab from '../../../components/Fab';
-import { Add, Edit, ExportSquare, Message, Message2, Messages, MessageText1, People, User } from 'iconsax-react';
+import { Add, Edit, ExportSquare, Message, Message2, Messages, MessageText1, People, User as UserIcon } from 'iconsax-react';
 import SearchBar from '../../../components/SearchBar';
 
 import addChatAnim from '../../../assets/lottie/add-chat.json'
@@ -19,7 +19,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useAdmin } from '../../../provider/AdminProvider';
 import { useDirectMessages } from '../../../provider/DirectMessagesProvider';
 import { DirectMessage } from '../../../interfaces/DirectMessage';
-import { Member } from '../../../interfaces/Member';
+import { User } from '../../../interfaces/User';
 import { FaSpinner } from 'react-icons/fa6';
 import { TypingIndicatorProvider } from '../../../provider/TypingIndicatorProvider';
 import DMWidget from './DMWidget';
@@ -49,7 +49,7 @@ export default function DMsPage() {
   const [trayOpen, setTrayOpen] = useState(false);
 
   const [isAddingUser, setAddingUser] = useState(false)
-  const [searchedUsers, setSearchedUsers] = useState<Member[]>([])
+  const [searchedUsers, setSearchedUsers] = useState<User[]>([])
 
   const [communityName, setCommunityName] = useState('');
   const [communityDescription, setCommunityDescription] = useState('');
@@ -153,7 +153,7 @@ export default function DMsPage() {
         throw Error((response.data as ApiResponse).message);
       }
 
-      return (response.data as ApiResponse).data as Member[]
+      return (response.data as ApiResponse).data as User[]
     },
     onSuccess: (data)=>{
       // Only show users that are not already on your DMs
@@ -165,7 +165,7 @@ export default function DMsPage() {
   })
 
   const startChatMutation = useMutation({
-    mutationFn: async({user}: {user: Member})=>{
+    mutationFn: async({user}: {user: User})=>{
       const response = await startChat(user.id);
       console.log(response)
       if(response.status >= 300){
@@ -250,7 +250,7 @@ export default function DMsPage() {
 
       {/* Fab to add person */}
       <Fab onClick={()=> setAddingUser(true)} style={{zIndex: 2, backgroundColor: !trayOpen? 'black' : 'var(--purple)', transitionDelay: '100ms'}} title='Chat Someone'  className={`absolute shadow-sm right-[40px] p-[8px] duration-[500ms] ${trayOpen? 'bottom-[165px] visible' : 'bottom-5 [visibility:hidden]' }`}>
-        <User size={21} />
+        <UserIcon size={21} />
       </Fab>
 
     </div>

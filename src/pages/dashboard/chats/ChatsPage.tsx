@@ -16,7 +16,7 @@ import docsPurple from "../../../assets/lottie/doc-purple.json"
 import LottieWidget from "../../../components/LottieWidget"
 import PopupMenu from '../../../components/PopupMenu/PopupMenu';
 import PopupTarget from '../../../components/PopupMenu/PopupTarget';
-import { Member } from '../../../interfaces/Member';
+import { User } from '../../../interfaces/User';
 import { delay } from '../../../services/delay';
 import OverlappingImages from '../../../components/OverlappingImages';
 import { useCall, useStreamVideoClient } from '@stream-io/video-react-sdk';

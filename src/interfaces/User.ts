@@ -1,3 +1,5 @@
+import { AdminRole } from "./Admin";
+
 export interface User{
     firstName:string,
     id:string,
@@ -6,5 +8,5 @@ export interface User{
     color: string,
     phoneNumber:string,
     profile?:string | undefined,
-    role: 'admin' | 'student'
+    role: 'admin' | 'student' | AdminRole
 }
