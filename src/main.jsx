@@ -15,6 +15,8 @@ import AnnouncementPage from './pages/dashboard/announcements/AnnouncementPage'
 import EventsPage from './pages/dashboard/events/EventsPage'
 import StudentsPage from './pages/dashboard/students/StudentsPage'
 import MenteesPage from './pages/dashboard/mentees/MenteesPage'
+import MenteeLayout from './pages/dashboard/mentees/MenteeLayout'
+import ViewMenteePage from './pages/dashboard/mentees/ViewMenteePage'
 import BatchesPage from './pages/dashboard/batches/BatchesPage'
 import MyBatchesPage from './pages/dashboard/my-batches/MyBatchesPage'
 import CoursesPage from './pages/dashboard/courses/CoursesPage'
@@ -59,7 +61,10 @@ createRoot(document.getElementById('root')).render(
                     <Route path='courses' element={<CoursesPage />} />
                     <Route path='my-batches' element={<MyBatchesPage />} />
                     <Route path='staffs' element={<StaffsPage />} />
-                    <Route path='mentees' element={<MenteesPage />} />
+                    <Route path='mentees' element={<MenteeLayout />} >
+                      <Route index element={<MenteesPage />} />
+                      <Route path=':menteeId' element={<ViewMenteePage />} />
+                    </Route>
                     <Route path='events' element={<EventLayout />} >
                       <Route index element={<EventsPage />} />
                       <Route path=':eventId' element={<ViewEventPage />} />
