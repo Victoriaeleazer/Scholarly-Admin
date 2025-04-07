@@ -5,6 +5,9 @@ import {Event} from "../interfaces/Event"
 import { DirectMessage } from "../interfaces/DirectMessage";
 import { Mentee } from "../interfaces/Mentee";
 import { Notification } from "../interfaces/Notification";
+import { Batch } from "../interfaces/Batch";
+import { Course } from "../interfaces/Course";
+import { Student } from "../interfaces/Student";
 
 export function saveAdminUserData(data:Admin){
     localStorage.setItem('userdata', JSON.stringify(data))
@@ -81,6 +84,46 @@ export function saveEvents (events: Event[]){
 
 export function getEvents(): Event[]{
     return JSON.parse(localStorage.getItem('events') ?? '[]');
+}
+
+export function saveBatches (batches: Batch[]){
+    localStorage.setItem("batches", JSON.stringify(batches))
+}
+
+export function getBatches(): Batch[]{
+    return JSON.parse(localStorage.getItem('batches') ?? '[]');
+}
+
+export function saveMyBatches (batches: Batch[]){
+    localStorage.setItem("my-batches", JSON.stringify(batches))
+}
+
+export function getMyBatches(): Batch[]{
+    return JSON.parse(localStorage.getItem('my-batches') ?? '[]');
+}
+
+export function saveCourses (courses: Course[]){
+    localStorage.setItem("courses", JSON.stringify(courses))
+}
+
+export function getCourses(): Course[]{
+    return JSON.parse(localStorage.getItem('courses') ?? '[]');
+}
+
+export function saveAdmins (admins: Admin[]){
+    localStorage.setItem("admins", JSON.stringify(admins))
+}
+
+export function getAdmins(): Admin[]{
+    return JSON.parse(localStorage.getItem('admins') ?? '[]');
+}
+
+export function saveStudents (student: Student[]){
+    localStorage.setItem("students", JSON.stringify(student))
+}
+
+export function getStudents(): Student[]{
+    return JSON.parse(localStorage.getItem('students') ?? '[]');
 }
 
 export function logout(){

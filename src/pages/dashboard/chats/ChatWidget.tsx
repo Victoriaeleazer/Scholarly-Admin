@@ -174,7 +174,7 @@ export function TypingWidget({sender, show=false}: {sender?: Member, show?: bool
                     borderBottomLeftRadius: '8px',
                     borderTopLeftRadius: '20px'
                 }}>
-                    <LottieWidget lottieAnimation={typingAnim} className='w-full h-full object-fill -translate-y-1 scale-[.85] scale-x-[.85]' />
+                    <LottieWidget lottieAnimation={typingAnim} className='w-full h-full object-fill -translate-y-1 scale-[.65] opacity-40' />
                 </div>
             </div>
         </div>

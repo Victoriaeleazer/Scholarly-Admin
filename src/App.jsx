@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 
 import scholarlyIcon from '../src/assets/images/scholarly.png'
 import { hasAdminUserData } from "./services/user-storage";
-import { onMessageListener, requestPermission } from "../firebase";
+import { onMessageListener, requestPermission } from "../firebase-notification";
 import { delay } from "./services/delay";
 
 export default function App() {

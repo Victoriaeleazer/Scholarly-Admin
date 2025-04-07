@@ -29,9 +29,10 @@ import OpenChat from './pages/dashboard/chats/OpenChat'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Provider } from 'react-redux'
 import { store } from './store'
-import ChannelDetail from './pages/dashboard/chats/ChannelDetails'
+import ChatDetails from './pages/dashboard/chats/ChatDetails'
 import CallLayout from './pages/dashboard/CallLayout'
 import WebsocketStore from './provider/WebsocketStore'
+import StaffsLayout from './pages/dashboard/staffs/StaffsLayout'
 
 
 const queryClient = new QueryClient();
@@ -53,11 +54,11 @@ createRoot(document.getElementById('root')).render(
                     <Route path='chats' element={<ChatsLayout />}>
                       <Route index element={<OpenChat />} />
                       <Route path=':dmId' element={<ChatsPage/>} />
-                      <Route path=':dmId/details?' element={<ChannelDetail />} />
+                      <Route path=':dmId/details?' element={<ChatDetails />} />
                     </Route>
                     <Route path='announcements' element={<AnnouncementPage />} />
                     <Route path='students' element={<StudentsPage />} />
-                    <Route path='batches' element={<BatchesPage />} />
+                    <Route path='cohorts' element={<BatchesPage />} />
                     <Route path='courses' element={<CoursesPage />} />
                     <Route path='my-batches' element={<MyBatchesPage />} />
                     <Route path='staffs' element={<StaffsPage />} />
@@ -65,6 +66,11 @@ createRoot(document.getElementById('root')).render(
                       <Route index element={<MenteesPage />} />
                       <Route path=':menteeId' element={<ViewMenteePage />} />
                     </Route>
+                    <Route path='my-cohorts' element={<MyBatchesPage />} />
+                    <Route path='staffs' element={<StaffsLayout />}>
+                      <Route index element={<StaffsPage />} />
+                    </Route>
+                    <Route path='mentees' element={<MenteesPage />} />
                     <Route path='events' element={<EventLayout />} >
                       <Route index element={<EventsPage />} />
                       <Route path=':eventId' element={<ViewEventPage />} />

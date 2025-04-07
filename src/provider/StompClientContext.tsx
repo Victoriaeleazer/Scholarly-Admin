@@ -83,7 +83,8 @@ export function StompClientProvider({children} : {children?:React.JSX.Element}){
 
 
     return <StompClientContext.Provider value={{client, publish, subscribe}}>
-        {!client?.connected && <SessionExpiredPage title="Server Disconnected" button="Reconnect" onClick={initializeClient} description="You've been disconnected from our server.\nTry to refresh the page or click the button below" />}
+        {!client && <SessionExpiredPage title="Hold On" description="Trying to setup..." showButton={false} />}
+        {!client?.connected && <SessionExpiredPage title="Server Disconnected" button="Reconnect" onClick={initializeClient} description={"You've been disconnected from our server.\nTry to refresh the page or click the button below"} />}
         {client?.connected && children}
     </StompClientContext.Provider>
 }

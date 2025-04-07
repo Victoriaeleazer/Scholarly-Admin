@@ -1,4 +1,3 @@
-import { Member } from "./Member"
 export interface Chat{
     id:string,
     senderId:string,

@@ -1,5 +1,5 @@
 import { Channel } from "./Channel";
-import { Member } from "./Member";
+import { User } from "./User";
 
 export interface Community{
     id: string,
@@ -7,10 +7,9 @@ export interface Community{
     communityName: string,
     communityDescription: string,
     communityProfile: string,
-
-    creator: string | Member,
+    creator: User,
     createdAt: string,
     color: string,
-    members: (string | Member)[]
+    members: (string | User)[]
     channels: (string | Channel)[]
 }

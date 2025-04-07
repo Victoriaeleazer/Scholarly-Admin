@@ -4,6 +4,7 @@ import { Chat } from "../interfaces/Chat";
 import { Channel } from "../interfaces/Channel";
 import { ApiResponse } from "../interfaces/ApiResponse";
 import { getAdminUserData } from "./user-storage";
+import { Community } from "../interfaces/Community";
 
 export const baseUrl = import.meta.env.VITE_BACKEND_API_URL;
 
@@ -17,8 +18,8 @@ const axiosInstance = axios.create({
     validateStatus: ()=> true
 })
 
-export async function loginAccount(emailOrPhoneNumber:string, password:string){
-    const reqBody = {password}
+export async function loginAccount(emailOrPhoneNumber:string, password:string, playerId?:string){
+    const reqBody = {password, playerId}
     /// To determin whether it's email or phone number
     reqBody[emailOrPhoneNumber.includes('@')? 'email':'phoneNumber'] = emailOrPhoneNumber;
 
@@ -27,7 +28,7 @@ export async function loginAccount(emailOrPhoneNumber:string, password:string){
     return response;
 }
 
-export async function registerAccount(email:string, phoneNumber:string, firstName:string, lastName:string, role: AdminRole | string, password:string, playerId: string){
+export async function registerAccount(email:string, phoneNumber:string, firstName:string, lastName:string, role: AdminRole | string, password:string, playerId?: string){
     const reqBody = {password, email, phoneNumber, firstName, lastName, role, playerId}
 
     const response = await axiosInstance.post(`${baseUrl}/auth/register`, reqBody, {headers:headers});
@@ -94,9 +95,15 @@ export async function createChannel(channel:Channel, adminId:string){
     return response;
 }
 
+export async function createCommunity(community:Community, adminId:string){
+    const pathVariables = `${adminId}`
+    const response = await axiosInstance.post(`${baseUrl}/community/createCommunity/${pathVariables}`, community, {headers:headers})
+    return response;
+}
+
 export async function sendInvitation(channelId:string, email:string){
     const pathVariables = `${channelId}`
-    const response = await axiosInstance.post(`${baseUrl}/channel/sendInvitation/${pathVariables}`, {email}, {headers:headers})
+    const response = await axiosInstance.post(`${baseUrl}/community/sendInvitation/${pathVariables}`, {email}, {headers:headers})
     return response;
 }
 
@@ -108,7 +115,7 @@ export async function removeMember(channelId:string, memberId:string){
 
 export async function acceptInvitation(invitationId: string, accept: boolean){
     const pathVariables = `${invitationId}`
-    const response = await axiosInstance.patch(`${baseUrl}/channel/respondToInvitation/${pathVariables}`, {accept}, {headers:headers})
+    const response = await axiosInstance.patch(`${baseUrl}/community/respondToInvitation/${pathVariables}`, {accept}, {headers:headers})
     return response;
 }
 
@@ -140,5 +147,10 @@ export async function searchUser(name: string){
 
 export async function startChat(receipientId: string){
     const response = await axiosInstance.post(`${baseUrl}/chat/startChat/${getAdminUserData().id}/${receipientId}`, {headers:headers})
+    return response;
+}
+
+export async function closeDM(dmId: string){
+    const response = await axiosInstance.delete(`${baseUrl}/chat/closeDM/${dmId}`, {headers:headers})
     return response;
 }

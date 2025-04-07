@@ -1,10 +1,10 @@
-import { Member } from "./Member";
+import {User } from "./User";
 
 export interface Feedback{
     id:string,
     description:string,
     evidenceUrl:string,
-    perpetrator:string | Member,
-    reporter:string | Member,
+    perpetrator:string | User,
+    reporter:string | User,
     anonymous:string,
 }

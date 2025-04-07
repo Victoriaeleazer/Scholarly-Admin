@@ -1,5 +1,5 @@
 import { Call, User, StreamVideoClient, StreamVideo, StreamCall, NoiseCancellationProvider, useCalls } from "@stream-io/video-react-sdk";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useCustomStreamCall } from "../../hooks/stream-call-hook";
 import { useCustomStreamVideoClient } from "../../hooks/stream-client-hook";
@@ -27,6 +27,8 @@ export default function CallLayout(){
 
   const { call, setCall, incomingCall, setIncomingCall } = useCustomStreamCall();
 
+  const [clientError, setClientError] = useState(false);
+
   const {admin} = useAdmin()
 
   if(!admin) return <SessionExpiredPage />
@@ -38,6 +40,7 @@ export default function CallLayout(){
   
 
   useEffect(()=>{
+    setClientError(false)
 
     
     const _admin = getAdminUserData();
@@ -71,6 +74,7 @@ export default function CallLayout(){
         initializeClient(_callClient);
       })
       .catch((e)=>{
+        setClientError(true)
         console.error(e);
       });
 
@@ -83,7 +87,6 @@ export default function CallLayout(){
   }, [])
 
   useEffect(()=>{
-
     // Ringtone only plays when there's an incoming call
     // and no ongoing call
     if(incomingCall && !call){
@@ -99,7 +102,11 @@ export default function CallLayout(){
     }
   }, [incomingCall])
 
+  if(!client && !clientError) return (<SessionExpiredPage title="Hold On" description="Trying to setup..." showButton={false} />)
+
   if(!client) return (<SessionExpiredPage />)
+
+  
 
 
    //  If the token has expired or another error occurred

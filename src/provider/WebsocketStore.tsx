@@ -5,22 +5,37 @@ import { MenteesProvider } from "./MenteesProvider"
 import { NotificationsProvider } from "./NotificationsProvider"
 import { DirectMessagesProvider } from "./DirectMessagesProvider"
 import { EventsProvider } from "./EventsProvider"
+import { ChannelsProvider } from "./ChannelsProvider"
+import { BatchesProvider } from "./BatchesProvider"
+import { CoursesProvider } from "./CoursesProvider"
+import { AdminsProvider } from "./AdminsProvider"
+import { StudentsProvider } from "./StudentsProvider"
 
 const WebsocketStore = ({children}: {children?:React.JSX.Element}) =>{
     return <AdminProvider>
         <StompClientProvider>
-            <MenteesProvider>
-                <NotificationsProvider>
-                    <DirectMessagesProvider>
-                        <EventsProvider>
-                            {children}
-                        </EventsProvider>
-                    </DirectMessagesProvider>
-                </NotificationsProvider>
-            </MenteesProvider>
-    </StompClientProvider>
+            <StudentsProvider>
+                <AdminsProvider>
+                    <MenteesProvider>
+                        <NotificationsProvider>
+                            <DirectMessagesProvider>
+                                <ChannelsProvider>
+                                    <EventsProvider>
+                                        <BatchesProvider>
+                                            <CoursesProvider>
+                                                {children}
+                                            </CoursesProvider>
+                                        </BatchesProvider>
+                                    </EventsProvider>
+                                </ChannelsProvider>
+                            </DirectMessagesProvider>
+                        </NotificationsProvider>
+                    </MenteesProvider>
+                </AdminsProvider>
+            </StudentsProvider>
+        </StompClientProvider>
 
-        </AdminProvider>
+     </AdminProvider>
 }
 
 export default WebsocketStore

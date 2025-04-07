@@ -1,7 +1,7 @@
 import React, { ReactNode, useContext, useEffect, useMemo, useState } from 'react'
 import { Outlet, useLocation, useNavigate, useSearchParams } from 'react-router'
 import DashboardNavItem from '../../components/DashboardNavItem'
-import { HambergerMenu, Home2, Calendar, Information, Messages, Notification as N, Personalcard, ShieldTick, BookSaved, Setting, Book, Message, EmojiHappy, ArrowDown2, DirectboxReceive, Icon, IconProps, Messages1, SecurityUser } from 'iconsax-react'
+import { HambergerMenu, Home2, Calendar, Information, Messages, Notification as N, Personalcard, ShieldTick, BookSaved, Setting, Book, Message, EmojiHappy, ArrowDown2, DirectboxReceive, Icon, IconProps, Messages1, SecurityUser, Call } from 'iconsax-react'
 import { Admin, AdminRole } from '../../interfaces/Admin';
 import { getAdminUserData, getCallToken, hasAdminUserData, saveCallToken } from '../../services/user-storage';
 import { useMediaQuery } from '@react-hook/media-query';
@@ -109,14 +109,14 @@ export default function DashboardLayout() {
 
   const facultyMenus = ()=>(
     <>
-      <DashboardNavItem selected={currentLocation.pathname.includes('/my-batches')} navItem={{icon:<BookSaved />, selectedIcon:<BookSaved variant='Bold'/>, link:'./my-batches', name:'My Batches'}} />
+      <DashboardNavItem selected={currentLocation.pathname.includes('/my-cohorts')} navItem={{icon:<BookSaved />, selectedIcon:<BookSaved variant='Bold'/>, link:'./my-cohorts', name:'My Cohorts'}} />
     </>
   );
 
   const managerOrCouselorMenus = ()=>(
     <>
       <DashboardNavItem selected={currentLocation.pathname.includes('/courses')} navItem={{icon:<Book />, selectedIcon:<Book variant='Bold'/>, link:'./courses', name:'Courses'}} />
-      <DashboardNavItem selected={currentLocation.pathname.includes('/batches')} navItem={{icon:<BookSaved />, selectedIcon:<BookSaved variant='Bold'/>, link:'./batches', name:'Batches'}} />
+      <DashboardNavItem selected={currentLocation.pathname.includes('/cohorts')} navItem={{icon:<BookSaved />, selectedIcon:<BookSaved variant='Bold'/>, link:'./cohorts', name:'Cohorts'}} />
       <DashboardNavItem selected={currentLocation.pathname.includes('/feedbacks')} navItem={{icon:<Information/>, selectedIcon:<Information variant='Bold' />, link:'./feedbacks', name:'Feedbacks'}} />  
     </>
   )
@@ -166,7 +166,9 @@ export default function DashboardLayout() {
       {admin?.role === AdminRole.Manager && managerMenus()}
 
       {/* For Menus that apply to both managers and counselors */}
-      {admin?.role === AdminRole.Counselor || admin?.role === AdminRole.Manager && managerOrCouselorMenus()}         
+      {admin?.role === AdminRole.Counselor || admin?.role === AdminRole.Manager && managerOrCouselorMenus()}
+
+      <DashboardNavItem selected={currentLocation.pathname.includes('/meets')} navItem={{icon:<Call />, selectedIcon:<Call variant='Bold'/>, link:'./meets', name:'Meets'}} />
       
 
       <DashboardNavItem selected={currentLocation.pathname.includes('/settings')} navItem={{icon:<Setting />, selectedIcon:<Setting variant='Bold'/>, link:'./settings', name:'Settings'}} />
