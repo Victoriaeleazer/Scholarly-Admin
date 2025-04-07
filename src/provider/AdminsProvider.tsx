@@ -46,7 +46,7 @@ export function AdminsProvider({children}: {children?: React.JSX.Element}){
 
     useEffect(()=>{
         saveAdmins(admins)
-    }, [admin])
+    }, [admins])
 
     
 

@@ -1,6 +1,6 @@
 
 import { useMediaQuery } from '@react-hook/media-query';
-import { Add, ArrowDown2, ArrowRight2 } from 'iconsax-react';
+import { Add, AddCircle, ArrowDown2, ArrowRight2 } from 'iconsax-react';
 import React, { useRef, useState } from 'react'
 import Fab from '../../../components/Fab';
 import LottieWidget from '../../../components/LottieWidget';
@@ -20,33 +20,135 @@ import formatCurrency from '../../../utils/NumberFormat';
 import { FaCheck } from 'react-icons/fa6';
 import { AdminRole } from '../../../interfaces/Admin';
 import CheckBox from '../../../components/CheckBox';
+import { useStudents } from '../../../provider/StudentsProvider';
+import { Student } from '../../../interfaces/Student';
+import { distinctList, distinctStringList } from '../../../utils/ArrayUtils';
+import { useMutation } from '@tanstack/react-query';
+import { CohortPayload, createCohort } from '../../../services/cohort-repo';
+import { toast } from 'sonner';
+import CohortsList from './BatchesList';
 
 export default function BatchesPage() {
     const {batches: cohorts} = useBatches();
+    const {students:allStudents} = useStudents();
     const [dialog, showDialog] = useState(false)
     const [courseDialog, showCourseDialog] = useState(false);
     const [facultyDialog, showFacultyDialog] = useState(false);
+    const [studentDialog, showStudentDialog] = useState(false);
+
     const {admin} = useAdmin();
     const {admins} = useAdmins();
     const cohortNameRef = useRef<HTMLInputElement>(null);
     const cohortRecommendedPriceRef = useRef<HTMLInputElement>(null);
+    const cohortStartDayRef = useRef<HTMLInputElement>(null);
+    const cohortStartMonthRef = useRef<HTMLInputElement>(null);
+    const cohortStartYearRef = useRef<HTMLInputElement>(null);
+    const cohortEndDayRef = useRef<HTMLInputElement>(null);
+    const cohortEndMonthRef = useRef<HTMLInputElement>(null);
+    const cohortEndYearRef = useRef<HTMLInputElement>(null);
     const isPhone = !useMediaQuery('only screen and (min-width: 768px)');
 
 
     const [course, selectCourse] = useState<Course | undefined>(undefined)
     const [index, selectIndex] = useState<number | undefined>(undefined)
     const [faculty, selectFaculty] = useState<User | undefined>(undefined)
-    const [students, selectStudents] = useState<User[]>([]);
+    const [students, selectStudents] = useState<Student[]>([]);
+    const [selectedStudents, setSelectedStudents] = useState<Student[]>([]);
     const [days, selectDays] = useState<Days[]>([]);
     const {courses} = useCourses();
 
     const allowedDays = [Days.Mon, Days.Tue, Days.Wed, Days.Thur, Days.Fri, Days.Sat];
 
 
-    const MonthDropdown = ()=>{
+    const toggleStudentSelected = (student: Student)=>{
+        if(selectedStudents.some(_student => student.id === _student.id)){
+          setSelectedStudents(prev => prev.filter(_student => _student.id !== student.id));
+          return;
+        }
 
+        setSelectedStudents(prev => [...prev, student])
     }
 
+    const convertDay = (day: Days)=>{
+        switch(day){
+            case 'Monday': ()=> 'Mon';
+            case 'Tuesday': ()=> 'Tue';
+            case 'Wednesday': ()=> 'Wed';
+            case 'Thursday': ()=> 'Thu';
+            case 'Friday': ()=> 'Fri';
+            case 'Saturday': ()=> 'Sat';
+            default:
+                return 'Sun';
+        }
+    }
+
+    const formatNumber = (value: string) => {
+        // Remove any character except digits and decimal point
+        const cleaned = value.replace(/[^\d.]/g, '');
+
+        // Split into whole and decimal parts
+        const [wholePart, decimalPart] = cleaned.split('.');
+
+        // Format whole part with commas
+        const formattedWhole = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+        // Handle final output
+        if (decimalPart !== undefined) {
+        return formattedWhole + '.' + decimalPart;
+        } else if (value.endsWith('.')) {
+        return formattedWhole + '.';
+        } else {
+        return formattedWhole;
+        }
+    };
+
+    const createCohortMutation = useMutation({
+        mutationFn: async ()=>{
+            const startDay = cohortStartDayRef.current?.value.padStart(2, '0')!;
+            const startMonth = Object.keys(Months).filter(g => isNaN(Number(g))).findIndex(month => month === cohortStartMonthRef.current?.value).toString().padStart(2, '0');
+            const startYear = Number.parseInt(cohortStartYearRef.current?.value!);
+            const startPeriod = `${startYear}-${startMonth}-${startDay}`;
+
+            const endDay = cohortEndDayRef.current?.value!.padStart(2, '0')!;
+            const endMonth = Object.keys(Months).filter(g => isNaN(Number(g))).findIndex(month => month === cohortEndMonthRef.current?.value!).toString().padStart(2, '0');
+            const endYear = Number.parseInt(cohortEndYearRef.current?.value!);
+            const endPeriod = `${endYear}-${endMonth}-${endDay}`;
+
+            const timetable = distinctStringList(days.map(day => convertDay(day)));
+
+            const recommendedPrice = Number.parseFloat(formatNumber(cohortRecommendedPriceRef.current?.value!).replace(',', ''));
+
+            const cohort : CohortPayload = {
+                batchName: cohortNameRef.current?.value!,
+                course: course?.id!,
+                faculty: faculty?.id!,
+                recommendedPrice,
+                endPeriod,
+                startPeriod,
+                members: students.map(student => student.id),
+                timetable
+            }
+
+            const req = await createCohort(cohort, admin!);
+            console.log("Cohort: ", req);
+            if(req.status !== 200){
+                throw new Error(req.data.message)
+            }
+
+            return req.data;            
+        },
+        onSuccess: ()=>{
+            toast.success("Cohort Created", {description:"The cohort was successfully created."});
+            selectCourse(undefined);
+            selectFaculty(undefined);
+            selectDays([]);
+            selectStudents([]);
+            showDialog(false);
+        },
+        onError: ({message})=>{
+            toast.error("Process Failed", {description: message});
+        }
+    })
 
     
     
@@ -63,6 +165,8 @@ export default function BatchesPage() {
     return (
         <div className='w-full h-full'>
             {cohorts.length == 0 && <NoCohortsPage />}
+            {cohorts.length !== 0 && <CohortsList />}
+
 
 
             {/* Select Course Dialog */}
@@ -121,12 +225,44 @@ export default function BatchesPage() {
 
             </Dialog>
 
+            {/* Select Student's Dialog */}
+            <Dialog show={studentDialog} zIndex={850} onClose={()=>{showStudentDialog(false); selectIndex(undefined);setSelectedStudents([])}} className='w-[500px]'>
+                <p className='text-white mb-5 text-[23px] font-semibold self-start'>Select students</p>
+                <div className='w-full flex mb-5 flex-col gap-4'>
+                    {allStudents.map((student, _index)=>{
+                        const selected = selectedStudents.some(_student=> _student.id == student.id);
+                       return <div onClick={()=>toggleStudentSelected(student)} className='flex items-center gap-3 select-none cursor-pointer border-secondary pb-4 border-opacity-10 border-b last:border-b-0 last:pb-0'>
+                            <ProfileIcon member={student} className='object-cover object-center w-[37px] h-[37px]' />
+                            <div className='flex flex-col overflow-hidden'>
+                                <p className='text-white text-[14px] font-normal truncate'>{student.fullName}</p>
+                                <p className='text-[11px] text-secondary font-light truncate'>{student.email}</p>
+                            </div>
+                            <div className='flex-1' />
+                            <input type='checkbox' checked={selected} onChange={(e)=>selectIndex(e.target.checked?_index:undefined)} className='hidden' />
+                            <div className={`w-[16px] h-[16px] flex text-white flex-center border-2 rounded ${selected?'bg-purple border-purple' :'bg-transparent border-secondary'}`}>
+                                {selected && <FaCheck className='text-[8px]' />}
+                            </div>
+                        </div>
+                    })}
+                </div>
+                <Button title='Add' disabled={selectedStudents.length === 0} onClick={()=>{
+                    selectStudents(prev => distinctList([...prev.filter(_student => selectedStudents.some(_studen => _studen.id === _student.id)), ...selectedStudents], 'id'));
+                    showStudentDialog(false)
+                    selectIndex(undefined)
+                }} />
+
+
+            </Dialog>
+
             {/* Create Cohort Dialog */}
             <Dialog show={dialog} onClose={()=>showDialog(false)} cancelable={false} className='flex w-[900px] gap-10'>
                 <div className='w-[400px]'>
                     <p className='text-white mb-4 text-[23px] font-semibold self-start'>Create a Cohort</p>
 
-                    <form className='flex flex-col items-center justify-center gap-5 text-left w-full'>
+                    <form className='flex flex-col items-center justify-center gap-5 text-left w-full' onSubmit={(e)=>{
+                        e.preventDefault();
+                        createCohortMutation.mutate();
+                    }}>
                         {/* Cohort Name */}
                         <div className='flex flex-col gap-1 w-full'>
                             <p className='text-secondary text-[13px] raleway'>Cohort Name</p>
@@ -167,9 +303,9 @@ export default function BatchesPage() {
                          <div className='flex flex-col gap-1 w-full'>
                             <p className='text-secondary text-[13px] raleway'>Set Start Date</p>
                             <div className='flex w-full gap-4'>
-                                <input required inputMode='numeric' placeholder='Day' multiple={false} className='w-[55px] bg-white bg-opacity-[0.02] px-3 py-3 rounded-[10px] text-[14px] placeholder:text-secondary text-white outline-background outline outline-[2.5px] focus:outline focus:outline-purple' />
-                                <input required list='months' multiple={false} placeholder='Month' className='w-[50%] bg-white bg-opacity-[0.02] px-3 py-3 rounded-[10px] text-[14px] placeholder:text-secondary text-white outline-background outline outline-[2.5px] focus:outline focus:outline-purple'/>
-                                <input required list='years' multiple={false} placeholder='Year' className='w-[30%] bg-white bg-opacity-[0.02] px-3 py-3 rounded-[10px] text-[14px] placeholder:text-secondary text-white outline-background outline outline-[2.5px] focus:outline focus:outline-purple' />
+                                <input required ref={cohortStartDayRef} inputMode='numeric' placeholder='Day' multiple={false} className='w-[55px] bg-white bg-opacity-[0.02] px-3 py-3 rounded-[10px] text-[14px] placeholder:text-secondary text-white outline-background outline outline-[2.5px] focus:outline focus:outline-purple' />
+                                <input required ref={cohortStartMonthRef} list='months' multiple={false} placeholder='Month' className='w-[50%] bg-white bg-opacity-[0.02] px-3 py-3 rounded-[10px] text-[14px] placeholder:text-secondary text-white outline-background outline outline-[2.5px] focus:outline focus:outline-purple'/>
+                                <input required ref={cohortStartYearRef} list='years' multiple={false} placeholder='Year' className='w-[30%] bg-white bg-opacity-[0.02] px-3 py-3 rounded-[10px] text-[14px] placeholder:text-secondary text-white outline-background outline outline-[2.5px] focus:outline focus:outline-purple' />
 
                             </div>
                         </div>
@@ -178,9 +314,9 @@ export default function BatchesPage() {
                         <div className='flex flex-col gap-1 w-full'>
                             <p className='text-secondary text-[13px] raleway'>Set End Date</p>
                             <div className='flex w-full gap-4'>
-                                <input required inputMode='numeric' placeholder='Day' multiple={false} className='w-[55px] bg-white bg-opacity-[0.02] px-3 py-3 rounded-[10px] text-[14px] placeholder:text-secondary text-white outline-background outline outline-[2.5px] focus:outline focus:outline-purple' />
-                                <input required list='months' multiple={false} placeholder='Month' className='w-[50%] bg-white bg-opacity-[0.02] px-3 py-3 rounded-[10px] text-[14px] placeholder:text-secondary text-white outline-background outline outline-[2.5px] focus:outline focus:outline-purple' />
-                                <input required list='years' multiple={false} placeholder='Year' className='w-[30%] bg-white bg-opacity-[0.02] px-3 py-3 rounded-[10px] text-[14px] placeholder:text-secondary text-white outline-background outline outline-[2.5px] focus:outline focus:outline-purple' />
+                                <input required ref={cohortEndDayRef} inputMode='numeric' placeholder='Day' multiple={false} className='w-[55px] bg-white bg-opacity-[0.02] px-3 py-3 rounded-[10px] text-[14px] placeholder:text-secondary text-white outline-background outline outline-[2.5px] focus:outline focus:outline-purple' />
+                                <input required ref={cohortEndMonthRef} list='months' multiple={false} placeholder='Month' className='w-[50%] bg-white bg-opacity-[0.02] px-3 py-3 rounded-[10px] text-[14px] placeholder:text-secondary text-white outline-background outline outline-[2.5px] focus:outline focus:outline-purple' />
+                                <input required ref={cohortEndYearRef} list='years' multiple={false} placeholder='Year' className='w-[30%] bg-white bg-opacity-[0.02] px-3 py-3 rounded-[10px] text-[14px] placeholder:text-secondary text-white outline-background outline outline-[2.5px] focus:outline focus:outline-purple' />
 
                             </div>
                         </div>
@@ -200,7 +336,7 @@ export default function BatchesPage() {
                             <option>{new Date().getFullYear()+1}</option>
                         </datalist>
 
-                        <Button className='mt-2' title={'Create Cohort'} type='submit'  />
+                        <Button className='mt-2' title={'Create Cohort'} loading={createCohortMutation.isPending} type='submit'  />
                     </form>
 
                     
@@ -231,10 +367,17 @@ export default function BatchesPage() {
                     </div>
 
                     <p className='text-[18px] mb-3 font-semibold'>Select Students</p>
-                    <div className={`w-full min-h-[100px] flex ${students.length === 0? 'flex-center': 'flex-wrap'}`}>
+                    <div className={`w-full min-h-[100px] flex gap-3 ${students.length === 0? 'flex-center': 'flex-wrap'}`}>
                         {students.length === 0 && <p className='flex text-secondary font-light text-[12px]'>Students you add will appear here</p>}
+                        {students.map((student, index)=>(
+                            <div key={index} className='flex items-center select-none cursor-pointer gap-2 outline outline-3 outline-purple bg-purple bg-opacity-30 px-2 py-[5px] h-fit rounded'>
+                                <ProfileIcon className='h-[22px] aspect-square text-[7.5px]' member={student} />
+                                <p className='text-[12px] font-light'>{student.firstName}</p>
+                                <AddCircle onClick={()=>selectStudents(prev => prev.filter(_student => _student.id !== student.id))} variant='Bold' color='#fff' size={18} className='rotate-45' />
+                            </div>
+                        ))}
                     </div>
-                    <div className="w-full bg-tertiary text-center cursor-pointer px-3 py-1.5 select-none rounded-[10px] h-[40px] text-[13px] flex gap-2 flex-center text-white outline-background outline outline-[2px]">
+                    <div onClick={()=> {setSelectedStudents(students); showStudentDialog(true);}} className="w-full bg-tertiary text-center cursor-pointer px-3 py-1.5 select-none rounded-[10px] h-[40px] text-[13px] flex gap-2 flex-center text-white outline-background outline outline-[2px]">
                         <p>{students.length === 0? "Add Student": "Add more students"}</p>
                     </div>
 

@@ -71,7 +71,7 @@ export default function CourseList() {
  
                          </tr>
                      )))}
-                     {filteredCourses.length === 0 && <tr className='bg-background'><td className='text-center py-4' colSpan={5}>No search results for "<span className='font-bold'>{searchTerm}</span>".</td></tr>}
+                     {filteredCourses.length === 0 && <tr className='bg-background'><td className='text-center py-4' colSpan={6}>No search results for "<span className='font-bold'>{searchTerm}</span>".</td></tr>}
                  </tbody>
              </table>
          </div>

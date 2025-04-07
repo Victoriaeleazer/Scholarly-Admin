@@ -1,13 +1,14 @@
 import React, { CSSProperties } from 'react'
 import { User } from '../interfaces/User';
 import { Admin } from '../interfaces/Admin';
+import { Student } from '../interfaces/Student';
 
 interface props{
     width?: string | number,
     height?: string | number,
     className?: string,
     style?: CSSProperties,
-    member?: User | Admin,
+    member?: User | Admin | Student,
     profile?: string,
 }
 

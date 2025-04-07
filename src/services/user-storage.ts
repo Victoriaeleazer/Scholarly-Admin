@@ -7,6 +7,7 @@ import { Mentee } from "../interfaces/Mentee";
 import { Notification } from "../interfaces/Notification";
 import { Batch } from "../interfaces/Batch";
 import { Course } from "../interfaces/Course";
+import { Student } from "../interfaces/Student";
 
 export function saveAdminUserData(data:Admin){
     localStorage.setItem('userdata', JSON.stringify(data))
@@ -115,6 +116,14 @@ export function saveAdmins (admins: Admin[]){
 
 export function getAdmins(): Admin[]{
     return JSON.parse(localStorage.getItem('admins') ?? '[]');
+}
+
+export function saveStudents (student: Student[]){
+    localStorage.setItem("students", JSON.stringify(student))
+}
+
+export function getStudents(): Student[]{
+    return JSON.parse(localStorage.getItem('students') ?? '[]');
 }
 
 export function logout(){

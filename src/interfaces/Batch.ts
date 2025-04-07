@@ -9,7 +9,9 @@ export interface Batch{
     faculty: User, // More strictly an admin
     startPeriod: string,
     endPeriod: string,
+    recommendedFee?: number,
     members:  User[],
+    timetable: Days[],
     paidMembers: User[],
 }
 

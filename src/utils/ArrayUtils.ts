@@ -18,3 +18,6 @@ export const distinctList = (list: any[], property:string, compareFn?:(a: any, b
     return newDistinct;
 
 }
+export function distinctStringList(array:string[]):string[]{
+    return Array.from(new Set(array));
+}

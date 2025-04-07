@@ -5,6 +5,7 @@ export interface Student{
     firstName:string,
     lastName:string,
     fullName:string,
+    color: string,
     profile?:string,
     email:string,
     phoneNumber:string,

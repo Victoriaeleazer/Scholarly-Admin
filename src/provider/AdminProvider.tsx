@@ -10,6 +10,7 @@ export interface AdminAPI{
 
 const AdminContext = createContext<AdminAPI | null>(null);
 
+
 /**
  * Responsible for reading, and overwriting admin (user) details globally within the app.
  * 
