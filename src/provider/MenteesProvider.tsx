@@ -11,7 +11,7 @@ type MenteesContextAPI = {
     mentees: Mentee[],
 }
 
-const menteesCompareFn = (a:Mentee, b:Mentee)=> (new Date(b.date).getTime() - new Date(a.date).getTime());
+const menteesCompareFn = (a:Mentee, b:Mentee)=> (new Date(b.createdTime).getTime() - new Date(a.createdTime).getTime());
 
 
 const MenteesContext = createContext<MenteesContextAPI | null>(null);
@@ -58,10 +58,9 @@ export function MenteesProvider({children} : {children?:React.JSX.Element}){
             }
         })
 
-        if(!admin) return;
         publish(`/scholarly/getMentees/${admin?.id}`)
 
-    }, [])
+    }, [admin])
 
     const setMentees = useCallback((_mentees: Mentee[])=>{
         saveMentees(_mentees);

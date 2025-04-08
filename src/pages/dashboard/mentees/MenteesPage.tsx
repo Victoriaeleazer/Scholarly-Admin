@@ -6,9 +6,10 @@ import MenteesList from './MenteesList';
 import Fab from '../../../components/Fab';
 import { Add } from 'iconsax-react';
 import Dialog from '../../../components/Dialog';
+import { useMentees } from '../../../provider/MenteesProvider';
 
 export default function MenteesPage() {
-    const [mentees, setMentees] = useState([]);
+    const {mentees} = useMentees();
     const [popup, showPopup] = useState(false);
     const [menteeName, setMenteeName] = useState('');
     const [menteeDescription, setMenteeDescription] = useState('');
@@ -31,9 +32,9 @@ export default function MenteesPage() {
     // The Layout to show when there mentees
     return (
         <div className={`w-full h-full bg-transparent items-center justify-center flex flex-col text-white text-center ${isPhone?'gap-2':'gap-10'} relative`}>
-            {mentees.length ===0 && <NoMenteesLayout />}
+            {mentees.length === 0 && <NoMenteesLayout />}
             
-            {mentees.length > 0 && <MenteesList mentees={mentees} />}
+            {mentees.length > 0 && <MenteesList />}
 
         <Dialog 
          show={popup}
@@ -45,9 +46,9 @@ export default function MenteesPage() {
         </Dialog>
 
 
-            <Fab onClick={()=>showPopup(true)} className='absolute shadow-sm bottom-5 right-5'>
+            {/* <Fab onClick={()=>showPopup(true)} className='absolute shadow-sm bottom-5 right-5'>
                 <Add size={25} />
-            </Fab>
+            </Fab> */}
         </div>
     )
 }
