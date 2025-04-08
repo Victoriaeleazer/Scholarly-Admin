@@ -45,7 +45,7 @@ const StudentsList = () => {
           </thead>
           <tbody className="text-[14px]">
             {filtered.map((student, i) => (
-              <StudentRow key={i} student={student} />
+              <StudentRow key={i} student={student} /> 
             ))}
             {filtered.length === 0 && <tr className='bg-background'><td className='text-center py-4' colSpan={5}>No search results for "<span className='font-bold'>{search}</span>".</td></tr>}
           </tbody>
