@@ -10,5 +10,5 @@ export interface Student{
     email:string,
     phoneNumber:string,
     createdAt:string,
-    counselor: string | Admin
+    counselor: Admin
 }

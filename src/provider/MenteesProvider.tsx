@@ -9,6 +9,7 @@ import { distinctList } from "../utils/ArrayUtils";
 
 type MenteesContextAPI = {
     mentees: Mentee[],
+    fetch: ()=> void,
 }
 
 const menteesCompareFn = (a:Mentee, b:Mentee)=> (new Date(b.createdTime).getTime() - new Date(a.createdTime).getTime());
@@ -67,8 +68,12 @@ export function MenteesProvider({children} : {children?:React.JSX.Element}){
         setMenteesRaw(_mentees);
     }, [])
 
+    const fetch = useCallback(()=>{
+        publish(`/scholarly/getMentees/${admin?.id}`);
+    }, [])
 
-    return <MenteesContext.Provider value={{mentees}}>
+
+    return <MenteesContext.Provider value={{mentees, fetch}}>
         {children}
     </MenteesContext.Provider>
 }
