@@ -39,7 +39,7 @@ const StudentsList = () => {
               <th className="px-4 py-2">Details</th>
               <th className="px-4 text-center py-2">Email</th>
               <th className="px-4 text-center py-2">Phone No.</th>
-              <th className="px-4 text-center py-2">Counselor</th>
+              <th className="px-4 text-center py-2">Counselor </th>
               <th className="px-4 text-center py-2">Date Joined</th>
             </tr>
           </thead>

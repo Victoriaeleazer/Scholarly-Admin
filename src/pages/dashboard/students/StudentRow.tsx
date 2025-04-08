@@ -8,7 +8,7 @@ const StudentRow = ({student} : {student: Student}) => {
     <tr className="border-0 bg-tertiary text-center odd:bg-background hover:bg-light-purple hover:bg-opacity-20 transition-colors ease duration-300 text-white font-normal cursor-pointer">
       <td className="px-4 pl-6 py-4">
         <div className="flex items-center">
-          <ProfileIcon member={student} className="w-8 h-8 mr-2" width={"32px"} height={"32"} />
+          <ProfileIcon member={student} className="w-8 h-8 mr-2" width={"32px"} height={"32px"} />
           <p>{student.fullName}</p>
         </div>  
       </td>
