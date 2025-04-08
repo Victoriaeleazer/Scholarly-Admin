@@ -10,7 +10,7 @@ const StudentRow = ({student} : {student: Student}) => {
         <div className="flex items-center">
           <ProfileIcon member={student} className="w-8 h-8 mr-2" width={"32px"} height={"32"} />
           <p>{student.fullName}</p>
-        </div>
+        </div> 
       </td>
       <td className="px-4 py-2">{student.email}</td>
       <td className="px-4 py-2">{student.phoneNumber}</td>
