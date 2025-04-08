@@ -15,7 +15,7 @@ const StudentRow = ({student} : {student: Student}) => {
       <td className="px-4 py-2">{student.email}</td>
       <td className="px-4 py-2">{student.phoneNumber}</td>
       <td className="px-4 py-2 pl-6 flex">
-          <div className="flex items-center gap-2 overflow-hidden">
+          <div className="flex items-center gap-2 overflow-hidden"> 
                   <ProfileIcon member={student.counselor} className="text-[10px]" width={"32px"} height={"32px"} />
                   <p className='truncate' title={student.counselor.fullName}>{student.counselor.fullName}</p>
           </div>
