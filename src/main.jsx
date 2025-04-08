@@ -24,6 +24,7 @@ import EventLayout from './pages/dashboard/events/EventLayout'
 import ChatsLayout from './pages/dashboard/chats/ChatsLayout'
 import ChatsPage from './pages/dashboard/chats/ChatsPage'
 import OpenChat from './pages/dashboard/chats/OpenChat'
+import PaymentRequests from './pages/dashboard/payments/PaymentRequests'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Provider } from 'react-redux'
 import { store } from './store'
@@ -64,6 +65,7 @@ createRoot(document.getElementById('root')).render(
                     </Route>
                     <Route path='mentees' element={<MenteesPage />} />
                     <Route path='events' element={<EventLayout />} >
+                    <Route path='payments' element={<PaymentRequests />} ></Route>
                       <Route index element={<EventsPage />} />
                       <Route path=':eventId' element={<ViewEventPage />} />
                     </Route>
