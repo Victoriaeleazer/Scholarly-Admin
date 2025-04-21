@@ -140,42 +140,137 @@ input::placeholder{
 
 
 
-/* Custom calendar styles
-.custom-calendar {
-  width: 570px;
+Custom calendar styles
+.calendar-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #2d2d2d;
+  color: white;
   border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.react-calendar__tile {
-  border-radius: 6px;
-  font-weight: 600;
-  transition: background-color 0.3s ease;
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
-.react-calendar__tile:hover {
-  background-color: rgba(0, 123, 255, 0.1);
+.calendar-header h2 {
+  font-size: 1.5rem;
 }
 
-.react-calendar__tile:active {
-  background-color: rgba(16, 16, 16, 0.3);
+.calendar-header button {
+  background-color: #560677;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-.react-calendar__tile.react-calendar__tile--now {
-  background-color: rgba(16, 16, 16, 0.5);
-  color: black;
+.calendar-header button:hover {
+  background-color: #7a0b9e;
 }
 
-.react-calendar__tile.react-calendar__tile--now:hover {
-  background-color: rgba(0, 123, 255, 0.6);
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
 }
 
-.react-calendar__month-view__days__day {
+.day-name {
+  font-weight: bold;
+  text-align: center;
+}
+
+.day,
+.empty-day {
+  width: 100%;
+  padding: 12px;
+  text-align: center;
+  background-color: #3d3d3d;
+  border-radius: 4px;
+}
+
+.day {
+  cursor: pointer;
+}
+
+.day.today {
+  background-color: #7a0b9e; 
+  color: white;
+  font-weight: bold;
+}
+
+.day:hover {
+  background-color: #560677;
+  color: white;
+}
+
+.reminder-dot {
+  width: 6px;
+  height: 6px;
+  background-color: greenyellow;
+  border-radius: 50%;
+  margin: 4px auto 0;
+}
+.day:hover .reminder-dot {
+  background-color: greenyellow; 
+}
+
+
+
+
+.month-year-picker {
+  cursor: pointer;
+  text-decoration: underline;
+  display: flex;
+}
+
+.month-year-menu {
+  position: absolute;
+  background-color: #2d2d2d;
+  color: white;
+  border: 1px solid #ffffff;
   border-radius: 8px;
-  padding: 10px;
-  font-size: 1rem;
-  color: #333;
-} */
+  padding: 16px;
+  z-index: 10;
+  
+}
 
+.year-selector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.month-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.month-selector button {
+  background-color: #3d3d3d;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.month-selector button.selected {
+  background-color: #560677;
+  color: white;
+  font-weight: bold;
+}
+
+.month-selector button:hover {
+  background-color: #7a0b9e;
+}
 
