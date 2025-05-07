@@ -11,9 +11,75 @@ import { Book1, People, Personalcard } from 'iconsax-react'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler)
 
+
+
+
 export default function DashboardPage() {
   const [admin, setAdmin] = useState<Admin | null>(null)
   const navigate = useNavigate()
+
+  
+  //calender
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ];
+  
+  const handleMonthYearChange = (month: number, year: number) => {
+    setCurrentDate(new Date(year, month, 1));
+    setIsPickerOpen(false); // Close the picker after selection
+  };
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [reminders, setReminders] = useState<{ date: string; description: string }[]>([
+    { date: '2025-04-16', description: 'Project deadline' },
+    { date: '2025-04-20', description: 'Team meeting' },
+    
+  ]);
+  const today = new Date();
+
+  const getDaysInMonth = (year: number, month: number) => {
+    return new Date(year, month + 1, 0).getDate();
+  };
+
+  const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  const daysInMonth = getDaysInMonth(currentDate.getFullYear(), currentDate.getMonth());
+  const startDay = startOfMonth.getDay();
+
+  const handlePrevMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  };
+
+  const renderDays = () => {
+    const days: JSX.Element[] = [];
+    for (let i = 0; i < startDay; i++) {
+      days.push(<div key={`empty-${i}`} className="empty-day"></div>);
+    }
+    for (let i = 1; i <= daysInMonth; i++) {
+      const dayDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+      const reminder = reminders.find((r) => r.date === dayDate);
+      const isToday =
+        today.getDate() === i &&
+        today.getMonth() === currentDate.getMonth() &&
+        today.getFullYear() === currentDate.getFullYear();
+  
+      days.push(
+        <div key={i} className={`day ${isToday ? 'today' : ''}`} title={reminder?.description || ''}>
+          {i}
+          {reminder && <div className="reminder-dot"></div>}
+        </div>
+      );
+    }
+    return days;
+  };
+//calender
+
+
 
   useEffect(() => {
     if (hasAdminUserData()) {
@@ -75,6 +141,10 @@ export default function DashboardPage() {
     }
   }
 
+  function setSelectedDate(value: string): void {
+    throw new Error('Function not implemented.')
+  }
+
   return (
     <div className='text-white bg-transparent px-6 py-8 w-full h-fit overflow-x-hidden overflow-y-scroll scholarly-scrollbar'>
       <FadeSlideUp className='select-none font-light text-4xl'>
@@ -113,16 +183,55 @@ export default function DashboardPage() {
           <h2 className='text-2xl font-bold mb-4 text-white'>Performance Over Time</h2>
           <Line data={lineData} options={{ maintainAspectRatio: true, plugins: { legend: { display: false }, filler: { propagate: true }, colors: { forceOverride: true } }, scales: { x: { type: 'category' }, y: { type: 'linear', beginAtZero: true } } }} />
         </div>
-        {/* <div className='bg-tertiary text-black p-1  rounded-lg shadow-md w-[400px]'>
-          <h2 className='text-2xl font-bold mb-4 text-white'>Calendar</h2>
-          <div className='custom-calendar '>
-            <Calendar 
-              className=''
-              tileClassName={calendarTileClassName}
-            />
+
+
+<div className="calendar-container">
+<div className="calendar-header">
+  <button onClick={handlePrevMonth}>&lt;</button>
+  <h2 onClick={() => setIsPickerOpen(!isPickerOpen)} className="month-year-picker">
+    {currentDate.toLocaleString('default', { month: 'long' })} {currentDate.getFullYear()}
+  </h2>
+  <button onClick={handleNextMonth}>&gt;</button>
+</div>
+      <div className="calendar-days">
+        {daysOfWeek.map((day) => (
+          <div key={day} className="day-name">
+            {day}
           </div>
-        </div> */}
+        ))}
+        {renderDays()}
+      </div>
+    </div>
+
+
+    {isPickerOpen && (
+  <div className="month-year-menu">
+    <div className="year-selector">
+      <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1))}>
+        &lt;
+      </button>
+      <span>{currentDate.getFullYear()}</span>
+      <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), 1))}>
+        &gt;
+      </button>
+    </div>
+    <div className="month-selector">
+      {months.map((month, index) => (
+        <button
+          key={month}
+          onClick={() => handleMonthYearChange(index, currentDate.getFullYear())}
+          className={index === currentDate.getMonth() ? 'selected' : ''}
+        >
+          {month}
+        </button>
+      ))}
+    </div>
+  </div>
+)}
         
+        
+
+
       {/* <div className='grid grid-cols-2 gap-4 '>
          <div className='bg-tertiary p-4 max-h-[400px] rounded-lg shadow-md'>
           <h2 className='text-2xl font-bold mb-4 text-white'>Notice Board</h2>

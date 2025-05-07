@@ -5,5 +5,7 @@ export interface Mentee{
     lastName : string,
     profile? : string,
     color: string,
-    date: string
+    createdTime: string
+    phoneNumber: string,
+    email: string,  
 }

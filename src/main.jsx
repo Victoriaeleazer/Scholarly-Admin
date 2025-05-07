@@ -15,6 +15,8 @@ import AnnouncementPage from './pages/dashboard/announcements/AnnouncementPage'
 import EventsPage from './pages/dashboard/events/EventsPage'
 import StudentsPage from './pages/dashboard/students/StudentsPage'
 import MenteesPage from './pages/dashboard/mentees/MenteesPage'
+import MenteeLayout from './pages/dashboard/mentees/MenteeLayout'
+import ViewMenteePage from './pages/dashboard/mentees/ViewMenteePage'
 import BatchesPage from './pages/dashboard/batches/BatchesPage'
 import MyBatchesPage from './pages/dashboard/my-batches/MyBatchesPage'
 import CoursesPage from './pages/dashboard/courses/CoursesPage'
@@ -32,6 +34,9 @@ import ChatDetails from './pages/dashboard/chats/ChatDetails'
 import CallLayout from './pages/dashboard/CallLayout'
 import WebsocketStore from './provider/WebsocketStore'
 import StaffsLayout from './pages/dashboard/staffs/StaffsLayout'
+import StudentsList from './pages/dashboard/students/StudentsList'
+import StudentLayout from './pages/dashboard/students/StudentLayout'
+import ViewStudentPage from './pages/dashboard/students/ViewStudentPage'
 
 
 const queryClient = new QueryClient();
@@ -56,9 +61,18 @@ createRoot(document.getElementById('root')).render(
                       <Route path=':dmId/details?' element={<ChatDetails />} />
                     </Route>
                     <Route path='announcements' element={<AnnouncementPage />} />
-                    <Route path='students' element={<StudentsPage />} />
+                    <Route path='students' element={<StudentLayout />}>
+                      <Route index element={<StudentsPage />} />
+                      <Route path=':studentId' element={<ViewStudentPage />} />
+                    </Route>
                     <Route path='cohorts' element={<BatchesPage />} />
                     <Route path='courses' element={<CoursesPage />} />
+                    <Route path='my-batches' element={<MyBatchesPage />} />
+                    <Route path='staffs' element={<StaffsPage />} />
+                    <Route path='mentees' element={<MenteeLayout />} >
+                      <Route index element={<MenteesPage />} />
+                      <Route path=':menteeId' element={<StudentsList />} />
+                    </Route>
                     <Route path='my-cohorts' element={<MyBatchesPage />} />
                     <Route path='staffs' element={<StaffsLayout />}>
                       <Route index element={<StaffsPage />} />

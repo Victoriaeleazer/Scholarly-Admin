@@ -26,6 +26,7 @@ export default function EventsPage() {
     
       await delay(2000);}
       
+      
 
       const eventMutation = useMutation({
         mutationFn: createEvent,
