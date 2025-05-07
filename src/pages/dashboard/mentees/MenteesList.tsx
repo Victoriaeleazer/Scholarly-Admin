@@ -7,6 +7,7 @@ import ProfileIcon from "../../../components/ProfileIcon";
 import OverlappingImages from "../../../components/OverlappingImages";
 import { useMentees } from "../../../provider/MenteesProvider";
 import { useMemo } from "react";
+import { User } from "../../../interfaces/User";
 
 
 
@@ -50,7 +51,7 @@ export default function MenteesList() {
     }
 
     const openMenteePage = (menteeId: string) => {
-        navigate(`/dashboard/mentees/${menteeId}`);
+        navigate(`/dashboard/students/${menteeId}`);
         };
     
 
@@ -95,7 +96,7 @@ export default function MenteesList() {
                       >
                         <td className="px-4 py-4">
                           <div className="flex items-center">
-                            <ProfileIcon member={mentee} className="w-8 h-8 mr-2" width={"32px"} height={"32"} />
+                            <ProfileIcon member={{firstName: mentee.firstName, lastName: mentee.lastName, color: mentee.color, profile: mentee.profile} as User} className="w-8 h-8 mr-2" width={"32px"} height={"32"} />
                             <p>{mentee.firstName + " " + mentee.lastName}</p>
                           </div>
                         </td>
